@@ -331,8 +331,7 @@ void CImageView::ReSizeIcon()
 			m_yPosBottom = m_faceLandmarkDraw[8].y;
 			m_yPosNose = m_faceLandmarkDraw[33].y;
 			m_yPosLip = (m_faceLandmarkDraw[48].y + m_faceLandmarkDraw[54].y)*0.5f;
-
-
+			
 
 			mtSetPoint3D(&m_PosLeftEye, 0, 0, 0);
 			mtSetPoint3D(&m_PosRightEye, 0, 0, 0);
