@@ -275,7 +275,7 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	m_bIsThreadEnd = false;
 	CWinThread* pl = AfxBeginThread(MyThread, this);
 //	CloseHandle(pl);
-
+		
 	
 	//===============================================//
 	SetTimer(_RENDER, 10, NULL);
@@ -338,12 +338,12 @@ void CImageView::ReSizeIcon()
 
 		for (int i = 0; i < 7; i++){
 			m_guidePosDraw[i] = convertImageToScreenSpace(m_guidePos[i]);
+			}
+
+
+
+
 		}
-
-
-		
-
-	}
 
 	m_right = m_left + m_nWidth;
 	m_top = m_bottom + m_nHeight;
@@ -524,7 +524,7 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 			TRACE(L"File Loaded...");
 
 
-		}
+	}
 
 	}
 
