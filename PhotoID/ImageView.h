@@ -19,11 +19,16 @@
 
 enum _RENDERMODE { _BYGROUP = 0, _BYORDER };
 enum _PICKMODE { _PICK_SELECT=0 };
+enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN};
 #define SEL_BUFF_SIZE 1024
 
 class CViewTree;
 
 typedef std::vector<CSNImage*> _vecSNImage;
+
+
+static UINT MyThread(LPVOID lpParam);
+static bool  m_bIsThreadEnd;
 
 
 class CImageView :
@@ -44,6 +49,7 @@ public:
 	void ReleaseImageData();
 	CBitmap* GetLogCBitmap(CString strFile);
 
+	void ThreadFaceDataLoad();
 
 private:
 
@@ -91,14 +97,19 @@ private:
 	float m_fXScale, m_fYScale;
 	CString m_strMousePos;
 
-	POINT3D m_PosRightEye;
-	POINT3D m_PosLeftEye;
+	
 
-	float m_yPosEye;
-	float m_yPosLip;
-	float m_yPosBottom;
-	float m_yPosTop;
-	float m_yPosNose;
+	//POINT3D m_PosRightEye;
+	//POINT3D m_PosLeftEye;
+
+	//float m_yPosEye;
+	//float m_yPosLip;
+	//float m_yPosBottom;
+	//float m_yPosTop;
+	//float m_yPosNose;
+
+	POINT3D m_guidePos[7];		
+	POINT3D m_guidePosDraw[7];
 
 
 public:
@@ -113,5 +124,10 @@ public:
 
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+
+
+
+	
+
 };
 
