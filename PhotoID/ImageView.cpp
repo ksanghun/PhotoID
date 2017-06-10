@@ -40,6 +40,7 @@ CImageView::CImageView()
 
 	m_left = m_right = m_bottom = m_top =0.0f;
 
+
 	m_iconSize = 100.0f;
 //	m_fScreenScale = 2.5f;
 	m_fScreenScale = 1.0f;
@@ -64,6 +65,7 @@ CImageView::CImageView()
 
 
 	m_pPhotoImg = NULL;
+	m_bIsThreadEnd = false;
 }
 
 
@@ -188,20 +190,20 @@ void CImageView::Render2D()
 
 	// Draw Lines //
 	glBegin(GL_LINES);
-	glVertex3f(0.0f, m_yPosBottom, 0.0f);
-	glVertex3f(m_nWidth, m_yPosBottom, 0.0f);
+	glVertex3f(0.0f, m_guidePosDraw[_CHIN].y, 0.0f);
+	glVertex3f(m_nWidth, m_guidePosDraw[_CHIN].y, 0.0f);
 
-	glVertex3f(0.0f, m_yPosLip, 0.0f);
-	glVertex3f(m_nWidth, m_yPosLip, 0.0f);
+	glVertex3f(0.0f, m_guidePosDraw[_LIP].y, 0.0f);
+	glVertex3f(m_nWidth, m_guidePosDraw[_LIP].y, 0.0f);
 
-	glVertex3f(0.0f, m_yPosNose, 0.0f);
-	glVertex3f(m_nWidth, m_yPosNose, 0.0f);
+	glVertex3f(0.0f, m_guidePosDraw[_NOSE].y, 0.0f);
+	glVertex3f(m_nWidth, m_guidePosDraw[_NOSE].y, 0.0f);
 
-	glVertex3f(0.0f, m_yPosEye, 0.0f);
-	glVertex3f(m_nWidth, m_yPosEye, 0.0f);
+	glVertex3f(0.0f, m_guidePosDraw[_EYE_CENTER].y, 0.0f);
+	glVertex3f(m_nWidth, m_guidePosDraw[_EYE_CENTER].y, 0.0f);
 
-	glVertex3f(0.0f, m_yPosTop, 0.0f);
-	glVertex3f(m_nWidth, m_yPosTop, 0.0f);
+	glVertex3f(0.0f, m_guidePosDraw[_TOPHEAD].y, 0.0f);
+	glVertex3f(m_nWidth, m_guidePosDraw[_TOPHEAD].y, 0.0f);
 
 	glEnd();
 
@@ -209,8 +211,8 @@ void CImageView::Render2D()
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glBegin(GL_LINES);
 	
-	glVertex3f(m_PosLeftEye.x, m_PosLeftEye.y, m_PosLeftEye.z);
-	glVertex3f(m_PosRightEye.x, m_PosRightEye.y, m_PosRightEye.z);
+	glVertex3f(m_guidePosDraw[_LEFT_EYE].x, m_guidePosDraw[_LEFT_EYE].y, m_guidePosDraw[_LEFT_EYE].z);
+	glVertex3f(m_guidePosDraw[_RIGHT_EYE].x, m_guidePosDraw[_RIGHT_EYE].y, m_guidePosDraw[_RIGHT_EYE].z);
 
 	glEnd();
 
@@ -262,9 +264,17 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 
 	
 
-	USES_CONVERSION;
-	char* sz = T2A(L"./data/shape_predictor_68_face_landmarks.dat");	
-	dlib::deserialize(sz) >> m_sp;
+	
+		
+	//m_bIsThreadEnd = false;
+	//m_pThread = AfxBeginThread(MyThread, this);
+	//m_pThread->m_bAutoDelete = FALSE;
+	//m_pThread->ResumeThread();
+
+
+	m_bIsThreadEnd = false;
+	CWinThread* pl = AfxBeginThread(MyThread, this);
+//	CloseHandle(pl);
 		
 	
 	//===============================================//
@@ -326,46 +336,14 @@ void CImageView::ReSizeIcon()
 			m_faceLandmarkDraw[i] = convertImageToScreenSpace(m_faceLandmark[i]);			
 		}
 
-
-		if (m_faceLandmark.size()>67){
-			m_yPosBottom = m_faceLandmarkDraw[8].y;
-			m_yPosNose = m_faceLandmarkDraw[33].y;
-			m_yPosLip = (m_faceLandmarkDraw[48].y + m_faceLandmarkDraw[54].y)*0.5f;
-			
-
-			mtSetPoint3D(&m_PosLeftEye, 0, 0, 0);
-			mtSetPoint3D(&m_PosRightEye, 0, 0, 0);
-
-			for (int i = 36; i < 42; i++){
-				m_PosLeftEye.x += m_faceLandmarkDraw[i].x;
-				m_PosLeftEye.y += m_faceLandmarkDraw[i].y;
-			}
-			for (int i = 42; i < 48; i++){
-				m_PosRightEye.x += m_faceLandmarkDraw[i].x;
-				m_PosRightEye.y += m_faceLandmarkDraw[i].y;
+		for (int i = 0; i < 7; i++){
+			m_guidePosDraw[i] = convertImageToScreenSpace(m_guidePos[i]);
 			}
 
-			m_PosLeftEye.x *= 0.16666f;
-			m_PosLeftEye.y *= 0.16666f;
-			m_PosLeftEye.z = 0.0f;
-
-			m_PosRightEye.x *= 0.16666f;
-			m_PosRightEye.y *= 0.16666f;
-			m_PosRightEye.z *= 0.0f;
 
 
-			m_yPosEye = (m_PosLeftEye.y + m_PosRightEye.y)*0.5f;
 
-
-			//m_yPosTop = m_yPosEye + (m_yPosEye - m_yPosBottom)*1.1f;
-
-
-			float facewidth = m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x;
-			float faceheight = 1.618f * facewidth;
-			m_yPosTop = m_yPosBottom + faceheight;
 		}
-
-	}
 
 	m_right = m_left + m_nWidth;
 	m_top = m_bottom + m_nHeight;
@@ -539,6 +517,15 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 		m_right = m_left + m_nWidth;
 		m_top = m_bottom + m_nHeight;
 		Render();
+
+
+		if (m_bIsThreadEnd == true){
+			m_bIsThreadEnd = false;
+			TRACE(L"File Loaded...");
+
+
+	}
+
 	}
 
 
@@ -816,6 +803,41 @@ bool CImageView::FaceDetection(IplImage* pImg)
 
 //	imshow("Detected Face", image);
 
+	for (int i = 0; i < 7; i++){
+		mtSetPoint3D(&m_guidePos[i], 0.0f, 0.0f, 0.0f);
+	}
+
+	if (m_faceLandmark.size()>67){
+		m_guidePos[_CHIN] = m_faceLandmark[8];
+		m_guidePos[_NOSE] = m_faceLandmark[33];
+		m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
+
+		for (int i = 36; i < 42; i++){
+			m_guidePos[_LEFT_EYE].x += m_faceLandmarkDraw[i].x;
+			m_guidePos[_LEFT_EYE].y += m_faceLandmarkDraw[i].y;
+		}
+		for (int i = 42; i < 48; i++){
+			m_guidePos[_RIGHT_EYE].x += m_faceLandmarkDraw[i].x;
+			m_guidePos[_RIGHT_EYE].y += m_faceLandmarkDraw[i].y;
+		}
+
+		m_guidePos[_LEFT_EYE].x *= 0.16666f;
+		m_guidePos[_LEFT_EYE].y *= 0.16666f;
+
+		m_guidePos[_RIGHT_EYE].x *= 0.16666f;
+		m_guidePos[_RIGHT_EYE].y *= 0.16666f;
+
+
+		m_guidePos[_EYE_CENTER].x = (m_guidePos[_LEFT_EYE].x + m_guidePos[_RIGHT_EYE].x)*0.5f;
+		m_guidePos[_EYE_CENTER].y = (m_guidePos[_LEFT_EYE].y + m_guidePos[_RIGHT_EYE].y)*0.5f;
+
+		float facewidth = m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x;
+		float faceheight = 1.618f * facewidth;
+		m_guidePos[_TOPHEAD].y = m_guidePos[_CHIN].y + faceheight;
+	}
+
+
+
 	ReSizeIcon();
 	return true;
 }
@@ -885,4 +907,21 @@ void CImageView::OnDropFiles(HDROP hDropInfo)
 
 
 	COGLWnd::OnDropFiles(hDropInfo);
+}
+
+
+void CImageView::ThreadFaceDataLoad()
+{
+	USES_CONVERSION;
+	char* sz = T2A(L"./data/shape_predictor_68_face_landmarks.dat");
+	dlib::deserialize(sz) >> m_sp;
+
+	m_bIsThreadEnd = true;
+}
+
+UINT MyThread(LPVOID lpParam)
+{
+	CImageView* pClass = (CImageView*)lpParam;
+	pClass->ThreadFaceDataLoad();
+	return 0L;
 }
