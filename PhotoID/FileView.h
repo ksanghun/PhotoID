@@ -29,6 +29,9 @@ public:
 	void UpdateImgListCtrl(CString strPath);
 	CListCtrl& GetListCtrl() { return m_wndListCtrl; }
 
+	BOOL  GetImageFileNames(CString strFolder);
+	void  DrawThumbnails(CString strFolder);
+
 // Attributes
 protected:
 
@@ -36,6 +39,10 @@ protected:
 	CImgList m_wndListCtrl;
 	CImageList m_FileViewImages;
 	CFileViewToolBar m_wndToolBar;
+
+	ULONG_PTR	m_gdiplusToken;
+
+	std::vector<CString>	m_VectorImageNames;
 
 protected:
 	void FillFileView();

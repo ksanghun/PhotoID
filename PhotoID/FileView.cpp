@@ -5,12 +5,17 @@
 #include "Resource.h"
 #include "PhotoID.h"
 
+#include <gdiplus.h>
+using namespace Gdiplus;
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
+#define	THUMBNAIL_WIDTH		100
+#define	THUMBNAIL_HEIGHT	100
 /////////////////////////////////////////////////////////////////////////////
 // CFileView
 
@@ -44,6 +49,11 @@ int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	// initialize GDI+
+	GdiplusStartupInput gdiplusStartupInput;
+	GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
+
 
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
@@ -274,11 +284,192 @@ void CFileView::OnChangeVisualStyle()
 
 void CFileView::UpdateImgListCtrl(CString strPath)
 {
-	if (m_wndListCtrl){
-		m_wndListCtrl.UpdateImgListCtrl(strPath);
-	}
+	//if (m_wndListCtrl){
+	//	m_wndListCtrl.UpdateImgListCtrl(strPath);
+	//}
 
-
-
+	GetImageFileNames(strPath);
+	DrawThumbnails(strPath);
 }
 
+
+BOOL  CFileView::GetImageFileNames(CString strFolder)
+{
+	m_VectorImageNames.clear();
+
+	CString	strExt;
+	CString	strName;
+	CString	strPattern;
+	BOOL	bRC = TRUE;
+
+	HANDLE					hFind = NULL;
+	WIN32_FIND_DATA			FindFileData;
+	std::vector<CString>	VectorImageNames;
+
+	strPattern.Format(TEXT("%s\\*.*"), strFolder);
+
+	hFind = ::FindFirstFile(strPattern, &FindFileData);	// strat search	
+	if (hFind == INVALID_HANDLE_VALUE)
+	{
+		LPVOID  msg;
+		::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+			NULL,
+			GetLastError(),
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			(LPTSTR)&msg,
+			0,
+			NULL);
+		//MessageBox((LPTSTR)msg, CString((LPCSTR)IDS_TITLE), MB_OK | MB_ICONSTOP);
+		::LocalFree(msg);
+		return FALSE;
+	}
+
+	// filter off the system files and directories
+	if (!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+		!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) &&
+		!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) &&
+		!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY))
+	{
+		// test file extension
+		strName = FindFileData.cFileName;
+		strExt = strName.Right(3);
+
+		if ((strExt.CompareNoCase(TEXT("bmp")) == 0) ||
+			(strExt.CompareNoCase(TEXT("jpg")) == 0) ||
+			(strExt.CompareNoCase(TEXT("gif")) == 0) ||
+			(strExt.CompareNoCase(TEXT("tif")) == 0) ||
+			(strExt.CompareNoCase(TEXT("png")) == 0))
+		{
+			// save the image file name
+			VectorImageNames.push_back(strName);
+		}
+	}
+
+	// loop through to add all of them to our vector	
+	while (bRC)
+	{
+		bRC = ::FindNextFile(hFind, &FindFileData);
+		if (bRC)
+		{
+			// filter off the system files and directories
+			if (!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+				!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) &&
+				!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) &&
+				!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY))
+			{
+				// test file extension
+				strName = FindFileData.cFileName;
+				strExt = strName.Right(3);
+
+				if ((strExt.CompareNoCase(TEXT("bmp")) == 0) ||
+					(strExt.CompareNoCase(TEXT("jpg")) == 0) ||
+					(strExt.CompareNoCase(TEXT("gif")) == 0) ||
+					(strExt.CompareNoCase(TEXT("tif")) == 0) ||
+					(strExt.CompareNoCase(TEXT("png")) == 0))
+				{
+					// save the image file name
+					VectorImageNames.push_back(strName);
+				}
+			}
+		}
+		else
+		{
+			DWORD err = ::GetLastError();
+			if (err != ERROR_NO_MORE_FILES)
+			{
+				LPVOID msg;
+				::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+					NULL, err,
+					MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+					(LPTSTR)&msg, 0, NULL);
+				//MessageBox((LPTSTR)msg, CString((LPCSTR)IDS_TITLE), MB_OK | MB_ICONSTOP);
+				::LocalFree(msg);
+				::FindClose(hFind);
+				return FALSE;
+			}
+		}
+	} // end of while loop
+
+	// close the search handle
+	::FindClose(hFind);
+
+	// update the names, if any
+	if (!VectorImageNames.empty())
+	{
+		// reset the image name vector		
+		m_VectorImageNames = VectorImageNames;
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+void  CFileView::DrawThumbnails(CString strFolder)
+{
+	CBitmap*    pImage = NULL;
+	HBITMAP		hBmp = NULL;
+	POINT		pt;
+	CString		strPath;
+	int			i;
+
+	// no images
+	if (m_VectorImageNames.empty())
+		return;
+
+	// set the length of the space between thumbnails
+	// you can also calculate and set it based on the length of your list control
+	int nGap = 6;
+
+	// hold the window update to avoid flicking
+	m_wndListCtrl.SetRedraw(FALSE);
+
+	// reset our image list
+	for (i = 0; i<m_FileViewImages.GetImageCount(); i++)
+		m_FileViewImages.Remove(i);
+
+	// remove all items from list view
+	if (m_wndListCtrl.GetItemCount() != 0)
+		m_wndListCtrl.DeleteAllItems();
+
+	// set the size of the image list
+	m_FileViewImages.SetImageCount(m_VectorImageNames.size());
+	i = 0;
+
+	// draw the thumbnails
+	std::vector<CString>::iterator	iter;
+	for (iter = m_VectorImageNames.begin(); iter != m_VectorImageNames.end(); iter++)
+	{
+		// load the bitmap
+		strPath.Format(TEXT("%s\\%s"), strFolder, *iter);
+
+		USES_CONVERSION;
+		Bitmap img((strPath));
+		Bitmap* pThumbnail = static_cast<Bitmap*>(img.GetThumbnailImage(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, NULL, NULL));
+
+		// attach the thumbnail bitmap handle to an CBitmap object
+		pThumbnail->GetHBITMAP(NULL, &hBmp);
+		pImage = new CBitmap();
+		pImage->Attach(hBmp);
+
+		// add bitmap to our image list
+		m_FileViewImages.Replace(i, pImage, NULL);
+
+		// put item to display
+		// set the image file name as item text
+		m_wndListCtrl.InsertItem(i, m_VectorImageNames[i], i);
+
+		// get current item position	 
+		m_wndListCtrl.GetItemPosition(i, &pt);
+
+		// shift the thumbnail to desired position
+		//pt.x = nGap + i*(THUMBNAIL_WIDTH + nGap);
+		m_wndListCtrl.SetItemPosition(i, pt);
+		i++;
+
+		delete pImage;
+		delete pThumbnail;
+	}
+
+	// let's show the new thumbnails
+	m_wndListCtrl.SetRedraw();
+}

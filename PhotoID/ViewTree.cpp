@@ -51,6 +51,7 @@ void CViewTree::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hSelected = pNMTreeView->itemNew.hItem;
 	if (GetItemData(hSelected) == 0){
 		CString pathSelected;
+		CString pathFolder;
 
 		HTREEITEM hParentsItem = hSelected;
 		while (hParentsItem != NULL){
@@ -58,6 +59,7 @@ void CViewTree::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 			pathSelected = GetItemText(hParentsItem) + pathSelected;
 			hParentsItem = GetParentItem(hParentsItem);
 		}
+		pathFolder = pathSelected;
 		pathSelected += L"*.*";
 
 		CFileFind finder;
@@ -77,7 +79,7 @@ void CViewTree::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	//	Expand(hSelected, TVE_EXPAND);
 
 		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
-		pM->UpdateImgListCtrl(pathSelected);
+		pM->UpdateImgListCtrl(pathFolder);
 	}
 
 
