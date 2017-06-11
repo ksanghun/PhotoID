@@ -61,6 +61,7 @@ private:
 
 	POINT3D m_lookAt;
 	LOGFONT		m_LogFont;
+	LOGFONT		m_LogFontBig;
 	BITMAPINFO* m_pBmpInfo;
 
 	int			m_nWidth;
@@ -95,19 +96,10 @@ private:
 	std::vector<POINT3D> m_faceLandmarkDraw;
 
 	float m_fXScale, m_fYScale;
+	float m_fImgDetectScale;
 	CString m_strMousePos;
 
 	
-
-	//POINT3D m_PosRightEye;
-	//POINT3D m_PosLeftEye;
-
-	//float m_yPosEye;
-	//float m_yPosLip;
-	//float m_yPosBottom;
-	//float m_yPosTop;
-	//float m_yPosNose;
-
 	POINT3D m_guidePos[7];		
 	POINT3D m_guidePosDraw[7];
 

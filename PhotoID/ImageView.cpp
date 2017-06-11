@@ -25,8 +25,18 @@ CImageView::CImageView()
 	m_LogFont.lfHeight = -10;
 	m_LogFont.lfWidth = 0;
 	//	m_LogFont.lfWeight = FW_BOLD;
+	
+
+	memset(&m_LogFontBig, 0, sizeof(m_LogFontBig));
+	//	strcpy((char*)m_LogFont.lfFaceName, ("Arial"));
+	m_LogFontBig.lfCharSet = ANSI_CHARSET;
+	m_LogFontBig.lfHeight = -15;
+	m_LogFontBig.lfWidth = 0;
+	m_LogFont.lfWeight = FW_BOLD;
+
 
 	m_pBmpInfo = (BITMAPINFO *)malloc(sizeof(BITMAPINFOHEADER) + (sizeof(RGBQUAD) * 256));
+
 
 	m_nWidth = 0;
 	m_nHeight = 0;
@@ -66,6 +76,7 @@ CImageView::CImageView()
 
 	m_pPhotoImg = NULL;
 	m_bIsThreadEnd = false;
+	m_fImgDetectScale = 1.0f;
 }
 
 
@@ -159,6 +170,9 @@ void CImageView::Render()
 void CImageView::Render2D()
 {
 
+	
+
+
 	//int pointSize = m_iconSize / 100;
 	//if (pointSize < 4)
 	//	pointSize = 4;
@@ -168,15 +182,24 @@ void CImageView::Render2D()
 
 	gl_PushOrtho(m_left, m_right, m_bottom, m_top);
 
+
+	if (m_bIsThreadEnd == false){
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glColor3f(0.9f, 0.2f, 0.2f);
+		POINT3D pos;
+		mtSetPoint3D(&pos, m_nWidth*0.5f, m_nHeight*0.5f, 0);
+		gl_DrawText(pos, L"Initilizing...", m_LogFontBig, 1, m_pBmpInfo, m_CDCPtr);
+	}
+
+
+
 	if (m_pPhotoImg){
 		m_pPhotoImg->DrawThumbNail(1.0f);
 	}
 
-
-	//glColor3f(0.2f, 0.2f, 0.2f);
-	//POINT3D pos;
-	//mtSetPoint3D(&pos,100, 100, 0);
-	//gl_DrawText(pos, m_strMousePos, m_LogFont, 1, m_pBmpInfo, m_CDCPtr);
+	
 
 
 	glColor3f(0.0f, 1.0f, 0.0f);
@@ -517,15 +540,11 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 		m_right = m_left + m_nWidth;
 		m_top = m_bottom + m_nHeight;
 		Render();
-
-
-		if (m_bIsThreadEnd == true){
-			m_bIsThreadEnd = false;
-			TRACE(L"File Loaded...");
-
-
-	}
-
+		
+		//if (m_bIsThreadEnd == true){
+		//	m_bIsThreadEnd = false;
+		//	TRACE(L"File Loaded...");
+		//}
 	}
 
 
@@ -777,7 +796,14 @@ bool CImageView::FaceDetection(IplImage* pImg)
 {
 	Mat oimage, image;
 	oimage = cvarrToMat(pImg);
-	resize(oimage, image, Size(oimage.cols / 2, oimage.rows/2));
+	m_fImgDetectScale = (float)oimage.cols / 350.0f;
+	if (m_fImgDetectScale < 1.0f)
+		m_fImgDetectScale = 1.0f;
+
+	int newSizeW = (float)oimage.cols / m_fImgDetectScale;
+	int newSizeH = (float)oimage.rows / m_fImgDetectScale;
+
+	resize(oimage, image, Size(newSizeW, newSizeH));
 
 	dlib::frontal_face_detector detector = dlib::get_frontal_face_detector();
 		
@@ -813,12 +839,12 @@ bool CImageView::FaceDetection(IplImage* pImg)
 		m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
 
 		for (int i = 36; i < 42; i++){
-			m_guidePos[_LEFT_EYE].x += m_faceLandmarkDraw[i].x;
-			m_guidePos[_LEFT_EYE].y += m_faceLandmarkDraw[i].y;
+			m_guidePos[_LEFT_EYE].x += m_faceLandmark[i].x;
+			m_guidePos[_LEFT_EYE].y += m_faceLandmark[i].y;
 		}
 		for (int i = 42; i < 48; i++){
-			m_guidePos[_RIGHT_EYE].x += m_faceLandmarkDraw[i].x;
-			m_guidePos[_RIGHT_EYE].y += m_faceLandmarkDraw[i].y;
+			m_guidePos[_RIGHT_EYE].x += m_faceLandmark[i].x;
+			m_guidePos[_RIGHT_EYE].y += m_faceLandmark[i].y;
 		}
 
 		m_guidePos[_LEFT_EYE].x *= 0.16666f;
@@ -831,9 +857,9 @@ bool CImageView::FaceDetection(IplImage* pImg)
 		m_guidePos[_EYE_CENTER].x = (m_guidePos[_LEFT_EYE].x + m_guidePos[_RIGHT_EYE].x)*0.5f;
 		m_guidePos[_EYE_CENTER].y = (m_guidePos[_LEFT_EYE].y + m_guidePos[_RIGHT_EYE].y)*0.5f;
 
-		float facewidth = m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x;
+		float facewidth = (m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x);
 		float faceheight = 1.618f * facewidth;
-		m_guidePos[_TOPHEAD].y = m_guidePos[_CHIN].y + faceheight;
+		m_guidePos[_TOPHEAD].y = m_guidePos[_CHIN].y - faceheight;
 	}
 
 
@@ -845,12 +871,10 @@ bool CImageView::FaceDetection(IplImage* pImg)
 POINT3D CImageView::convertScreenToImageSpace(POINT3D pnt)
 {
 	POINT3D curPos;
-	if (m_pPhotoImg){
+	if (m_pPhotoImg){		
 
-		
-
-		m_fXScale = (float)m_pPhotoImg->GetImgWidth() / (m_pPhotoImg->GetLeftTop().x*2);
-		m_fYScale = (float)m_pPhotoImg->GetImgHeight() / (m_pPhotoImg->GetLeftTop().y*2);
+		m_fXScale = (float)m_pPhotoImg->GetImgWidth() / (m_pPhotoImg->GetLeftTop().x*m_fImgDetectScale);
+		m_fYScale = (float)m_pPhotoImg->GetImgHeight() / (m_pPhotoImg->GetLeftTop().y*m_fImgDetectScale);
 
 		float xOffset = m_nWidth - (m_pPhotoImg->GetLeftTop().x + m_nWidth*0.5f);
 		float yOffset = m_nHeight - (m_pPhotoImg->GetLeftTop().y + m_nHeight*0.5f);
@@ -867,12 +891,12 @@ POINT3D CImageView::convertImageToScreenSpace(POINT3D pnt)
 	POINT3D curPos;
 	if (m_pPhotoImg){
 
-		float fxDetectScale = (float)m_pPhotoImg->GetImgWidth() / (float)FACE_DETECT_SIZE;
-		float fyDetectScale = (float)m_pPhotoImg->GetImgHeight() / (float)FACE_DETECT_SIZE;
+//		float fxDetectScale = (float)m_pPhotoImg->GetImgWidth() / (float)FACE_DETECT_SIZE;
+//		float fyDetectScale = (float)m_pPhotoImg->GetImgHeight() / (float)FACE_DETECT_SIZE;
 
 		// restore original size //
-		pnt.x = pnt.x*2;
-		pnt.y = pnt.y*2;
+		pnt.x = pnt.x*m_fImgDetectScale;
+		pnt.y = pnt.y*m_fImgDetectScale;
 		pnt.y = m_pPhotoImg->GetImgHeight() - pnt.y;
 
 		m_fXScale = (float)m_pPhotoImg->GetImgWidth() / (m_pPhotoImg->GetLeftTop().x * 2);
