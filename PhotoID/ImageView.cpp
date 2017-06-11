@@ -295,8 +295,8 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	//m_pThread->ResumeThread();
 
 
-	//m_bIsThreadEnd = false;
-	//CWinThread* pl = AfxBeginThread(MyThread, this);
+	m_bIsThreadEnd = false;
+	CWinThread* pl = AfxBeginThread(MyThread, this);
 //	CloseHandle(pl);
 		
 	

@@ -59,7 +59,7 @@ private:
 	CPoint m_preMmousedown;
 	short m_mouseMode;
 
-	POINT3D m_lookAt;
+	POINT3D		m_lookAt;
 	LOGFONT		m_LogFont;
 	LOGFONT		m_LogFontBig;
 	BITMAPINFO* m_pBmpInfo;

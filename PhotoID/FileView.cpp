@@ -288,7 +288,7 @@ void CFileView::UpdateImgListCtrl(CString strPath)
 	//	m_wndListCtrl.UpdateImgListCtrl(strPath);
 	//}
 
-	GetImageFileNames(strPath);
+	GetImageFileNames(strPath);	
 	DrawThumbnails(strPath);
 }
 
@@ -296,6 +296,7 @@ void CFileView::UpdateImgListCtrl(CString strPath)
 BOOL  CFileView::GetImageFileNames(CString strFolder)
 {
 	m_VectorImageNames.clear();
+	
 
 	CString	strExt;
 	CString	strName;
@@ -412,6 +413,14 @@ void  CFileView::DrawThumbnails(CString strFolder)
 	CString		strPath;
 	int			i;
 
+	// reset our image list
+	for (i = 0; i<m_FileViewImages.GetImageCount(); i++)
+		m_FileViewImages.Remove(i);
+
+	// remove all items from list view
+	if (m_wndListCtrl.GetItemCount() != 0)
+		m_wndListCtrl.DeleteAllItems();
+
 	// no images
 	if (m_VectorImageNames.empty())
 		return;
@@ -423,13 +432,7 @@ void  CFileView::DrawThumbnails(CString strFolder)
 	// hold the window update to avoid flicking
 	m_wndListCtrl.SetRedraw(FALSE);
 
-	// reset our image list
-	for (i = 0; i<m_FileViewImages.GetImageCount(); i++)
-		m_FileViewImages.Remove(i);
-
-	// remove all items from list view
-	if (m_wndListCtrl.GetItemCount() != 0)
-		m_wndListCtrl.DeleteAllItems();
+	
 
 	// set the size of the image list
 	m_FileViewImages.SetImageCount(m_VectorImageNames.size());
