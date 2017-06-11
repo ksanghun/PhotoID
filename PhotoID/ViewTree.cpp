@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "ViewTree.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,6 +21,7 @@ CViewTree::~CViewTree()
 }
 
 BEGIN_MESSAGE_MAP(CViewTree, CTreeCtrl)
+	ON_NOTIFY_REFLECT(TVN_SELCHANGED, &CViewTree::OnTvnSelchanged)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -38,4 +40,55 @@ BOOL CViewTree::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 	}
 
 	return bRes;
+}
+
+
+void CViewTree::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+
+	HTREEITEM hSelected = pNMTreeView->itemNew.hItem;
+	if (GetItemData(hSelected) == 0){
+		CString pathSelected;
+
+		HTREEITEM hParentsItem = hSelected;
+		while (hParentsItem != NULL){
+			pathSelected = L"\\" + pathSelected;
+			pathSelected = GetItemText(hParentsItem) + pathSelected;
+			hParentsItem = GetParentItem(hParentsItem);
+		}
+		pathSelected += L"*.*";
+
+		CFileFind finder;
+		BOOL bWorking = finder.FindFile(pathSelected);
+
+		while (bWorking){
+			bWorking = finder.FindNextFile();
+			if (finder.IsDots()) continue;
+			if (finder.IsDirectory()){
+				InsertItem(finder.GetFileName(), hSelected);
+			}
+		}
+
+		//SetItemData(hSelected, 1);
+		EnsureVisible(hSelected);
+
+	//	Expand(hSelected, TVE_EXPAND);
+
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+		pM->UpdateImgListCtrl(pathSelected);
+	}
+
+
+	
+
+
+	// Update List Ctrl //
+	
+
+
+	//Invalidate(TRUE);
+
+	*pResult = 0;
 }

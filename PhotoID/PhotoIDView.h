@@ -17,6 +17,7 @@ public:
 //	CPhotoIDDoc* GetDocument() const;
 
 private:
+
 	CImageView* m_pImageView;
 
 // Operations

@@ -1,7 +1,11 @@
 
 #pragma once
 
-#include "ViewTree.h"
+#include "ImgList.h"
+
+
+
+
 
 class CFileViewToolBar : public CMFCToolBar
 {
@@ -22,10 +26,14 @@ public:
 	void AdjustLayout();
 	void OnChangeVisualStyle();
 
+	void UpdateImgListCtrl(CString strPath);
+	CListCtrl& GetListCtrl() { return m_wndListCtrl; }
+
 // Attributes
 protected:
 
-	CViewTree m_wndFileView;
+//	CViewTree m_wndFileView;
+	CImgList m_wndListCtrl;
 	CImageList m_FileViewImages;
 	CFileViewToolBar m_wndToolBar;
 

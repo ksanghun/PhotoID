@@ -382,3 +382,9 @@ BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParent
 	return TRUE;
 }
 
+void CMainFrame::UpdateImgListCtrl(CString strPath)
+{
+	if (m_wndFileView){
+		m_wndFileView.UpdateImgListCtrl(strPath);
+	}
+}

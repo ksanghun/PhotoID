@@ -23,14 +23,14 @@ public:
 	void OnChangeVisualStyle();
 
 protected:
-	CClassToolBar m_wndToolBar;
+//	CClassToolBar m_wndToolBar;
 	CViewTree m_wndClassView;
 	CImageList m_ClassViewImages;
 	UINT m_nCurrSort;
 
 	void FillClassView();
-
-// Overrides
+	
+	// Overrides
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 

@@ -81,33 +81,33 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	// Load images:
-	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_SORT);
-	m_wndToolBar.LoadToolBar(IDR_SORT, 0, 0, TRUE /* Is locked */);
+	//m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_SORT);
+	//m_wndToolBar.LoadToolBar(IDR_SORT, 0, 0, TRUE /* Is locked */);
 
 	OnChangeVisualStyle();
 
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
+	//m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
+	//m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
 
-	m_wndToolBar.SetOwner(this);
+	//m_wndToolBar.SetOwner(this);
 
 	// All commands will be routed via this control , not via the parent frame:
-	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
+	//m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
 
 	CMenu menuSort;
 	menuSort.LoadMenu(IDR_POPUP_SORT);
 
-	m_wndToolBar.ReplaceButton(ID_SORT_MENU, CClassViewMenuButton(menuSort.GetSubMenu(0)->GetSafeHmenu()));
+	//m_wndToolBar.ReplaceButton(ID_SORT_MENU, CClassViewMenuButton(menuSort.GetSubMenu(0)->GetSafeHmenu()));
 
-	CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
+	//CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
 
-	if (pButton != NULL)
-	{
-		pButton->m_bText = FALSE;
-		pButton->m_bImage = TRUE;
-		pButton->SetImage(GetCmdMgr()->GetCmdImage(m_nCurrSort));
-		pButton->SetMessageWnd(this);
-	}
+	//if (pButton != NULL)
+	//{
+	//	pButton->m_bText = FALSE;
+	//	pButton->m_bImage = TRUE;
+	//	pButton->SetImage(GetCmdMgr()->GetCmdImage(m_nCurrSort));
+	//	pButton->SetMessageWnd(this);
+	//}
 
 	// Fill in some static tree view data (dummy code, nothing magic here)
 	FillClassView();
@@ -121,42 +121,60 @@ void CClassView::OnSize(UINT nType, int cx, int cy)
 	AdjustLayout();
 }
 
+
 void CClassView::FillClassView()
 {
-	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("FakeApp classes"), 0, 0);
+	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("D:"), 0, 0);
 	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 
-	HTREEITEM hClass = m_wndClassView.InsertItem(_T("CFakeAboutDlg"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAboutDlg()"), 3, 3, hClass);
+	CFileFind finder;
+	BOOL bWorking = finder.FindFile(_T("D:\\*.*"));
 
-	m_wndClassView.Expand(hRoot, TVE_EXPAND);
+	while (bWorking){
+		bWorking = finder.FindNextFile();
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeApp"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeApp()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("InitInstance()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("OnAppAbout()"), 3, 3, hClass);
+		if (finder.IsDirectory()){
+			m_wndClassView.InsertItem(finder.GetFileName(), hRoot);
+		}
+	}
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppDoc"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppDoc()"), 4, 4, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppDoc()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("OnNewDocument()"), 3, 3, hClass);
+	m_wndClassView.EnsureVisible(hRoot);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppView"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppView()"), 4, 4, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppView()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("GetDocument()"), 3, 3, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppFrame"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppFrame()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppFrame()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("m_wndMenuBar"), 6, 6, hClass);
-	m_wndClassView.InsertItem(_T("m_wndToolBar"), 6, 6, hClass);
-	m_wndClassView.InsertItem(_T("m_wndStatusBar"), 6, 6, hClass);
+	//HTREEITEM hRoot = m_wndClassView.InsertItem(_T("FakeApp classes"), 0, 0);
+	//m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 
-	hClass = m_wndClassView.InsertItem(_T("Globals"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("theFakeApp"), 5, 5, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	//HTREEITEM hClass = m_wndClassView.InsertItem(_T("CFakeAboutDlg"), 1, 1, hRoot);
+	//m_wndClassView.InsertItem(_T("CFakeAboutDlg()"), 3, 3, hClass);
+
+	//m_wndClassView.Expand(hRoot, TVE_EXPAND);
+
+	//hClass = m_wndClassView.InsertItem(_T("CFakeApp"), 1, 1, hRoot);
+	//m_wndClassView.InsertItem(_T("CFakeApp()"), 3, 3, hClass);
+	//m_wndClassView.InsertItem(_T("InitInstance()"), 3, 3, hClass);
+	//m_wndClassView.InsertItem(_T("OnAppAbout()"), 3, 3, hClass);
+
+	//hClass = m_wndClassView.InsertItem(_T("CFakeAppDoc"), 1, 1, hRoot);
+	//m_wndClassView.InsertItem(_T("CFakeAppDoc()"), 4, 4, hClass);
+	//m_wndClassView.InsertItem(_T("~CFakeAppDoc()"), 3, 3, hClass);
+	//m_wndClassView.InsertItem(_T("OnNewDocument()"), 3, 3, hClass);
+
+	//hClass = m_wndClassView.InsertItem(_T("CFakeAppView"), 1, 1, hRoot);
+	//m_wndClassView.InsertItem(_T("CFakeAppView()"), 4, 4, hClass);
+	//m_wndClassView.InsertItem(_T("~CFakeAppView()"), 3, 3, hClass);
+	//m_wndClassView.InsertItem(_T("GetDocument()"), 3, 3, hClass);
+	//m_wndClassView.Expand(hClass, TVE_EXPAND);
+
+	//hClass = m_wndClassView.InsertItem(_T("CFakeAppFrame"), 1, 1, hRoot);
+	//m_wndClassView.InsertItem(_T("CFakeAppFrame()"), 3, 3, hClass);
+	//m_wndClassView.InsertItem(_T("~CFakeAppFrame()"), 3, 3, hClass);
+	//m_wndClassView.InsertItem(_T("m_wndMenuBar"), 6, 6, hClass);
+	//m_wndClassView.InsertItem(_T("m_wndToolBar"), 6, 6, hClass);
+	//m_wndClassView.InsertItem(_T("m_wndStatusBar"), 6, 6, hClass);
+
+	//hClass = m_wndClassView.InsertItem(_T("Globals"), 2, 2, hRoot);
+	//m_wndClassView.InsertItem(_T("theFakeApp"), 5, 5, hClass);
+	//m_wndClassView.Expand(hClass, TVE_EXPAND);
 }
 
 void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
@@ -212,9 +230,9 @@ void CClassView::AdjustLayout()
 	CRect rectClient;
 	GetClientRect(rectClient);
 
-	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
-
-	m_wndToolBar.SetWindowPos(NULL, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
+//	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
+	int cyTlb = 0;
+//	m_wndToolBar.SetWindowPos(NULL, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
 	m_wndClassView.SetWindowPos(NULL, rectClient.left + 1, rectClient.top + cyTlb + 1, rectClient.Width() - 2, rectClient.Height() - cyTlb - 2, SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
@@ -225,21 +243,21 @@ BOOL CClassView::PreTranslateMessage(MSG* pMsg)
 
 void CClassView::OnSort(UINT id)
 {
-	if (m_nCurrSort == id)
-	{
-		return;
-	}
+	//if (m_nCurrSort == id)
+	//{
+	//	return;
+	//}
 
-	m_nCurrSort = id;
+	//m_nCurrSort = id;
 
-	CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
+	//CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
 
-	if (pButton != NULL)
-	{
-		pButton->SetImage(GetCmdMgr()->GetCmdImage(id));
-		m_wndToolBar.Invalidate();
-		m_wndToolBar.UpdateWindow();
-	}
+	//if (pButton != NULL)
+	//{
+	//	pButton->SetImage(GetCmdMgr()->GetCmdImage(id));
+	//	m_wndToolBar.Invalidate();
+	//	m_wndToolBar.UpdateWindow();
+	//}
 }
 
 void CClassView::OnUpdateSort(CCmdUI* pCmdUI)
@@ -317,6 +335,6 @@ void CClassView::OnChangeVisualStyle()
 
 	m_wndClassView.SetImageList(&m_ClassViewImages, TVSIL_NORMAL);
 
-	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* Locked */);
+//	m_wndToolBar.CleanUpLockedImages();
+//	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* Locked */);
 }

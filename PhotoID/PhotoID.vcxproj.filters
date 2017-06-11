@@ -69,6 +69,9 @@
     <ClInclude Include="ImageView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImgList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhotoID.cpp">
@@ -111,6 +114,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImgList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

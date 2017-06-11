@@ -156,6 +156,7 @@ int CPhotoIDView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_pImageView->InitGLview(0, 0);
 	}
 
+
 	return 0;
 }
 
@@ -165,6 +166,7 @@ void CPhotoIDView::OnSize(UINT nType, int cx, int cy)
 	CView::OnSize(nType, cx, cy);
 
 	// TODO: Add your message handler code here
+
 	if (m_pImageView){
 		m_pImageView->MoveWindow(0, 0, cx, cy);
 	}

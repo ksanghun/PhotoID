@@ -295,13 +295,13 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	//m_pThread->ResumeThread();
 
 
-	m_bIsThreadEnd = false;
-	CWinThread* pl = AfxBeginThread(MyThread, this);
+	//m_bIsThreadEnd = false;
+	//CWinThread* pl = AfxBeginThread(MyThread, this);
 //	CloseHandle(pl);
 		
 	
 	//===============================================//
-	SetTimer(_RENDER, 10, NULL);
+	SetTimer(_RENDER, 30, NULL);
 }
 
 void CImageView::SetPhotoIDimg(CString strPath)
@@ -470,7 +470,7 @@ void CImageView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 	if (GetCapture()){
-		//ReleaseCapture();
+		ReleaseCapture();
 		//m_fMoveSpeed = point.y - m_preMmousedown.y;
 	}
 
@@ -483,18 +483,18 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 
 
-	if (m_pPhotoImg){
-		POINT3D curPos;
-		curPos.x = (float)point.x;
-		curPos.y = (float)point.y;
-		curPos.z = 0.0f;
+	//if (m_pPhotoImg){
+	//	POINT3D curPos;
+	//	curPos.x = (float)point.x;
+	//	curPos.y = (float)point.y;
+	//	curPos.z = 0.0f;
 
-		curPos = convertScreenToImageSpace(curPos);
-		m_strMousePos.Format(_T("[%d, %d]"), (int)curPos.x, (int)curPos.y);
-	}
+	//	curPos = convertScreenToImageSpace(curPos);
+	//	m_strMousePos.Format(_T("[%d, %d]"), (int)curPos.x, (int)curPos.y);
+	//}
 
 	
-	if (GetCapture()){		
+	//if (GetCapture()){		
 
 		//m_centerx -= (point.x - m_mousedown.x);
 		//m_centery += (point.y - m_mousedown.y);
@@ -519,7 +519,7 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 		//m_mousedown = point;
 
 	//	Render();
-	}	
+	//}	
 
 	COGLWnd::OnMouseMove(nFlags, point);
 }
@@ -542,6 +542,7 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 		Render();
 		
 		//if (m_bIsThreadEnd == true){
+		//	EndWaitCursor();
 		//	m_bIsThreadEnd = false;
 		//	TRACE(L"File Loaded...");
 		//}
@@ -941,6 +942,8 @@ void CImageView::ThreadFaceDataLoad()
 	dlib::deserialize(sz) >> m_sp;
 
 	m_bIsThreadEnd = true;
+
+	ExitThread(1);
 }
 
 UINT MyThread(LPVOID lpParam)

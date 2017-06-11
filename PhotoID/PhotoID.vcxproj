@@ -117,6 +117,7 @@
     <ClInclude Include="data_type.h" />
     <ClInclude Include="FileView.h" />
     <ClInclude Include="ImageView.h" />
+    <ClInclude Include="ImgList.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="math_tool.h" />
     <ClInclude Include="OGLWnd.h" />
@@ -135,6 +136,7 @@
     <ClCompile Include="ClassView.cpp" />
     <ClCompile Include="FileView.cpp" />
     <ClCompile Include="ImageView.cpp" />
+    <ClCompile Include="ImgList.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="math_tool.cpp" />
     <ClCompile Include="OGLWnd.cpp" />
