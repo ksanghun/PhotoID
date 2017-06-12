@@ -177,7 +177,7 @@ void CImageView::Render2D()
 	//if (pointSize < 4)
 	//	pointSize = 4;
 
-	glLineWidth(2.0f);
+	glLineWidth(1.0f);
 	glPointSize(3);
 
 	gl_PushOrtho(m_left, m_right, m_bottom, m_top);
@@ -202,16 +202,17 @@ void CImageView::Render2D()
 	
 
 
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glBegin(GL_POINTS);
-	for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
-		glVertex3f(m_faceLandmarkDraw[i].x, m_faceLandmarkDraw[i].y, m_faceLandmarkDraw[i].z);
-	}
-	glEnd();
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	//glBegin(GL_POINTS);
+	//for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
+	//	glVertex3f(m_faceLandmarkDraw[i].x, m_faceLandmarkDraw[i].y, m_faceLandmarkDraw[i].z);
+	//}
+	//glEnd();
 
 
 
 	// Draw Lines //
+	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_LINES);
 	glVertex3f(0.0f, m_guidePosDraw[_CHIN].y, 0.0f);
 	glVertex3f(m_nWidth, m_guidePosDraw[_CHIN].y, 0.0f);
