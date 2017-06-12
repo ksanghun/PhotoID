@@ -174,3 +174,9 @@ void CPhotoIDView::OnSize(UINT nType, int cx, int cy)
 
 
 
+void CPhotoIDView::SetPhotoIDimg(CString strPath)
+{
+	if (m_pImageView){
+		m_pImageView->SetPhotoIDimg(strPath);
+	}
+}

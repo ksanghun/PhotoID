@@ -288,6 +288,7 @@ void CFileView::UpdateImgListCtrl(CString strPath)
 	//	m_wndListCtrl.UpdateImgListCtrl(strPath);
 	//}
 
+	m_wndListCtrl.SetCurrFolderPath(strPath);
 	GetImageFileNames(strPath);	
 	DrawThumbnails(strPath);
 }

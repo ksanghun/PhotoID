@@ -929,8 +929,6 @@ void CImageView::OnDropFiles(HDROP hDropInfo)
 
 		break;
 	}
-
-
 	COGLWnd::OnDropFiles(hDropInfo);
 }
 

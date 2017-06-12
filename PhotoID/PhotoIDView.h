@@ -22,6 +22,7 @@ private:
 
 // Operations
 public:
+	void SetPhotoIDimg(CString strPath);
 
 // Overrides
 public:

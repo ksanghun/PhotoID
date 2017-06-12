@@ -50,6 +50,7 @@ public:
 	CBitmap* GetLogCBitmap(CString strFile);
 
 	void ThreadFaceDataLoad();
+	void SetPhotoIDimg(CString strPath);
 
 private:
 
@@ -89,7 +90,7 @@ private:
 	POINT3D m_result_color[10];
 
 	bool FaceDetection(IplImage* pImg);
-	void SetPhotoIDimg(CString strPath);
+	
 
 	dlib::shape_predictor m_sp;
 	std::vector<POINT3D> m_faceLandmark;
