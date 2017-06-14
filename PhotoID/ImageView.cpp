@@ -30,7 +30,7 @@ CImageView::CImageView()
 	memset(&m_LogFontBig, 0, sizeof(m_LogFontBig));
 	//	strcpy((char*)m_LogFont.lfFaceName, ("Arial"));
 	m_LogFontBig.lfCharSet = ANSI_CHARSET;
-	m_LogFontBig.lfHeight = -15;
+	m_LogFontBig.lfHeight = -20;
 	m_LogFontBig.lfWidth = 0;
 	m_LogFont.lfWeight = FW_BOLD;
 
@@ -44,6 +44,8 @@ CImageView::CImageView()
 
 //	m_dragOper.init();
 	m_mouseMode = 0;
+
+	m_iFrameCnt = 0;
 
 
 //	m_bNeedPrepare = false;
@@ -184,13 +186,18 @@ void CImageView::Render2D()
 
 
 	if (m_bIsThreadEnd == false){
-		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glColor3f(0.9f, 0.2f, 0.2f);
+		if ((m_iFrameCnt / 5) % 2 == 0){
+			glColor3f(0.99f, 0.99f, 0.2f);
+		}
+		else{
+			glColor3f(0.0f, 0.0f, 0.0f);
+		}
 		POINT3D pos;
 		mtSetPoint3D(&pos, m_nWidth*0.5f, m_nHeight*0.5f, 0);
-		gl_DrawText(pos, L"Initilizing...", m_LogFontBig, 1, m_pBmpInfo, m_CDCPtr);
+		gl_DrawText(pos, L"Initializing...", m_LogFontBig, 1, m_pBmpInfo, m_CDCPtr);
 	}
 
 
@@ -237,6 +244,9 @@ void CImageView::Render2D()
 	
 	glVertex3f(m_guidePosDraw[_LEFT_EYE].x, m_guidePosDraw[_LEFT_EYE].y, m_guidePosDraw[_LEFT_EYE].z);
 	glVertex3f(m_guidePosDraw[_RIGHT_EYE].x, m_guidePosDraw[_RIGHT_EYE].y, m_guidePosDraw[_RIGHT_EYE].z);
+
+	glVertex3f(m_guidePosDraw[_TOP_EYE].x, m_guidePosDraw[_TOP_EYE].y, m_guidePosDraw[_TOP_EYE].z);
+	glVertex3f(m_guidePosDraw[_BOTTOM_EYE].x, m_guidePosDraw[_BOTTOM_EYE].y, m_guidePosDraw[_BOTTOM_EYE].z);
 
 	glEnd();
 
@@ -307,23 +317,28 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 
 void CImageView::SetPhotoIDimg(CString strPath)
 {
-	// Load Phto ID image=============================//
-	if (m_pPhotoImg){
-		GLuint texid = m_pPhotoImg->GetTexId();
-		if (texid != 0)	glDeleteTextures(1, &texid);
-		delete m_pPhotoImg;
-		m_pPhotoImg = NULL;
+	if (m_bIsThreadEnd == true){
+
+		BeginWaitCursor();
+		// Load Phto ID image=============================//
+		if (m_pPhotoImg){
+			GLuint texid = m_pPhotoImg->GetTexId();
+			if (texid != 0)	glDeleteTextures(1, &texid);
+			delete m_pPhotoImg;
+			m_pPhotoImg = NULL;
+		}
+
+		m_pPhotoImg = new CSNImage;
+		POINT3D pos;
+		mtSetPoint3D(&pos, 0, 0, 0);
+		m_pPhotoImg->SetPosition(pos);
+		LoadSNImage(strPath, m_pPhotoImg);
+
+		m_iconSize = m_nWidth;
+		ReSizeIcon();
 	}
 
-	m_pPhotoImg = new CSNImage;
-	POINT3D pos;
-	mtSetPoint3D(&pos, 0, 0, 0);
-	m_pPhotoImg->SetPosition(pos);
-	LoadSNImage(strPath, m_pPhotoImg);
-
-	m_iconSize = m_nWidth;
-	ReSizeIcon();
-
+	EndWaitCursor();
 }
 
 void CImageView::MouseWheel(short zDelta)
@@ -542,11 +557,9 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 		m_top = m_bottom + m_nHeight;
 		Render();
 		
-		//if (m_bIsThreadEnd == true){
-		//	EndWaitCursor();
-		//	m_bIsThreadEnd = false;
-		//	TRACE(L"File Loaded...");
-		//}
+		if (m_bIsThreadEnd == false){
+			m_iFrameCnt++;
+		}
 	}
 
 
@@ -853,7 +866,8 @@ bool CImageView::FaceDetection(IplImage* pImg)
 		m_guidePos[_LEFT_EYE].y *= 0.16666f;
 
 		m_guidePos[_RIGHT_EYE].x *= 0.16666f;
-		m_guidePos[_RIGHT_EYE].y *= 0.16666f;
+		m_guidePos[_RIGHT_EYE].y *= 0.16666f; 
+
 
 
 		m_guidePos[_EYE_CENTER].x = (m_guidePos[_LEFT_EYE].x + m_guidePos[_RIGHT_EYE].x)*0.5f;
@@ -862,6 +876,43 @@ bool CImageView::FaceDetection(IplImage* pImg)
 		float facewidth = (m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x);
 		float faceheight = 1.618f * facewidth;
 		m_guidePos[_TOPHEAD].y = m_guidePos[_CHIN].y - faceheight;
+
+
+		// Find eye guide line=============================================
+		POINT3D eDir;
+		eDir.x = m_guidePos[_LEFT_EYE].x - m_guidePos[_RIGHT_EYE].x;
+		eDir.y = m_guidePos[_LEFT_EYE].y - m_guidePos[_RIGHT_EYE].y;
+		eDir.z = 0;
+		eDir = mtNormalize(eDir);
+		float d = -m_guidePos[_RIGHT_EYE].x / eDir.x;
+
+		m_guidePos[_LEFT_EYE].x = m_guidePos[_RIGHT_EYE].x + d*eDir.x;
+		m_guidePos[_LEFT_EYE].y = m_guidePos[_RIGHT_EYE].y + d*eDir.y;
+
+		eDir.x = -eDir.x;
+		eDir.y = -eDir.y;
+		d = (newSizeW - m_guidePos[_RIGHT_EYE].x) / eDir.x;
+
+		m_guidePos[_RIGHT_EYE].x = m_guidePos[_RIGHT_EYE].x + d*eDir.x;
+		m_guidePos[_RIGHT_EYE].y = m_guidePos[_RIGHT_EYE].y + d*eDir.y;
+
+		POINT3D pDir;
+		pDir.x = -eDir.y;
+		pDir.y = eDir.x;
+		pDir.z = 0;
+
+		d = -m_guidePos[_EYE_CENTER].y / pDir.y;
+		m_guidePos[_TOP_EYE].x = m_guidePos[_EYE_CENTER].x + pDir.x*d;
+		m_guidePos[_TOP_EYE].y = m_guidePos[_EYE_CENTER].y + pDir.y*d;
+		m_guidePos[_TOP_EYE].z = 0;
+
+		pDir.x = -pDir.x;
+		pDir.y = -pDir.y;
+		d = (newSizeH - m_guidePos[_EYE_CENTER].y) / pDir.y;
+		m_guidePos[_BOTTOM_EYE].x = m_guidePos[_EYE_CENTER].x + pDir.x*d;
+		m_guidePos[_BOTTOM_EYE].y = m_guidePos[_EYE_CENTER].y + pDir.y*d;
+		m_guidePos[_BOTTOM_EYE].z = 0;
+		//=================================================================
 	}
 
 

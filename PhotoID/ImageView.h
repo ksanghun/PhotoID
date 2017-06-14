@@ -19,7 +19,8 @@
 
 enum _RENDERMODE { _BYGROUP = 0, _BYORDER };
 enum _PICKMODE { _PICK_SELECT=0 };
-enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN};
+enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _TOP_EYE, _BOTTOM_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN};
+#define _LNADMARK_POS_NUM 9
 #define SEL_BUFF_SIZE 1024
 
 class CViewTree;
@@ -100,9 +101,10 @@ private:
 	float m_fImgDetectScale;
 	CString m_strMousePos;
 
+	unsigned int m_iFrameCnt;
 	
-	POINT3D m_guidePos[7];		
-	POINT3D m_guidePosDraw[7];
+	POINT3D m_guidePos[_LNADMARK_POS_NUM];
+	POINT3D m_guidePosDraw[_LNADMARK_POS_NUM];
 
 
 public:
