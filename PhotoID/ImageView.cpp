@@ -13,6 +13,7 @@
 enum TIMEREVNT { _RENDER=100, _ADDIMG , _SEARCHIMG};
 #define _MIN_ICON_SIZE 16
 #define FACE_DETECT_SIZE 100
+#define _PI 3.1414529
 
 using namespace cv;
 
@@ -79,6 +80,8 @@ CImageView::CImageView()
 	m_pPhotoImg = NULL;
 	m_bIsThreadEnd = false;
 	m_fImgDetectScale = 1.0f;
+
+	m_fDeSkewAngle = 0.0f;
 }
 
 
@@ -169,12 +172,19 @@ void CImageView::Render()
 	SwapBuffers(m_CDCPtr->GetSafeHdc());
 }
 
+void CImageView::DrawDebugInfo()
+{
+	glColor3f(0.0f, 0.0f, 1.0f);
+
+	POINT3D pos;
+	mtSetPoint3D(&pos, 10.0f, m_nHeight-50, 0.0f);
+	CString strDAngle;
+	strDAngle.Format(L"Deskew Angle: %3.2f", m_fDeSkewAngle);
+	gl_DrawText(pos, strDAngle, m_LogFont, 2, m_pBmpInfo, m_CDCPtr);
+}
+
 void CImageView::Render2D()
 {
-
-	
-
-
 	//int pointSize = m_iconSize / 100;
 	//if (pointSize < 4)
 	//	pointSize = 4;
@@ -250,6 +260,9 @@ void CImageView::Render2D()
 
 	glEnd();
 
+
+
+	DrawDebugInfo();
 
 
 	gl_PopOrtho();
@@ -896,10 +909,17 @@ bool CImageView::FaceDetection(IplImage* pImg)
 		m_guidePos[_RIGHT_EYE].x = m_guidePos[_RIGHT_EYE].x + d*eDir.x;
 		m_guidePos[_RIGHT_EYE].y = m_guidePos[_RIGHT_EYE].y + d*eDir.y;
 
-		POINT3D pDir;
+		POINT3D pDir;		// up vector //
 		pDir.x = -eDir.y;
 		pDir.y = eDir.x;
 		pDir.z = 0;
+
+		POINT3D uDir;
+		mtSetPoint3D(&uDir, 0.0f, 1.0f, 0.0f);
+		float dotVal = mtDot(uDir, pDir);
+		m_fDeSkewAngle = acos(dotVal) * 180.0f / _PI;
+		if (pDir.x > uDir.x)
+			m_fDeSkewAngle *= -1.0f;
 
 		d = -m_guidePos[_EYE_CENTER].y / pDir.y;
 		m_guidePos[_TOP_EYE].x = m_guidePos[_EYE_CENTER].x + pDir.x*d;

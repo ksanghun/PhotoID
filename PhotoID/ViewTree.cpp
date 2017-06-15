@@ -65,11 +65,13 @@ void CViewTree::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 		CFileFind finder;
 		BOOL bWorking = finder.FindFile(pathSelected);
 
-		while (bWorking){
-			bWorking = finder.FindNextFile();
-			if (finder.IsDots()) continue;
-			if (finder.IsDirectory()){
-				InsertItem(finder.GetFileName(), hSelected);
+		if (GetChildItem(hSelected) == NULL){
+			while (bWorking){
+				bWorking = finder.FindNextFile();
+				if (finder.IsDots()) continue;
+				if (finder.IsDirectory()){
+					InsertItem(finder.GetFileName(), hSelected);
+				}
 			}
 		}
 

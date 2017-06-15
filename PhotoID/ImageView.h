@@ -41,6 +41,7 @@ public:
 
 	void Render();
 	void Render2D();
+	void DrawDebugInfo();
 	void InitGLview(int _nWidth, int _nHeight);
 	void MouseWheel(short zDelta);
 
@@ -96,6 +97,7 @@ private:
 	dlib::shape_predictor m_sp;
 	std::vector<POINT3D> m_faceLandmark;
 	std::vector<POINT3D> m_faceLandmarkDraw;
+	float m_fDeSkewAngle;
 
 	float m_fXScale, m_fYScale;
 	float m_fImgDetectScale;
