@@ -1016,9 +1016,15 @@ void CImageView::ThreadFaceDataLoad()
 	ExitThread(1);
 }
 
+void CImageView::RotateImage(float fAngle, CSNImage* pimg)
+{
+//	pimg->
+
+}
 UINT MyThread(LPVOID lpParam)
 {
 	CImageView* pClass = (CImageView*)lpParam;
 	pClass->ThreadFaceDataLoad();
 	return 0L;
 }
+

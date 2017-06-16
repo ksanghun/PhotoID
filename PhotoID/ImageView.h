@@ -92,6 +92,7 @@ private:
 	POINT3D m_result_color[10];
 
 	bool FaceDetection(IplImage* pImg);
+	void RotateImage(float fAngle, CSNImage* pimg);
 	
 
 	dlib::shape_predictor m_sp;
