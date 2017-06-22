@@ -31,7 +31,7 @@ CImageView::CImageView()
 	memset(&m_LogFontBig, 0, sizeof(m_LogFontBig));
 	//	strcpy((char*)m_LogFont.lfFaceName, ("Arial"));
 	m_LogFontBig.lfCharSet = ANSI_CHARSET;
-	m_LogFontBig.lfHeight = -20;
+	m_LogFontBig.lfHeight = -16;
 	m_LogFontBig.lfWidth = 0;
 	m_LogFont.lfWeight = FW_BOLD;
 
@@ -203,14 +203,26 @@ void CImageView::RenderMenu()
 	glDisable(GL_DEPTH_TEST);
 
 
-	float fMargin = 50.0f;
-	glColor3f(0.0f, 1.0f, 0.0f);
+	float fMargin = 32.0f;
+	glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+	glBegin(GL_QUADS);
+	glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
+	glVertex3f(m_right - fMargin, m_bottom + fMargin, 0.0f);
+	glVertex3f(m_right- 10.0f, m_bottom + fMargin, 0.0f);
+	glVertex3f(m_right- 10.0f, m_top - fMargin, 0.0f);
+	glEnd();
+
+	glColor4f(0.0f, 0.0f, 0.0f, 0.3f);
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
 	glVertex3f(m_right - fMargin, m_bottom + fMargin, 0.0f);
-	glVertex3f(m_right, m_bottom + fMargin, 0.0f);
-	glVertex3f(m_right, m_top - fMargin, 0.0f);
+	glVertex3f(m_right - 10.0f, m_bottom + fMargin, 0.0f);
+	glVertex3f(m_right - 10.0f, m_top - fMargin, 0.0f);
+	glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
 	glEnd();
+
+
+
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -236,7 +248,7 @@ void CImageView::Render2D()
 	glPointSize(3);
 
 	if (m_bIsThreadEnd == false){
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if ((m_iFrameCnt / 5) % 2 == 0){
