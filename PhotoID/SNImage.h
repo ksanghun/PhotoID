@@ -46,8 +46,8 @@ public:
 
 
 	void ClearMatchResult();
-	std::vector<_MATCHInfo>* GetMatchResult() { return &m_matched_pos; };
-	int GetResultSize() { return m_matched_pos.size(); }
+//	std::vector<_MATCHInfo>* GetMatchResult() { return &m_matched_pos; };
+//	int GetResultSize() { return m_matched_pos.size(); }
 
 private:
 	CString strPath;
@@ -77,7 +77,7 @@ private:
 	unsigned short nImgHeight;
 
 
-	std::vector<_MATCHInfo> m_matched_pos;
+//	std::vector<_MATCHInfo> m_matched_pos;
 
 	float m_fXScale, m_fYScale;
 	float m_imgWScale;

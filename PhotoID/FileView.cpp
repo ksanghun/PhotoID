@@ -25,6 +25,7 @@ CFileView::CFileView()
 
 CFileView::~CFileView()
 {
+	m_VectorImageNames.clear();
 }
 
 BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
@@ -408,6 +409,7 @@ BOOL  CFileView::GetImageFileNames(CString strFolder)
 
 void  CFileView::DrawThumbnails(CString strFolder)
 {
+
 	CBitmap*    pImage = NULL;
 	HBITMAP		hBmp = NULL;
 	POINT		pt;

@@ -43,7 +43,7 @@ CPhotoIDView::CPhotoIDView()
 
 CPhotoIDView::~CPhotoIDView()
 {
-	if (m_pImageView != nullptr){
+	if (m_pImageView){
 		delete m_pImageView;
 	}
 }

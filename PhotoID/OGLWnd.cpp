@@ -21,6 +21,7 @@ COGLWnd::COGLWnd()
 
 COGLWnd::~COGLWnd()
 {
+
 }
 
 
@@ -34,6 +35,7 @@ BEGIN_MESSAGE_MAP(COGLWnd, CWnd)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOVE()
 	ON_WM_MOUSEMOVE()
+	ON_WM_NCDESTROY()
 END_MESSAGE_MAP()
 
 // COGLWnd message handlers
@@ -693,3 +695,11 @@ GLuint COGLWnd::LoadTgaTexture(CString filename)
 
 }
 */
+
+void COGLWnd::OnNcDestroy()
+{
+	CWnd::OnNcDestroy();
+
+	// TODO: Add your message handler code here
+}
+

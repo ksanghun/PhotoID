@@ -55,6 +55,7 @@ public:
 
 //	GLuint LoadBMPTexture(CString fileName);
 //	GLuint LoadTgaTexture(CString filename);
+	afx_msg void OnNcDestroy();
 };
 
 

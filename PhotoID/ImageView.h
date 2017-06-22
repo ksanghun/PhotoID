@@ -41,6 +41,7 @@ public:
 
 	void Render();
 	void Render2D();
+	void RenderMenu();
 	void DrawDebugInfo();
 	void InitGLview(int _nWidth, int _nHeight);
 	void MouseWheel(short zDelta);
@@ -55,6 +56,7 @@ public:
 	void SetPhotoIDimg(CString strPath);
 
 private:
+//	CWinThread* g_pl;
 
 	int m_maxTextureSize;
 
@@ -95,9 +97,12 @@ private:
 	void RotateImage(float fAngle, CSNImage* pimg);
 	
 
-	dlib::shape_predictor m_sp;
+	
 	std::vector<POINT3D> m_faceLandmark;
 	std::vector<POINT3D> m_faceLandmarkDraw;
+
+//	POINT3D* m_faceLandmarkDraw;
+	dlib::shape_predictor m_sp;
 	float m_fDeSkewAngle;
 
 	float m_fXScale, m_fYScale;
@@ -127,5 +132,6 @@ public:
 
 	
 
+	afx_msg void OnNcDestroy();
 };
 

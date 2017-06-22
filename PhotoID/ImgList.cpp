@@ -12,11 +12,14 @@ IMPLEMENT_DYNAMIC(CImgList, CListCtrl)
 
 CImgList::CImgList()
 {
-
+	m_pDragImage = NULL;
 }
 
 CImgList::~CImgList()
 {
+	//if (m_pDragImage){
+	//	delete m_pDragImage;
+	//}
 }
 
 
@@ -74,7 +77,7 @@ void CImgList::OnLvnBegindrag(NMHDR *pNMHDR, LRESULT *pResult)
 	m_bDragging = TRUE;	//we are in a drag and drop operation
 	m_nDropIndex = -1;	//we don't have a drop index yet
 //	m_pDragList = &m_listR; //make note of which list we are dragging from
-	m_pDropWnd = pView;	//at present the drag list is the drop list
+//	m_pDropWnd = pView;	//at present the drag list is the drop list
 
 	//// Capture all mouse messages
 	SetCapture();
@@ -97,15 +100,15 @@ void CImgList::OnMouseMove(UINT nFlags, CPoint point)
 		m_pDragImage->DragShowNolock(false);
 
 		//// Get the CWnd pointer of the window that is under the mouse cursor
-		CWnd* pDropWnd = WindowFromPoint(pt);
-		ASSERT(pDropWnd); //make sure we have a window
+		//CWnd* pDropWnd = WindowFromPoint(pt);
+		//ASSERT(pDropWnd); //make sure we have a window
 
 
 		// Save current window pointer as the CListCtrl we are dropping onto
-		m_pDropWnd = pDropWnd;
+	//	m_pDropWnd = pDropWnd;
 
 		// Convert from screen coordinates to drop target client coordinates
-		pDropWnd->ScreenToClient(&pt);
+		//pDropWnd->ScreenToClient(&pt);
 
 		m_pDragImage->DragShowNolock(true);
 	}

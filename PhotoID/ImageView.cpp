@@ -82,12 +82,17 @@ CImageView::CImageView()
 	m_fImgDetectScale = 1.0f;
 
 	m_fDeSkewAngle = 0.0f;
+
+//	m_faceLandmarkDraw = NULL;
+
 }
 
 
 CImageView::~CImageView()
 {
-	delete m_pBmpInfo;
+//	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
+
+
 	//std::map<unsigned long, CSNImage*>::iterator iter = m_mapImageData.begin();
 	//for (; iter != m_mapImageData.end(); iter++){
 
@@ -95,7 +100,22 @@ CImageView::~CImageView()
 	//	glDeleteTextures(1, &tex);
 	//	delete iter->second;
 	//}
+
+	m_faceLandmark.clear();
+//	m_faceLandmarkDraw.clear();
+
+	//if (m_faceLandmarkDraw != NULL){
+	//	delete[] m_faceLandmarkDraw;
+	//	m_faceLandmarkDraw = NULL;
+	//}
+
+
+	delete m_pBmpInfo;
 	ReleaseImageData();
+
+
+	
+
 
 }
 
@@ -109,6 +129,7 @@ BEGIN_MESSAGE_MAP(CImageView, COGLWnd)
 	ON_WM_KEYDOWN()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_DROPFILES()
+	ON_WM_NCDESTROY()
 END_MESSAGE_MAP()
 
 
@@ -120,9 +141,10 @@ void CImageView::ReleaseImageData()
 	//_vecSNImage m_vecImageData;
 
 	if (m_pPhotoImg){
-		GLuint texid = m_pPhotoImg->GetTexId();
-		if (texid != 0)	glDeleteTextures(1, &texid);
+	//	GLuint texid = m_pPhotoImg->GetTexId();
+	//	if (texid != 0)	glDeleteTextures(1, &texid);
 		delete m_pPhotoImg;
+		m_pPhotoImg = NULL;
 	}
 
 	//for (int i = 0; i < m_vecImageData.size(); i++){
@@ -167,10 +189,31 @@ void CImageView::Render()
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	gl_PushOrtho(m_left, m_right, m_bottom, m_top);
 	Render2D();
+
+	RenderMenu();
+	gl_PopOrtho();
 
 	SwapBuffers(m_CDCPtr->GetSafeHdc());
 }
+
+void CImageView::RenderMenu()
+{
+	glDisable(GL_DEPTH_TEST);
+
+
+	float fMargin = 50.0f;
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
+	glVertex3f(m_right - fMargin, m_bottom + fMargin, 0.0f);
+	glVertex3f(m_right, m_bottom + fMargin, 0.0f);
+	glVertex3f(m_right, m_top - fMargin, 0.0f);
+	glEnd();
+	glEnable(GL_DEPTH_TEST);
+}
+
 
 void CImageView::DrawDebugInfo()
 {
@@ -191,9 +234,6 @@ void CImageView::Render2D()
 
 	glLineWidth(1.0f);
 	glPointSize(3);
-
-	gl_PushOrtho(m_left, m_right, m_bottom, m_top);
-
 
 	if (m_bIsThreadEnd == false){
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -265,7 +305,7 @@ void CImageView::Render2D()
 	DrawDebugInfo();
 
 
-	gl_PopOrtho();
+	
 
 	glLineWidth(1.0f);
 	glPointSize(1.0f);
@@ -310,7 +350,10 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &m_maxTextureSize); 
 
 	
-
+	//m_bIsThreadEnd = true;
+	//BeginWaitCursor();
+	//ThreadFaceDataLoad();
+	//EndWaitCursor();
 	
 		
 	//m_bIsThreadEnd = false;
@@ -318,9 +361,10 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	//m_pThread->m_bAutoDelete = FALSE;
 	//m_pThread->ResumeThread();
 
-
+	CWinThread* pl;
 	m_bIsThreadEnd = false;
-	CWinThread* pl = AfxBeginThread(MyThread, this);
+	pl = AfxBeginThread(MyThread, this);
+
 //	CloseHandle(pl);
 		
 	
@@ -335,8 +379,8 @@ void CImageView::SetPhotoIDimg(CString strPath)
 		BeginWaitCursor();
 		// Load Phto ID image=============================//
 		if (m_pPhotoImg){
-			GLuint texid = m_pPhotoImg->GetTexId();
-			if (texid != 0)	glDeleteTextures(1, &texid);
+		//	GLuint texid = m_pPhotoImg->GetTexId();
+		//	if (texid != 0)	glDeleteTextures(1, &texid);
 			delete m_pPhotoImg;
 			m_pPhotoImg = NULL;
 		}
@@ -384,18 +428,14 @@ void CImageView::ReSizeIcon()
 		sPnt.z = 0.0f;
 		m_pPhotoImg->SetPosition(sPnt);
 
-		for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
+		for (int i = 0; i < m_faceLandmark.size(); i++){
 			m_faceLandmarkDraw[i] = convertImageToScreenSpace(m_faceLandmark[i]);			
 		}
 
-		for (int i = 0; i < 7; i++){
+		for (int i = 0; i < _LNADMARK_POS_NUM; i++){
 			m_guidePosDraw[i] = convertImageToScreenSpace(m_guidePos[i]);
-			}
-
-
-
-
 		}
+	}
 
 	m_right = m_left + m_nWidth;
 	m_top = m_bottom + m_nHeight;
@@ -453,17 +493,19 @@ GLuint CImageView::LoadSNImage(CString strPath)
 
 bool CImageView::LoadSNImage(CString strPath, CSNImage* pInfo)
 {
-	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
+//	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
 	USES_CONVERSION;
 	char* sz = T2A(strPath);
 
 	IplImage *pimg = cvLoadImage(sz);	
 	if (pimg){
 
-		cvCvtColor(pimg, pimg, CV_BGR2RGB);
+		IplImage* pImgrgb=cvCloneImage(pimg);
+		cvCvtColor(pimg, pImgrgb, CV_BGR2RGB);
+		cvReleaseImage(&pimg);
 
-		pInfo->SetImgSize(pimg->width, pimg->height);
-		pInfo->SetSize(pimg->width, pimg->height, m_iconSize);		
+		pInfo->SetImgSize(pImgrgb->width, pImgrgb->height);
+		pInfo->SetSize(pImgrgb->width, pImgrgb->height, m_iconSize);
 
 
 		// glupload Image - Thumnail image=======================================================//
@@ -477,15 +519,15 @@ bool CImageView::LoadSNImage(CString strPath, CSNImage* pInfo)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		//glTexImage2D(GL_TEXTURE_2D, 0, 3, m_texture->sizeX,m_texture->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE,m_texture->data);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pimg->width, pimg->height, GL_RGB, GL_UNSIGNED_BYTE, pimg->imageData);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pImgrgb->width, pImgrgb->height, GL_RGB, GL_UNSIGNED_BYTE, pImgrgb->imageData);
 		//======================================================================================//
 
 		pInfo->SetThTex(tid);
 
 
-		FaceDetection(pimg);
+		FaceDetection(pImgrgb);
 
-		cvReleaseImage(&pimg);		
+		cvReleaseImage(&pImgrgb);
 		return true;
 	}
 	else{
@@ -573,6 +615,9 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 		if (m_bIsThreadEnd == false){
 			m_iFrameCnt++;
 		}
+		//else{
+		//	CloseHandle(g_pl);
+		//}
 	}
 
 
@@ -852,15 +897,26 @@ bool CImageView::FaceDetection(IplImage* pImg)
 			mtSetPoint3D(&pnt, shape.part(j).x(), shape.part(j).y(), 0);
 			m_faceLandmark.push_back(pnt);
 			m_faceLandmarkDraw.push_back(pnt);
-		}
+		}		
 	}
+
+	//if (m_faceLandmarkDraw != NULL){
+	//	delete[] m_faceLandmarkDraw;
+	//	m_faceLandmarkDraw = NULL;
+	//}
+//	m_faceLandmarkDraw = new POINT3D[m_faceLandmark.size()];
+
+//	std::copy(m_faceLandmark.begin(), m_faceLandmark.end(), back_inserter(m_faceLandmarkDraw));
 
 //	imshow("Detected Face", image);
 
-	for (int i = 0; i < 7; i++){
+
+	for (int i = 0; i < _LNADMARK_POS_NUM; i++){
 		mtSetPoint3D(&m_guidePos[i], 0.0f, 0.0f, 0.0f);
 	}
 
+
+	
 	if (m_faceLandmark.size()>67){
 		m_guidePos[_CHIN] = m_faceLandmark[8];
 		m_guidePos[_NOSE] = m_faceLandmark[33];
@@ -934,10 +990,15 @@ bool CImageView::FaceDetection(IplImage* pImg)
 		m_guidePos[_BOTTOM_EYE].z = 0;
 		//=================================================================
 	}
+	
 
 
 
-	ReSizeIcon();
+	oimage.release();
+	image.release();
+
+
+//	ReSizeIcon();
 	return true;
 }
 
@@ -988,19 +1049,19 @@ POINT3D CImageView::convertImageToScreenSpace(POINT3D pnt)
 void CImageView::OnDropFiles(HDROP hDropInfo)
 {
 	// TODO: Add your message handler code here and/or call default
-	UINT i = 0;
-	UINT uCount = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
-	TCHAR buffer[256];
+	//UINT i = 0;
+	//UINT uCount = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
+	//TCHAR buffer[256];
 
-	CString strPath;
-	for (i = 0; i < uCount; i++){
-		DragQueryFile(hDropInfo, i, buffer, 255);
-		strPath = buffer;
+	//CString strPath;
+	//for (i = 0; i < uCount; i++){
+	//	DragQueryFile(hDropInfo, i, buffer, 255);
+	//	strPath = buffer;
 
-		SetPhotoIDimg(strPath);
+	////	SetPhotoIDimg(strPath);
 
-		break;
-	}
+	//	break;
+	//}
 	COGLWnd::OnDropFiles(hDropInfo);
 }
 
@@ -1028,3 +1089,15 @@ UINT MyThread(LPVOID lpParam)
 	return 0L;
 }
 
+
+
+void CImageView::OnNcDestroy()
+{
+	COGLWnd::OnNcDestroy();
+
+	// TODO: Add your message handler code here
+	//if (m_CDCPtr){
+	//	m_CDCPtr->DeleteDC();
+	//	delete m_CDCPtr;
+	//}
+}

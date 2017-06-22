@@ -20,7 +20,7 @@ protected:
 	BOOL		m_bDragging;	//T during a drag operation
 	int			m_nDragIndex;	//Index of selected item in the List we are dragging FROM
 	int			m_nDropIndex;	//Index at which to drop item in the List we are dropping ON
-	CWnd*		m_pDropWnd;		//Pointer to window we are dropping on (will be cast to CListCtrl* type)
+//	CWnd*		m_pDropWnd;		//Pointer to window we are dropping on (will be cast to CListCtrl* type)
 
 	CString m_strCurrFoler;
 

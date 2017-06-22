@@ -42,14 +42,14 @@ CSNImage::~CSNImage()
 
 bool CSNImage::AddMatchedPoint(_MATCHInfo info, int search_size)
 {
-	if (search_size > 0){
+/*	if (search_size > 0){
 		if (IsDuplicate(info.pos, search_size) == false){
 			m_matched_pos.push_back(info);			
 		}
 	}
 	else{
 		m_matched_pos.push_back(info);
-	}
+	}*/
 	return true;
 }
 
@@ -303,12 +303,12 @@ void CSNImage::SetPosition(POINT3D pos)
 
 void CSNImage::ClearMatchResult()
 {
-	m_matched_pos.clear();
+//	m_matched_pos.clear();
 }
 
 bool CSNImage::IsDuplicate(POINT3D pos, int search_size)
 {
-	bool IsDup = false;
+/*	bool IsDup = false;
 	for (int i = 0; i < m_matched_pos.size(); i++){
 		float fDist = mtDistance(pos, m_matched_pos[i].pos);
 		if (fDist < search_size){
@@ -316,5 +316,6 @@ bool CSNImage::IsDuplicate(POINT3D pos, int search_size)
 			break;
 		}
 	}
-	return IsDup;
+	return IsDup*/
+	return false;
 }
