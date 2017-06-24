@@ -5,7 +5,8 @@
 #pragma once
 #include "FileView.h"
 #include "ClassView.h"
-#include "PropertiesWnd.h"
+//#include "PropertiesWnd.h"
+#include "DockFormView.h"
 
 class CMainFrame : public CFrameWndEx
 {
@@ -42,7 +43,9 @@ protected:  // control bar embedded members
 	CMFCToolBarImages m_UserImages;
 	CFileView         m_wndFileView;
 	CClassView        m_wndClassView;
-	CPropertiesWnd    m_wndProperties;
+//	CPropertiesWnd    m_wndProperties;
+
+	CDockFormView	 m_wndFormView;
 
 // Generated message map functions
 protected:

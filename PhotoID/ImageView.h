@@ -15,7 +15,7 @@
 #include <dlib/image_io.h>
 
 #include "SNImage.h"
-
+#include "GLHScrollBar.h"
 
 enum _RENDERMODE { _BYGROUP = 0, _BYORDER };
 enum _PICKMODE { _PICK_SELECT=0 };
@@ -72,7 +72,7 @@ private:
 	int			m_nWidth;
 	int			m_nHeight;
 
-
+	CGLHScrollBar m_glHScrollBar;
 
 	float m_left, m_right, m_bottom, m_top;
 

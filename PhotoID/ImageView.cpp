@@ -192,7 +192,7 @@ void CImageView::Render()
 	gl_PushOrtho(m_left, m_right, m_bottom, m_top);
 	Render2D();
 
-	RenderMenu();
+//	RenderMenu();
 	gl_PopOrtho();
 
 	SwapBuffers(m_CDCPtr->GetSafeHdc());
@@ -202,26 +202,26 @@ void CImageView::RenderMenu()
 {
 	glDisable(GL_DEPTH_TEST);
 
+	m_glHScrollBar.Draw();
 
-	float fMargin = 32.0f;
-	glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
-	glBegin(GL_QUADS);
-	glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
-	glVertex3f(m_right - fMargin, m_bottom + fMargin, 0.0f);
-	glVertex3f(m_right- 10.0f, m_bottom + fMargin, 0.0f);
-	glVertex3f(m_right- 10.0f, m_top - fMargin, 0.0f);
-	glEnd();
+	//float fMargin = 32.0f;
+	//glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
+	//glBegin(GL_QUADS);
+	//glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
+	//glVertex3f(m_right - fMargin, m_bottom + fMargin, 0.0f);
+	//glVertex3f(m_right- 10.0f, m_bottom + fMargin, 0.0f);
+	//glVertex3f(m_right- 10.0f, m_top - fMargin, 0.0f);
+	//glEnd();
 
-	glColor4f(0.0f, 0.0f, 0.0f, 0.3f);
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
-	glVertex3f(m_right - fMargin, m_bottom + fMargin, 0.0f);
-	glVertex3f(m_right - 10.0f, m_bottom + fMargin, 0.0f);
-	glVertex3f(m_right - 10.0f, m_top - fMargin, 0.0f);
-	glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
-	glEnd();
-
-
+	//glColor4f(0.0f, 0.0f, 0.0f, 0.3f);
+	//glBegin(GL_LINE_STRIP);
+	//glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
+	//glVertex3f(m_right - fMargin, m_bottom + fMargin, 0.0f);
+	//glVertex3f(m_right - 10.0f, m_bottom + fMargin, 0.0f);
+	//glVertex3f(m_right - 10.0f, m_top - fMargin, 0.0f);
+	//glVertex3f(m_right - fMargin, m_top - fMargin, 0.0f);
+	//glEnd();
+	
 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -373,12 +373,15 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	//m_pThread->m_bAutoDelete = FALSE;
 	//m_pThread->ResumeThread();
 
-	CWinThread* pl;
-	m_bIsThreadEnd = false;
-	pl = AfxBeginThread(MyThread, this);
+	m_bIsThreadEnd = true;
+	//CWinThread* pl;
+	//m_bIsThreadEnd = false;
+	//pl = AfxBeginThread(MyThread, this);
 
 //	CloseHandle(pl);
 		
+	m_glHScrollBar.SetRange(-90.0f, 90.0f, 10.0f);
+	m_glHScrollBar.SetValue(0);
 	
 	//===============================================//
 	SetTimer(_RENDER, 30, NULL);
@@ -467,6 +470,9 @@ void CImageView::OnSize(UINT nType, int cx, int cy)
 	//m_cx = cx;
 	//m_cy = cy;
 	
+
+
+	m_glHScrollBar.SetSize(cx - 50, 50, cx - 20, cy - 50);
 
 //	m_cameraPri.SetProjectionMatrix(30.0f, 0.0f, 0.0f, cx, cy);
 //	m_cameraPri.SetModelViewMatrix(m_cameraPri.GetLookAt(), 0.0f, 0.0f);

@@ -115,7 +115,9 @@
     <ClInclude Include="Camera2Axis.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="data_type.h" />
+    <ClInclude Include="DockFormView.h" />
     <ClInclude Include="FileView.h" />
+    <ClInclude Include="GLHScrollBar.h" />
     <ClInclude Include="ImageView.h" />
     <ClInclude Include="ImgList.h" />
     <ClInclude Include="MainFrm.h" />
@@ -125,6 +127,7 @@
     <ClInclude Include="PhotoIDDoc.h" />
     <ClInclude Include="PhotoIDView.h" />
     <ClInclude Include="PropertiesWnd.h" />
+    <ClInclude Include="PropFormView.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SNImage.h" />
     <ClInclude Include="stdafx.h" />
@@ -134,7 +137,9 @@
   <ItemGroup>
     <ClCompile Include="Camera2Axis.cpp" />
     <ClCompile Include="ClassView.cpp" />
+    <ClCompile Include="DockFormView.cpp" />
     <ClCompile Include="FileView.cpp" />
+    <ClCompile Include="GLHScrollBar.cpp" />
     <ClCompile Include="ImageView.cpp" />
     <ClCompile Include="ImgList.cpp" />
     <ClCompile Include="MainFrm.cpp" />
@@ -144,6 +149,7 @@
     <ClCompile Include="PhotoIDDoc.cpp" />
     <ClCompile Include="PhotoIDView.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
+    <ClCompile Include="PropFormView.cpp" />
     <ClCompile Include="SNImage.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

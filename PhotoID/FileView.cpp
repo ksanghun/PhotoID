@@ -14,8 +14,8 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
-#define	THUMBNAIL_WIDTH		100
-#define	THUMBNAIL_HEIGHT	100
+#define	THUMBNAIL_WIDTH		64
+#define	THUMBNAIL_HEIGHT	64
 /////////////////////////////////////////////////////////////////////////////
 // CFileView
 
