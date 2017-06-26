@@ -233,9 +233,9 @@ void CImageView::DrawDebugInfo()
 
 	POINT3D pos;
 	mtSetPoint3D(&pos, 10.0f, m_nHeight-50, 0.0f);
-	CString strDAngle;
-	strDAngle.Format(L"Deskew Angle: %3.2f", m_fDeSkewAngle);
-	gl_DrawText(pos, strDAngle, m_LogFont, 2, m_pBmpInfo, m_CDCPtr);
+	//CString strDAngle;
+	//strDAngle.Format(L"Deskew Angle: %3.2f", m_fDeSkewAngle);
+	gl_DrawText(pos, m_strMousePos, m_LogFont, 2, m_pBmpInfo, m_CDCPtr);
 }
 
 void CImageView::Render2D()
@@ -243,6 +243,7 @@ void CImageView::Render2D()
 	//int pointSize = m_iconSize / 100;
 	//if (pointSize < 4)
 	//	pointSize = 4;
+
 
 	glLineWidth(1.0f);
 	glPointSize(3);
@@ -266,61 +267,74 @@ void CImageView::Render2D()
 
 	if (m_pPhotoImg){
 		m_pPhotoImg->DrawThumbNail(1.0f);
+
+
+
+
+
+		//glColor3f(0.0f, 1.0f, 0.0f);
+		//glBegin(GL_POINTS);
+		//for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
+		//	glVertex3f(m_faceLandmarkDraw[i].x, m_faceLandmarkDraw[i].y, m_faceLandmarkDraw[i].z);
+		//}
+		//glEnd();
+
+
+
+		// Draw Lines //
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glBegin(GL_LINES);
+		glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
+		glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
+
+		//glVertex3f(0.0f, m_guidePosDraw[_LIP].y, 0.0f);
+		//glVertex3f(m_nWidth, m_guidePosDraw[_LIP].y, 0.0f);
+
+		//glVertex3f(0.0f, m_guidePosDraw[_NOSE].y, 0.0f);
+		//glVertex3f(m_nWidth, m_guidePosDraw[_NOSE].y, 0.0f);
+
+		glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
+		glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
+
+		glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
+		glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
+
+		glEnd();
+
+
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glBegin(GL_LINES);
+
+		glVertex3f(m_pPhotoImg->m_guidePosDraw[_LEFT_EYE].x, m_pPhotoImg->m_guidePosDraw[_LEFT_EYE].y, 0.0f);
+		glVertex3f(m_pPhotoImg->m_guidePosDraw[_RIGHT_EYE].x, m_pPhotoImg->m_guidePosDraw[_RIGHT_EYE].y, 0.0f);
+
+		glVertex3f(m_pPhotoImg->m_guidePosDraw[_TOP_EYE].x, m_pPhotoImg->m_guidePosDraw[_TOP_EYE].y, 0.0f);
+		glVertex3f(m_pPhotoImg->m_guidePosDraw[_BOTTOM_EYE].x, m_pPhotoImg->m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
+
+		glEnd();
+
+
+
+
+		//glPointSize(10);
+		//glBegin(GL_LINE_STRIP);
+
+		//for (int i = 0; i < 4; i++){
+		//	glVertex3f(m_pPhotoImg->m_tmpVDraw[i].x, m_pPhotoImg->m_tmpVDraw[i].y, 0.0f);
+		//}
+		//glVertex3f(m_pPhotoImg->m_tmpVDraw[0].x, m_pPhotoImg->m_tmpVDraw[0].y, 0.0f);
+
+		//glEnd();
+
+
+		DrawDebugInfo();
+
+
+
+
+		glLineWidth(1.0f);
+		glPointSize(1.0f);
 	}
-
-	
-
-
-	//glColor3f(0.0f, 1.0f, 0.0f);
-	//glBegin(GL_POINTS);
-	//for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
-	//	glVertex3f(m_faceLandmarkDraw[i].x, m_faceLandmarkDraw[i].y, m_faceLandmarkDraw[i].z);
-	//}
-	//glEnd();
-
-
-
-	// Draw Lines //
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glBegin(GL_LINES);
-	glVertex3f(0.0f, m_guidePosDraw[_CHIN].y, 0.0f);
-	glVertex3f(m_nWidth, m_guidePosDraw[_CHIN].y, 0.0f);
-
-	glVertex3f(0.0f, m_guidePosDraw[_LIP].y, 0.0f);
-	glVertex3f(m_nWidth, m_guidePosDraw[_LIP].y, 0.0f);
-
-	glVertex3f(0.0f, m_guidePosDraw[_NOSE].y, 0.0f);
-	glVertex3f(m_nWidth, m_guidePosDraw[_NOSE].y, 0.0f);
-
-	glVertex3f(0.0f, m_guidePosDraw[_EYE_CENTER].y, 0.0f);
-	glVertex3f(m_nWidth, m_guidePosDraw[_EYE_CENTER].y, 0.0f);
-
-	glVertex3f(0.0f, m_guidePosDraw[_TOPHEAD].y, 0.0f);
-	glVertex3f(m_nWidth, m_guidePosDraw[_TOPHEAD].y, 0.0f);
-
-	glEnd();
-
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glBegin(GL_LINES);
-	
-	glVertex3f(m_guidePosDraw[_LEFT_EYE].x, m_guidePosDraw[_LEFT_EYE].y, m_guidePosDraw[_LEFT_EYE].z);
-	glVertex3f(m_guidePosDraw[_RIGHT_EYE].x, m_guidePosDraw[_RIGHT_EYE].y, m_guidePosDraw[_RIGHT_EYE].z);
-
-	glVertex3f(m_guidePosDraw[_TOP_EYE].x, m_guidePosDraw[_TOP_EYE].y, m_guidePosDraw[_TOP_EYE].z);
-	glVertex3f(m_guidePosDraw[_BOTTOM_EYE].x, m_guidePosDraw[_BOTTOM_EYE].y, m_guidePosDraw[_BOTTOM_EYE].z);
-
-	glEnd();
-
-
-
-	DrawDebugInfo();
-
-
-	
-
-	glLineWidth(1.0f);
-	glPointSize(1.0f);
 }
 
 
@@ -374,15 +388,17 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	//m_pThread->ResumeThread();
 
 	m_bIsThreadEnd = true;
-	//CWinThread* pl;
-	//m_bIsThreadEnd = false;
-	//pl = AfxBeginThread(MyThread, this);
+	CWinThread* pl;
+	m_bIsThreadEnd = false;
+	pl = AfxBeginThread(MyThread, this);
 
 //	CloseHandle(pl);
 		
 	m_glHScrollBar.SetRange(-90.0f, 90.0f, 10.0f);
 	m_glHScrollBar.SetValue(0);
 	
+
+	m_pPhotoImg = new CSNImage;
 	//===============================================//
 	SetTimer(_RENDER, 30, NULL);
 }
@@ -393,22 +409,42 @@ void CImageView::SetPhotoIDimg(CString strPath)
 
 		BeginWaitCursor();
 		// Load Phto ID image=============================//
-		if (m_pPhotoImg){
-		//	GLuint texid = m_pPhotoImg->GetTexId();
-		//	if (texid != 0)	glDeleteTextures(1, &texid);
-			delete m_pPhotoImg;
-			m_pPhotoImg = NULL;
-		}
+		//if (m_pPhotoImg){
+		////	GLuint texid = m_pPhotoImg->GetTexId();
+		////	if (texid != 0)	glDeleteTextures(1, &texid);
+		//	delete m_pPhotoImg;
+		//	m_pPhotoImg = NULL;
+		//}
 
-		m_pPhotoImg = new CSNImage;
+		//m_pPhotoImg = new CSNImage;
 		POINT3D pos;
 		mtSetPoint3D(&pos, 0, 0, 0);
 		m_pPhotoImg->SetPosition(pos);
 		LoadSNImage(strPath, m_pPhotoImg);
+	//	m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
 
 		m_iconSize = m_nWidth;
 		ReSizeIcon();
 	}
+
+
+
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+	
+	if (m_pPhotoImg){		
+	//	pM->SetImageRotateValue(m_fDeSkewAngle);
+		//m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+		//RotateImage(0, true);
+
+		//if ((m_fDeSkewAngle > 0.1f) || (m_fDeSkewAngle < 0.1f)){
+		//	m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+		//	RotateImage(0, true);
+		//}
+
+		pM->SetImageRotateValue(m_fDeSkewAngle);
+		ReSizeIcon();		
+	}
+
 
 	EndWaitCursor();
 }
@@ -436,6 +472,8 @@ void CImageView::ReSizeIcon()
 		else
 			m_iconSize = m_nHeight;
 
+		m_iconSize *= 0.9f;
+
 		m_pPhotoImg->SetSize(m_pPhotoImg->GetWidth(), m_pPhotoImg->GetHeight(), m_iconSize);
 		POINT3D sPnt;
 		sPnt.x = m_nWidth*0.5f;
@@ -444,11 +482,15 @@ void CImageView::ReSizeIcon()
 		m_pPhotoImg->SetPosition(sPnt);
 
 		for (int i = 0; i < m_faceLandmark.size(); i++){
-			m_faceLandmarkDraw[i] = convertImageToScreenSpace(m_faceLandmark[i]);			
+			m_faceLandmarkDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_faceLandmark[i], m_nWidth, m_nHeight, true);
 		}
 
 		for (int i = 0; i < _LNADMARK_POS_NUM; i++){
-			m_guidePosDraw[i] = convertImageToScreenSpace(m_guidePos[i]);
+			m_pPhotoImg->m_guidePosDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_guidePos[i], m_nWidth, m_nHeight, true);
+		}
+
+		for (int i = 0; i < 4; i++){
+			m_pPhotoImg->m_tmpVDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_tmpV[i], m_nWidth, m_nHeight, true);
 		}
 	}
 
@@ -522,30 +564,31 @@ bool CImageView::LoadSNImage(CString strPath, CSNImage* pInfo)
 		cvCvtColor(pimg, pImgrgb, CV_BGR2RGB);
 		cvReleaseImage(&pimg);
 
+
+		pInfo->SetSrcIplImage(pImgrgb);
 		pInfo->SetImgSize(pImgrgb->width, pImgrgb->height);
 		pInfo->SetSize(pImgrgb->width, pImgrgb->height, m_iconSize);
+		//pInfo->SetGLTexture();
 
 
 		// glupload Image - Thumnail image=======================================================//
-		GLuint tid = 0;
-		glGenTextures(1, &tid);
-		glBindTexture(GL_TEXTURE_2D, tid);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		//GLuint tid = 0;
+		//glGenTextures(1, &tid);
+		//glBindTexture(GL_TEXTURE_2D, tid);
+		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		//glTexImage2D(GL_TEXTURE_2D, 0, 3, m_texture->sizeX,m_texture->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE,m_texture->data);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pImgrgb->width, pImgrgb->height, GL_RGB, GL_UNSIGNED_BYTE, pImgrgb->imageData);
+		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
+		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
+		////glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		////glTexImage2D(GL_TEXTURE_2D, 0, 3, m_texture->sizeX,m_texture->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE,m_texture->data);
+		//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pImgrgb->width, pImgrgb->height, GL_RGB, GL_UNSIGNED_BYTE, pImgrgb->imageData);
 		//======================================================================================//
+	//	cvReleaseImage(&pImgrgb);
 
-		pInfo->SetThTex(tid);
 
-
+	//	pInfo->SetThTex(tid);
 		FaceDetection(pImgrgb);
-
-		cvReleaseImage(&pImgrgb);
 		return true;
 	}
 	else{
@@ -572,15 +615,15 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 
 
-	//if (m_pPhotoImg){
-	//	POINT3D curPos;
-	//	curPos.x = (float)point.x;
-	//	curPos.y = (float)point.y;
-	//	curPos.z = 0.0f;
+	if (m_pPhotoImg){
+		POINT2D curPos;
+		curPos.x = (float)point.x;
+		curPos.y = (float)point.y;
 
-	//	curPos = convertScreenToImageSpace(curPos);
-	//	m_strMousePos.Format(_T("[%d, %d]"), (int)curPos.x, (int)curPos.y);
-	//}
+
+		curPos = m_pPhotoImg->convertScreenToImageSpace(curPos, m_nWidth, m_nHeight);
+		m_strMousePos.Format(_T("[%d, %d]"), (int)curPos.x, (int)curPos.y);
+	}
 
 	
 	//if (GetCapture()){		
@@ -894,175 +937,198 @@ bool CImageView::FaceDetection(IplImage* pImg)
 	int newSizeW = (float)oimage.cols / m_fImgDetectScale;
 	int newSizeH = (float)oimage.rows / m_fImgDetectScale;
 
-	resize(oimage, image, Size(newSizeW, newSizeH));
-
-	dlib::frontal_face_detector detector = dlib::get_frontal_face_detector();
-		
-
-	dlib::cv_image<dlib::bgr_pixel> cimg(image);
-	std::vector<dlib::rectangle> dets = detector(cimg);
-	std::vector<dlib::full_object_detection> shapes;
-
-	// Draw circles on the detected faces
-	m_faceLandmark.clear();
-	m_faceLandmarkDraw.clear();
-	for (int i = 0; i < dets.size(); i++)
-	{
-		dlib::full_object_detection shape = m_sp(cimg, dets[i]);
-		for (int j = 0; j < shape.num_parts(); j++){			
-
-			POINT3D pnt;
-			mtSetPoint3D(&pnt, shape.part(j).x(), shape.part(j).y(), 0);
-			m_faceLandmark.push_back(pnt);
-			m_faceLandmarkDraw.push_back(pnt);
-		}		
-	}
-
-	//if (m_faceLandmarkDraw != NULL){
-	//	delete[] m_faceLandmarkDraw;
-	//	m_faceLandmarkDraw = NULL;
-	//}
-//	m_faceLandmarkDraw = new POINT3D[m_faceLandmark.size()];
-
-//	std::copy(m_faceLandmark.begin(), m_faceLandmark.end(), back_inserter(m_faceLandmarkDraw));
-
-//	imshow("Detected Face", image);
-
-
-	for (int i = 0; i < _LNADMARK_POS_NUM; i++){
-		mtSetPoint3D(&m_guidePos[i], 0.0f, 0.0f, 0.0f);
-	}
-
 
 	
-	if (m_faceLandmark.size()>67){
-		m_guidePos[_CHIN] = m_faceLandmark[8];
-		m_guidePos[_NOSE] = m_faceLandmark[33];
-		m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
 
-		for (int i = 36; i < 42; i++){
-			m_guidePos[_LEFT_EYE].x += m_faceLandmark[i].x;
-			m_guidePos[_LEFT_EYE].y += m_faceLandmark[i].y;
+	if (m_pPhotoImg->GetSrcIplImage()){
+
+
+		mtSetPoint2D(&m_pPhotoImg->m_tmpV[0], 0, 0);
+		mtSetPoint2D(&m_pPhotoImg->m_tmpV[1], newSizeW, 0);
+		mtSetPoint2D(&m_pPhotoImg->m_tmpV[2], newSizeW, newSizeH);
+		mtSetPoint2D(&m_pPhotoImg->m_tmpV[3], 0, newSizeH);
+
+
+		m_pPhotoImg->SetDetectScale(m_fImgDetectScale);
+
+
+
+		resize(oimage, image, Size(newSizeW, newSizeH));
+
+		dlib::frontal_face_detector detector = dlib::get_frontal_face_detector();
+
+
+		dlib::cv_image<dlib::bgr_pixel> cimg(image);
+		std::vector<dlib::rectangle> dets = detector(cimg);
+		std::vector<dlib::full_object_detection> shapes;
+
+		// Draw circles on the detected faces
+		m_faceLandmark.clear();
+		m_faceLandmarkDraw.clear();
+		for (int i = 0; i < dets.size(); i++)
+		{
+			dlib::full_object_detection shape = m_sp(cimg, dets[i]);
+			for (int j = 0; j < shape.num_parts(); j++){
+
+				POINT2D pnt;
+				mtSetPoint2D(&pnt, shape.part(j).x(), shape.part(j).y());
+				m_faceLandmark.push_back(pnt);
+				m_faceLandmarkDraw.push_back(pnt);
+			}
 		}
-		for (int i = 42; i < 48; i++){
-			m_guidePos[_RIGHT_EYE].x += m_faceLandmark[i].x;
-			m_guidePos[_RIGHT_EYE].y += m_faceLandmark[i].y;
+
+		//if (m_faceLandmarkDraw != NULL){
+		//	delete[] m_faceLandmarkDraw;
+		//	m_faceLandmarkDraw = NULL;
+		//}
+		//	m_faceLandmarkDraw = new POINT3D[m_faceLandmark.size()];
+
+		//	std::copy(m_faceLandmark.begin(), m_faceLandmark.end(), back_inserter(m_faceLandmarkDraw));
+
+		//	imshow("Detected Face", image);
+
+
+		for (int i = 0; i < _LNADMARK_POS_NUM; i++){
+			mtSetPoint2D(&m_pPhotoImg->m_guidePos[i], 0.0f, 0.0f);
 		}
 
-		m_guidePos[_LEFT_EYE].x *= 0.16666f;
-		m_guidePos[_LEFT_EYE].y *= 0.16666f;
-
-		m_guidePos[_RIGHT_EYE].x *= 0.16666f;
-		m_guidePos[_RIGHT_EYE].y *= 0.16666f; 
 
 
+		if (m_faceLandmark.size()>67){
+			m_pPhotoImg->m_guidePos[_CHIN] = m_faceLandmark[8];
+			m_pPhotoImg->m_guidePos[_NOSE] = m_faceLandmark[33];
+			m_pPhotoImg->m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
 
-		m_guidePos[_EYE_CENTER].x = (m_guidePos[_LEFT_EYE].x + m_guidePos[_RIGHT_EYE].x)*0.5f;
-		m_guidePos[_EYE_CENTER].y = (m_guidePos[_LEFT_EYE].y + m_guidePos[_RIGHT_EYE].y)*0.5f;
+			for (int i = 36; i < 42; i++){
+				m_pPhotoImg->m_guidePos[_LEFT_EYE].x += m_faceLandmark[i].x;
+				m_pPhotoImg->m_guidePos[_LEFT_EYE].y += m_faceLandmark[i].y;
+			}
+			for (int i = 42; i < 48; i++){
+				m_pPhotoImg->m_guidePos[_RIGHT_EYE].x += m_faceLandmark[i].x;
+				m_pPhotoImg->m_guidePos[_RIGHT_EYE].y += m_faceLandmark[i].y;
+			}
 
-		float facewidth = (m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x);
-		float faceheight = 1.618f * facewidth;
-		m_guidePos[_TOPHEAD].y = m_guidePos[_CHIN].y - faceheight;
+			m_pPhotoImg->m_guidePos[_LEFT_EYE].x = (int)(m_pPhotoImg->m_guidePos[_LEFT_EYE].x*0.16666f);
+			m_pPhotoImg->m_guidePos[_LEFT_EYE].y = (int)(m_pPhotoImg->m_guidePos[_LEFT_EYE].y*0.16666f);
+
+			m_pPhotoImg->m_guidePos[_RIGHT_EYE].x = (int)(m_pPhotoImg->m_guidePos[_RIGHT_EYE].x*0.16666f);
+			m_pPhotoImg->m_guidePos[_RIGHT_EYE].y = (int)(m_pPhotoImg->m_guidePos[_RIGHT_EYE].y*0.16666f);
+
+			//m_pPhotoImg->m_guidePos[_RIGHT_EYE].x *= 0.16666f;
+			//m_pPhotoImg->m_guidePos[_RIGHT_EYE].y *= 0.16666f;
 
 
-		// Find eye guide line=============================================
-		POINT3D eDir;
-		eDir.x = m_guidePos[_LEFT_EYE].x - m_guidePos[_RIGHT_EYE].x;
-		eDir.y = m_guidePos[_LEFT_EYE].y - m_guidePos[_RIGHT_EYE].y;
-		eDir.z = 0;
-		eDir = mtNormalize(eDir);
-		float d = -m_guidePos[_RIGHT_EYE].x / eDir.x;
 
-		m_guidePos[_LEFT_EYE].x = m_guidePos[_RIGHT_EYE].x + d*eDir.x;
-		m_guidePos[_LEFT_EYE].y = m_guidePos[_RIGHT_EYE].y + d*eDir.y;
+			m_pPhotoImg->m_guidePos[_EYE_CENTER].x = (m_pPhotoImg->m_guidePos[_LEFT_EYE].x + m_pPhotoImg->m_guidePos[_RIGHT_EYE].x)*0.5f;
+			m_pPhotoImg->m_guidePos[_EYE_CENTER].y = (m_pPhotoImg->m_guidePos[_LEFT_EYE].y + m_pPhotoImg->m_guidePos[_RIGHT_EYE].y)*0.5f;
 
-		eDir.x = -eDir.x;
-		eDir.y = -eDir.y;
-		d = (newSizeW - m_guidePos[_RIGHT_EYE].x) / eDir.x;
+			float facewidth = (m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x);
+			float faceheight = 1.618f * facewidth;
+			m_pPhotoImg->m_guidePos[_TOPHEAD].y = m_pPhotoImg->m_guidePos[_CHIN].y - faceheight;
 
-		m_guidePos[_RIGHT_EYE].x = m_guidePos[_RIGHT_EYE].x + d*eDir.x;
-		m_guidePos[_RIGHT_EYE].y = m_guidePos[_RIGHT_EYE].y + d*eDir.y;
 
-		POINT3D pDir;		// up vector //
-		pDir.x = -eDir.y;
-		pDir.y = eDir.x;
-		pDir.z = 0;
+			// Find eye guide line=============================================
+			POINT3D eDir;
+			eDir.x = m_pPhotoImg->m_guidePos[_LEFT_EYE].x - m_pPhotoImg->m_guidePos[_RIGHT_EYE].x;
+			eDir.y = m_pPhotoImg->m_guidePos[_LEFT_EYE].y - m_pPhotoImg->m_guidePos[_RIGHT_EYE].y;
+			eDir.z = 0;
+			eDir = mtNormalize(eDir);
+			float d = -m_pPhotoImg->m_guidePos[_RIGHT_EYE].x / eDir.x;
 
-		POINT3D uDir;
-		mtSetPoint3D(&uDir, 0.0f, 1.0f, 0.0f);
-		float dotVal = mtDot(uDir, pDir);
-		m_fDeSkewAngle = acos(dotVal) * 180.0f / _PI;
-		if (pDir.x > uDir.x)
-			m_fDeSkewAngle *= -1.0f;
+			m_pPhotoImg->m_guidePos[_LEFT_EYE].x = m_pPhotoImg->m_guidePos[_RIGHT_EYE].x + d*eDir.x;
+			m_pPhotoImg->m_guidePos[_LEFT_EYE].y = m_pPhotoImg->m_guidePos[_RIGHT_EYE].y + d*eDir.y;
 
-		d = -m_guidePos[_EYE_CENTER].y / pDir.y;
-		m_guidePos[_TOP_EYE].x = m_guidePos[_EYE_CENTER].x + pDir.x*d;
-		m_guidePos[_TOP_EYE].y = m_guidePos[_EYE_CENTER].y + pDir.y*d;
-		m_guidePos[_TOP_EYE].z = 0;
+			eDir.x = -eDir.x;
+			eDir.y = -eDir.y;
+			d = (newSizeW - m_pPhotoImg->m_guidePos[_RIGHT_EYE].x) / eDir.x;
 
-		pDir.x = -pDir.x;
-		pDir.y = -pDir.y;
-		d = (newSizeH - m_guidePos[_EYE_CENTER].y) / pDir.y;
-		m_guidePos[_BOTTOM_EYE].x = m_guidePos[_EYE_CENTER].x + pDir.x*d;
-		m_guidePos[_BOTTOM_EYE].y = m_guidePos[_EYE_CENTER].y + pDir.y*d;
-		m_guidePos[_BOTTOM_EYE].z = 0;
-		//=================================================================
+			m_pPhotoImg->m_guidePos[_RIGHT_EYE].x = m_pPhotoImg->m_guidePos[_RIGHT_EYE].x + d*eDir.x;
+			m_pPhotoImg->m_guidePos[_RIGHT_EYE].y = m_pPhotoImg->m_guidePos[_RIGHT_EYE].y + d*eDir.y;
+
+			POINT3D pDir;		// up vector //
+			pDir.x = -eDir.y;
+			pDir.y = eDir.x;
+			pDir.z = 0;
+
+			POINT3D uDir;
+			mtSetPoint3D(&uDir, 0.0f, 1.0f, 0.0f);
+			float dotVal = mtDot(uDir, pDir);
+			m_fDeSkewAngle = acos(dotVal) * 180.0f / _PI;
+			if (pDir.x > uDir.x)
+				m_fDeSkewAngle *= -1.0f;
+
+			d = -m_pPhotoImg->m_guidePos[_EYE_CENTER].y / pDir.y;
+			m_pPhotoImg->m_guidePos[_TOP_EYE].x = m_pPhotoImg->m_guidePos[_EYE_CENTER].x + pDir.x*d;
+			m_pPhotoImg->m_guidePos[_TOP_EYE].y = m_pPhotoImg->m_guidePos[_EYE_CENTER].y + pDir.y*d;
+
+
+			pDir.x = -pDir.x;
+			pDir.y = -pDir.y;
+			d = (newSizeH - m_pPhotoImg->m_guidePos[_EYE_CENTER].y) / pDir.y;
+			m_pPhotoImg->m_guidePos[_BOTTOM_EYE].x = m_pPhotoImg->m_guidePos[_EYE_CENTER].x + pDir.x*d;
+			m_pPhotoImg->m_guidePos[_BOTTOM_EYE].y = m_pPhotoImg->m_guidePos[_EYE_CENTER].y + pDir.y*d;
+
+			//=================================================================
+		}
+
+		m_pPhotoImg->RestoreGuidePos();
 	}
-	
 
+	//CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+	//pM->SetImageRotateValue(m_fDeSkewAngle);
 
 
 	oimage.release();
 	image.release();
 
 
+//	m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+	
 //	ReSizeIcon();
 	return true;
 }
 
-POINT3D CImageView::convertScreenToImageSpace(POINT3D pnt)
-{
-	POINT3D curPos;
-	if (m_pPhotoImg){		
-
-		m_fXScale = (float)m_pPhotoImg->GetImgWidth() / (m_pPhotoImg->GetLeftTop().x*m_fImgDetectScale);
-		m_fYScale = (float)m_pPhotoImg->GetImgHeight() / (m_pPhotoImg->GetLeftTop().y*m_fImgDetectScale);
-
-		float xOffset = m_nWidth - (m_pPhotoImg->GetLeftTop().x + m_nWidth*0.5f);
-		float yOffset = m_nHeight - (m_pPhotoImg->GetLeftTop().y + m_nHeight*0.5f);
-
-		curPos.x = (pnt.x - xOffset)*m_fXScale;
-		curPos.y = (pnt.y - yOffset)*m_fYScale;
-		curPos.z = 0.0f;
-	}
-	return curPos;
-}
-
-POINT3D CImageView::convertImageToScreenSpace(POINT3D pnt)
-{
-	POINT3D curPos;
-	if (m_pPhotoImg){
-
-//		float fxDetectScale = (float)m_pPhotoImg->GetImgWidth() / (float)FACE_DETECT_SIZE;
-//		float fyDetectScale = (float)m_pPhotoImg->GetImgHeight() / (float)FACE_DETECT_SIZE;
-
-		// restore original size //
-		pnt.x = pnt.x*m_fImgDetectScale;
-		pnt.y = pnt.y*m_fImgDetectScale;
-		pnt.y = m_pPhotoImg->GetImgHeight() - pnt.y;
-
-		m_fXScale = (float)m_pPhotoImg->GetImgWidth() / (m_pPhotoImg->GetLeftTop().x * 2);
-		m_fYScale = (float)m_pPhotoImg->GetImgHeight() / (m_pPhotoImg->GetLeftTop().y * 2);
-
-		float xOffset = m_nWidth - (m_pPhotoImg->GetLeftTop().x + m_nWidth*0.5f);
-		float yOffset = m_nHeight - (m_pPhotoImg->GetLeftTop().y + m_nHeight*0.5f);
-
-		curPos.x = pnt.x / m_fXScale + xOffset;
-		curPos.y = pnt.y / m_fYScale + yOffset;
-		curPos.z = 0.0f;
-	}
-	return curPos;
-}
+//POINT2D CImageView::convertScreenToImageSpace(POINT2D pnt)
+//{
+//	POINT2D curPos;
+//	if (m_pPhotoImg){	
+//
+//		m_fXScale = (float)m_pPhotoImg->GetImgWidth() / m_iconSize;
+//		m_fYScale = (float)m_pPhotoImg->GetImgHeight() / m_iconSize;
+//
+//		float xOffset = m_nWidth - (m_pPhotoImg->GetLeftTop().x + m_nWidth*0.5f);
+//		float yOffset = m_nHeight - (m_pPhotoImg->GetLeftTop().y + m_nHeight*0.5f);
+//
+//		curPos.x = ((pnt.x - xOffset)*m_fXScale) ;
+//		curPos.y = ((pnt.y - yOffset)*m_fYScale) ;
+//	}
+//	return curPos;
+//}
+//
+//POINT2D CImageView::convertImageToScreenSpace(POINT2D pnt)
+//{
+//	POINT2D curPos;
+//	if (m_pPhotoImg){
+//
+////		float fxDetectScale = (float)m_pPhotoImg->GetImgWidth() / (float)FACE_DETECT_SIZE;
+////		float fyDetectScale = (float)m_pPhotoImg->GetImgHeight() / (float)FACE_DETECT_SIZE;
+//
+//		// restore original size //
+//		pnt.x = pnt.x*m_fImgDetectScale;
+//		pnt.y = pnt.y*m_fImgDetectScale;
+//		pnt.y = m_pPhotoImg->GetImgHeight() - pnt.y;
+//
+//		m_fXScale = (float)m_pPhotoImg->GetImgWidth() / (m_pPhotoImg->GetLeftTop().x * 2);
+//		m_fYScale = (float)m_pPhotoImg->GetImgHeight() / (m_pPhotoImg->GetLeftTop().y * 2);
+//
+//		float xOffset = m_nWidth - (m_pPhotoImg->GetLeftTop().x + m_nWidth*0.5f);
+//		float yOffset = m_nHeight - (m_pPhotoImg->GetLeftTop().y + m_nHeight*0.5f);
+//
+//		curPos.x = pnt.x / m_fXScale + xOffset;
+//		curPos.y = pnt.y / m_fYScale + yOffset;
+//	}
+//	return curPos;
+//}
 
 void CImageView::OnDropFiles(HDROP hDropInfo)
 {
@@ -1095,10 +1161,39 @@ void CImageView::ThreadFaceDataLoad()
 	ExitThread(1);
 }
 
-void CImageView::RotateImage(float fAngle, CSNImage* pimg)
+void CImageView::RotateImage(float fAngle, bool IsRedetect)
 {
-//	pimg->
+	if (m_pPhotoImg){
+		if (IsRedetect){
 
+			CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+			m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+			//RotateImage(0, true);
+
+			//if ((m_fDeSkewAngle > 0.1f) || (m_fDeSkewAngle < 0.1f)){
+			//	m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+			//	RotateImage(0, true);
+			//}
+
+			
+			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, true);
+			FaceDetection(m_pPhotoImg->GetSrcCopyIplImage());
+
+			//if ((m_fDeSkewAngle > 0.1f) || (m_fDeSkewAngle < 0.1f)){
+			//	m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+			//	RotateImage(0, true);
+			//}
+
+			pM->SetImageRotateValue(m_fDeSkewAngle);
+			ReSizeIcon();
+
+		//	m_pPhotoImg->SetImgDrawAngle(0.0f);
+		}
+		else{
+			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, false);
+		}
+		
+	}
 }
 UINT MyThread(LPVOID lpParam)
 {

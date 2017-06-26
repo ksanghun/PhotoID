@@ -28,6 +28,8 @@ public:
 
 	void UpdateImgListCtrl(CString strPath);
 
+	void SetImageRotateValue(float _fAngle);
+
 // Implementation
 public:
 	virtual ~CMainFrame();

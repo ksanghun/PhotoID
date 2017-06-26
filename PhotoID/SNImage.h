@@ -1,8 +1,14 @@
 #pragma once
+#include "opencv/cv.h"
+#include "opencv2\core\core.hpp"
+#include "opencv2\highgui\highgui.hpp"
+#include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 #include "math_tool.h"
 
-
+enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _TOP_EYE, _BOTTOM_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN };
+#define _LNADMARK_POS_NUM 9
 class CSNImage
 {
 public:
@@ -17,12 +23,13 @@ public:
 	void SetPosition(POINT3D pos);
 	void SetSelecttion(bool _isSel);
 	void SetImgSize(unsigned short _w, unsigned long _h) { nImgWidth = _w; nImgHeight = _h; };
+	void SetImgDrawAngle(float _angle) { m_fImgDrawAngle = _angle; }
 //	void SetBgColor(float r, float g, float b);
 
 	void DrawThumbNail(float fAlpha);
 	void DrawForPicking();
 	void DrawImage(float fAlpha);
-	void CSNImage::DrawBMPText();
+	void DrawBMPText();
 
 	bool AddMatchedPoint(_MATCHInfo info, int search_size);
 
@@ -46,8 +53,33 @@ public:
 
 
 	void ClearMatchResult();
+
+
+	// Image processing //
+	void SetSrcIplImage(IplImage* pimg);
+	IplImage* GetSrcIplImage() { return m_pSrcImg; }
+	IplImage* GetSrcCopyIplImage() { return m_pSrcImgCopy; }
+	void SetGLTexture(IplImage* pimg);
+	void RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot);
+	void SetImageCenter(POINT3D _cpos) { m_vSrcImgCenter = _cpos; }
+	void SetRotateionAngle(float _fangle); 
+	void SetDetectScale(float _scale) { m_fImgDetectScale = _scale; }
+
 //	std::vector<_MATCHInfo>* GetMatchResult() { return &m_matched_pos; };
 //	int GetResultSize() { return m_matched_pos.size(); }
+
+	void RestoreGuidePos();
+
+	POINT2D convertImageToScreenSpace(POINT2D pnt, int nWidth, int nHeight, bool IsScaled);
+	POINT2D convertScreenToImageSpace(POINT2D pnt, int nWidth, int nHeight);
+
+
+	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
+	POINT2D m_guidePos[_LNADMARK_POS_NUM];
+	POINT2D m_guidePosDraw[_LNADMARK_POS_NUM];
+
+	POINT2D m_tmpV[4];
+	POINT2D m_tmpVDraw[4];
 
 private:
 	CString strPath;
@@ -76,6 +108,7 @@ private:
 	unsigned short nImgWidth;
 	unsigned short nImgHeight;
 
+	int m_imgRectSize;
 
 //	std::vector<_MATCHInfo> m_matched_pos;
 
@@ -83,6 +116,15 @@ private:
 	float m_imgWScale;
 	float m_imgHScale;
 	POINT3D m_pntLT;
+
+	IplImage *m_pSrcImg;
+	IplImage *m_pSrcImgCopy;
+
+
+	float m_fImgDeskewAngle, m_fSrcBrightness, m_fSrcContrast, m_fImgAngle;
+	float m_fImgDrawAngle;
+	POINT3D m_vSrcImgCenter;
+	float m_fImgDetectScale;
 
 
 };

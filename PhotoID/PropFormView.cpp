@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "PhotoID.h"
 #include "PropFormView.h"
-
+#include "PhotoIDView.h"
 
 // CPropFormView
 
@@ -12,8 +12,11 @@ IMPLEMENT_DYNCREATE(CPropFormView, CFormView)
 
 CPropFormView::CPropFormView()
 	: CFormView(CPropFormView::IDD)
-{
+	, m_sliderRotate(0)
 
+	, m_strRotValue(_T("0"))
+{
+	m_preRotateSliderPos = 0;
 }
 
 CPropFormView::~CPropFormView()
@@ -23,10 +26,21 @@ CPropFormView::~CPropFormView()
 void CPropFormView::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
+	DDX_Slider(pDX, IDC_SLIDER_ROTATE, m_sliderRotate);
+	DDV_MinMaxInt(pDX, m_sliderRotate, -900, 900);
+	DDX_Control(pDX, IDC_SLIDER_ROTATE, m_ctrlSliderRotate);
+	//DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_editRotate);
+	//DDV_MinMaxFloat(pDX, m_editRotate, -90.0, 90.0);
+	DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_strRotValue);
+	DDV_MaxChars(pDX, m_strRotValue, 5);
+	DDX_Control(pDX, IDC_EDIT_ROT_VALUE, m_EditCtrlRotate);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_WM_MOUSEACTIVATE()
+	ON_EN_CHANGE(IDC_EDIT_ROT_VALUE, &CPropFormView::OnEnChangeEditRotValue)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_ROTATE, &CPropFormView::OnNMCustomdrawSliderRotate)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_ROTATE, &CPropFormView::OnNMReleasedcaptureSliderRotate)
 END_MESSAGE_MAP()
 
 
@@ -55,6 +69,15 @@ void CPropFormView::OnInitialUpdate()
 	CFormView::OnInitialUpdate();
 
 	// TODO: Add your specialized code here and/or call the base class
+
+
+	m_ctrlSliderRotate.SetRange(-900, 900, TRUE);
+	m_ctrlSliderRotate.SetPos(0);
+	
+	m_ctrlSliderRotate.Invalidate(TRUE);
+
+	UpdateData(TRUE);
+
 }
 
 
@@ -138,4 +161,103 @@ int CPropFormView::OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT messag
 	}
 
 	return nResult;
+}
+
+
+
+
+
+void CPropFormView::OnEnChangeEditRotValue()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CFormView::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+
+	//UpdateData(TRUE);
+	//float fAngle = _wtof(m_strRotValue);
+	//if ((!m_strRotValue.IsEmpty()) && (fAngle)){
+
+	//	int sPos = fAngle * 10;
+	//	m_ctrlSliderRotate.SetPos(sPos);
+	//	pView->RotateImage(fAngle);
+	//}
+	//UpdateData(FALSE);
+}
+
+
+
+
+void CPropFormView::OnNMCustomdrawSliderRotate(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+
+	UpdateData(TRUE);
+	
+	if (m_preRotateSliderPos != m_ctrlSliderRotate.GetPos()){
+
+		float fRotate = m_ctrlSliderRotate.GetPos();
+		m_strRotValue.Format(L"%3.1f", fRotate*0.1f);
+		pView->RotateImage(fRotate*0.1f, false);
+		UpdateData(FALSE);
+
+		m_preRotateSliderPos = m_ctrlSliderRotate.GetPos();
+
+	}
+
+	
+
+
+	*pResult = 0;
+}
+
+
+void CPropFormView::OnNMReleasedcaptureSliderRotate(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+
+	UpdateData(TRUE);
+	float fRotate = m_ctrlSliderRotate.GetPos();
+	m_strRotValue.Format(L"%3.1f", fRotate*0.1f);
+	pView->RotateImage(fRotate*0.1f);
+
+
+	//UpdateData(FALSE);
+
+	*pResult = 0;
+}
+
+
+void CPropFormView::SetImageRotateValue(float _fAngle)
+{
+	UpdateData(TRUE);
+//	m_editRotate = _fAngle;
+	m_strRotValue.Format(L"%3.1f", _fAngle);
+	int sPos = _fAngle * 10;
+	m_ctrlSliderRotate.SetPos(sPos);
+	UpdateData(FALSE);
+}
+
+BOOL CPropFormView::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	if ((pMsg->message == WM_KEYDOWN) && (pMsg->wParam == VK_RETURN)){
+
+		UpdateData(TRUE);
+		float fAngle = _wtof(m_strRotValue);
+		if ((!m_strRotValue.IsEmpty()) && m_EditCtrlRotate.GetFocus()){
+
+			int sPos = fAngle * 10;
+			m_ctrlSliderRotate.SetPos(sPos);
+			pView->RotateImage(fAngle);
+		}
+		UpdateData(FALSE);
+	}
+
+
+	return CFormView::PreTranslateMessage(pMsg);
 }

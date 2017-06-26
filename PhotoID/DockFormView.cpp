@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "PhotoID.h"
 #include "DockFormView.h"
-#include "PropFormView.h"
+
 
 // CDockFormView
 
@@ -31,7 +31,13 @@ END_MESSAGE_MAP()
 
 // CDockFormView message handlers
 
+void CDockFormView::SetImageRotateValue(float _fAngle)
+{
+	if (m_pMyFormView){
+		m_pMyFormView->SetImageRotateValue(_fAngle);
+	}
 
+}
 
 
 int CDockFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -51,6 +57,7 @@ void CDockFormView::OnSize(UINT nType, int cx, int cy)
 	CDockablePane::OnSize(nType, cx, cy);
 
 	// TODO: Add your message handler code here
-	if (m_pMyFormView)
+	if (m_pMyFormView){
 		m_pMyFormView->SetWindowPos(NULL, 0, 0, cx, cy, SWP_NOZORDER);
+	}
 }

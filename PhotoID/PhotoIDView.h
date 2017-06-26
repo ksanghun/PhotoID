@@ -23,6 +23,7 @@ private:
 // Operations
 public:
 	void SetPhotoIDimg(CString strPath);
+	void RotateImage(float _fAngle, bool IsRedetect = true);
 
 // Overrides
 public:

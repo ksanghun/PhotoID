@@ -19,8 +19,8 @@
 
 enum _RENDERMODE { _BYGROUP = 0, _BYORDER };
 enum _PICKMODE { _PICK_SELECT=0 };
-enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _TOP_EYE, _BOTTOM_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN};
-#define _LNADMARK_POS_NUM 9
+//enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _TOP_EYE, _BOTTOM_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN};
+//#define _LNADMARK_POS_NUM 9
 #define SEL_BUFF_SIZE 1024
 
 class CViewTree;
@@ -54,6 +54,10 @@ public:
 
 	void ThreadFaceDataLoad();
 	void SetPhotoIDimg(CString strPath);
+	void RotateImage(float fAngle, bool IsRedetect = true);
+
+	//POINT2D convertScreenToImageSpace(POINT2D pnt);
+	//POINT2D convertImageToScreenSpace(POINT2D pnt);
 
 private:
 //	CWinThread* g_pl;
@@ -87,19 +91,18 @@ private:
 	bool process_select(GLuint* index, int hit_num, int selmode);
 	void ResetIconTextureId();
 	void GenerateThumbnail();
-	POINT3D convertScreenToImageSpace(POINT3D pnt);
-	POINT3D convertImageToScreenSpace(POINT3D pnt);
+	
 
 	POINT3D GetColor(float fvalue);
 	POINT3D m_result_color[10];
 
 	bool FaceDetection(IplImage* pImg);
-	void RotateImage(float fAngle, CSNImage* pimg);
+	
 	
 
 	
-	std::vector<POINT3D> m_faceLandmark;
-	std::vector<POINT3D> m_faceLandmarkDraw;
+	std::vector<POINT2D> m_faceLandmark;
+	std::vector<POINT2D> m_faceLandmarkDraw;
 
 //	POINT3D* m_faceLandmarkDraw;
 	dlib::shape_predictor m_sp;
@@ -111,8 +114,8 @@ private:
 
 	unsigned int m_iFrameCnt;
 	
-	POINT3D m_guidePos[_LNADMARK_POS_NUM];
-	POINT3D m_guidePosDraw[_LNADMARK_POS_NUM];
+	//POINT3D m_guidePos[_LNADMARK_POS_NUM];
+	//POINT3D m_guidePosDraw[_LNADMARK_POS_NUM];
 
 
 public:
@@ -133,5 +136,7 @@ public:
 	
 
 	afx_msg void OnNcDestroy();
+
+
 };
 

@@ -180,3 +180,10 @@ void CPhotoIDView::SetPhotoIDimg(CString strPath)
 		m_pImageView->SetPhotoIDimg(strPath);
 	}
 }
+
+void CPhotoIDView::RotateImage(float _fAngle, bool IsRedetect)
+{
+	if (m_pImageView){
+		m_pImageView->RotateImage(_fAngle, IsRedetect);
+	}
+}

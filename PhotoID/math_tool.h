@@ -51,6 +51,8 @@ float	mtManhattanDistanceXZ(POINT3D A, POINT3D B);
 //POINT3D & Matrix operation(Daniel) ==================
 void mtMultMatrixVecf(const float matrix[16], const float in[4], float out[4]);
 void mtMultMatrixVecf(const double matrix[16], const double in[4], double out[4]);
+
+void mtMultMatrixVec(const float* matrix, const float* in, float* out, int n);
 //====================================================
 
 //Matrix & Matrix operation ==================

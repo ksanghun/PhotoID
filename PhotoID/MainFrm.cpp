@@ -408,3 +408,10 @@ void CMainFrame::UpdateImgListCtrl(CString strPath)
 		m_wndFileView.UpdateImgListCtrl(strPath);
 	}
 }
+
+void CMainFrame::SetImageRotateValue(float _fAngle)
+{
+	if (m_wndFormView){
+		m_wndFormView.SetImageRotateValue(_fAngle);
+	}
+}

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "resource.h"
+#include "afxcmn.h"
+#include "afxwin.h"
 
 // CPropFormView form view
 
@@ -30,8 +32,22 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual void OnInitialUpdate();
+
+	void SetImageRotateValue(float _fAngle);
 	
 	afx_msg int OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT message);
+	int m_sliderRotate;
+
+
+	CSliderCtrl m_ctrlSliderRotate;
+	int m_preRotateSliderPos;
+
+	afx_msg void OnEnChangeEditRotValue();
+	afx_msg void OnNMCustomdrawSliderRotate(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMReleasedcaptureSliderRotate(NMHDR *pNMHDR, LRESULT *pResult);
+	CString m_strRotValue;
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CEdit m_EditCtrlRotate;
 };
 
 

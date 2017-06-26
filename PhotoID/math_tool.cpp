@@ -151,6 +151,30 @@ void mtMultMatrixVecf(const double matrix[16], const double in[4], double out[4]
 
 }
 
+void mtMultMatrixVec(const float* matrix, const float* in, float* out, int n)
+{
+	int sum = 0;
+	for (int i = 0; i < n; i++) {
+		sum = 0;
+		for (int j = 0; j < n; j++)
+			sum += matrix[i*n+j] * in[j];
+		out[i] = sum;
+	}
+
+	//for (int i = 0; i<n; i++){
+	//	out[i] = 0;
+	//	for (int j = 0; j < n; j++){
+	//		out[i] += in[i] * matrix[0 * n + i];
+	//	}		
+	//}
+
+	//int i;
+	//for (i = 0; i<3; i++)
+	//{
+	//	out[i] = in[0] * matrix[0 * 3 + i] + in[1] * matrix[1 * 3 + i] + in[2] * matrix[2 * 3 + i];
+	//}
+}
+
 void mtMultMatrix(const float matrixA[16], const float matrixB[16], float matrixOut[16])
 {
 	int i4=0;

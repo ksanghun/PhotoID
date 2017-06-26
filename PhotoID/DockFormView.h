@@ -1,8 +1,8 @@
 #pragma once
-
+#include "PropFormView.h"
 
 // CDockFormView
-class CPropFormView;
+
 class CDockFormView : public CDockablePane
 {
 	DECLARE_DYNAMIC(CDockFormView)
@@ -13,6 +13,8 @@ class CDockFormView : public CDockablePane
 public:
 	CDockFormView();
 	virtual ~CDockFormView();
+
+	void SetImageRotateValue(float _fAngle);
 
 protected:
 	DECLARE_MESSAGE_MAP()
