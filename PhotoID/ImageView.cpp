@@ -23,7 +23,7 @@ CImageView::CImageView()
 	memset(&m_LogFont, 0, sizeof(m_LogFont));
 //	strcpy((char*)m_LogFont.lfFaceName, ("Arial"));
 	m_LogFont.lfCharSet = ANSI_CHARSET;
-	m_LogFont.lfHeight = -10;
+	m_LogFont.lfHeight = -14;
 	m_LogFont.lfWidth = 0;
 	//	m_LogFont.lfWeight = FW_BOLD;
 	
@@ -229,13 +229,22 @@ void CImageView::RenderMenu()
 
 void CImageView::DrawDebugInfo()
 {
-	glColor3f(0.0f, 0.0f, 1.0f);
 
-	POINT3D pos;
-	mtSetPoint3D(&pos, 10.0f, m_nHeight-50, 0.0f);
-	//CString strDAngle;
-	//strDAngle.Format(L"Deskew Angle: %3.2f", m_fDeSkewAngle);
-	gl_DrawText(pos, m_strMousePos, m_LogFont, 2, m_pBmpInfo, m_CDCPtr);
+	if (m_pPhotoImg->GetSrcIplImage()){
+		glColor3f(0.0f, 0.0f, 1.0f);
+
+		CString strDebug;
+		POINT3D pos;
+		mtSetPoint3D(&pos, 10.0f, m_nHeight - 50, 0.0f);
+		gl_DrawText(pos, m_strMousePos, m_LogFont, 2, m_pBmpInfo, m_CDCPtr);
+
+		// Image Angle Info ==//
+		pos.y += 20;
+		strDebug.Format(L"Rotation Angle: %3.1f degree", m_pPhotoImg->GetImgAngle());
+		gl_DrawText(pos, strDebug, m_LogFont, 2, m_pBmpInfo, m_CDCPtr);
+	}
+
+
 }
 
 void CImageView::Render2D()
@@ -405,7 +414,13 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 
 void CImageView::SetPhotoIDimg(CString strPath)
 {
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 	if (m_bIsThreadEnd == true){
+		m_fDeSkewAngle = 0.0f;
+		m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+		pM->SetImageRotateValue(m_fDeSkewAngle);
+
+
 
 		BeginWaitCursor();
 		// Load Phto ID image=============================//
@@ -429,7 +444,7 @@ void CImageView::SetPhotoIDimg(CString strPath)
 
 
 
-	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+	
 	
 	if (m_pPhotoImg){		
 	//	pM->SetImageRotateValue(m_fDeSkewAngle);
@@ -441,6 +456,7 @@ void CImageView::SetPhotoIDimg(CString strPath)
 		//	RotateImage(0, true);
 		//}
 
+		//m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
 		pM->SetImageRotateValue(m_fDeSkewAngle);
 		ReSizeIcon();		
 	}
@@ -1161,7 +1177,17 @@ void CImageView::ThreadFaceDataLoad()
 	ExitThread(1);
 }
 
-void CImageView::RotateImage(float fAngle, bool IsRedetect)
+float CImageView::GetImgAngle()
+{
+	if (m_pPhotoImg){
+		return m_pPhotoImg->GetImgAngle();
+	}
+	else{
+		return 0.0f;
+	}
+}
+
+float CImageView::RotateImage(float fAngle, bool IsRedetect)
 {
 	if (m_pPhotoImg){
 		if (IsRedetect){
@@ -1176,7 +1202,7 @@ void CImageView::RotateImage(float fAngle, bool IsRedetect)
 			//}
 
 			
-			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, true);
+			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, true, m_pPhotoImg->GetSrcIplImage());
 			FaceDetection(m_pPhotoImg->GetSrcCopyIplImage());
 
 			//if ((m_fDeSkewAngle > 0.1f) || (m_fDeSkewAngle < 0.1f)){
@@ -1190,10 +1216,11 @@ void CImageView::RotateImage(float fAngle, bool IsRedetect)
 		//	m_pPhotoImg->SetImgDrawAngle(0.0f);
 		}
 		else{
-			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, false);
-		}
-		
+			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, false, m_pPhotoImg->GetSrcIplImage());
+		}		
 	}
+
+	return m_fDeSkewAngle;
 }
 UINT MyThread(LPVOID lpParam)
 {
@@ -1213,4 +1240,21 @@ void CImageView::OnNcDestroy()
 	//	m_CDCPtr->DeleteDC();
 	//	delete m_CDCPtr;
 	//}
+}
+
+
+void CImageView::ChangeBrightness(float _value)
+{
+	if (m_pPhotoImg){
+		m_pPhotoImg->ChangeBrightness(m_pPhotoImg->GetSrcIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
+	}
+
+	
+
+}
+void CImageView::ChangeContrast(float _value)
+{
+	if (m_pPhotoImg){
+		m_pPhotoImg->ChangeConstrast(m_pPhotoImg->GetSrcIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
+	}
 }

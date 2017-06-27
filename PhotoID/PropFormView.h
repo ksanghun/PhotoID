@@ -4,6 +4,8 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
+#include "MySlider.h"
+
 // CPropFormView form view
 
 class CPropFormView : public CFormView
@@ -39,7 +41,7 @@ public:
 	int m_sliderRotate;
 
 
-	CSliderCtrl m_ctrlSliderRotate;
+	CMySlider m_ctrlSliderRotate;
 	int m_preRotateSliderPos;
 
 	afx_msg void OnEnChangeEditRotValue();
@@ -48,6 +50,13 @@ public:
 	CString m_strRotValue;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CEdit m_EditCtrlRotate;
+	afx_msg void OnBnClickedBnAutofit();
+	afx_msg void OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pResult);
+	int m_fBrightNess;
+	int m_fContrast;
+	CSliderCtrl m_SliderBrightness;
+	CSliderCtrl m_SliderContrast;
 };
 
 

@@ -25,6 +25,11 @@ public:
 	void SetPhotoIDimg(CString strPath);
 	void RotateImage(float _fAngle, bool IsRedetect = true);
 
+	void ProcAutoFitImage();
+
+	void ChangeBrightness(float _value);
+	void ChangeContrast(float _value);
+
 // Overrides
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view

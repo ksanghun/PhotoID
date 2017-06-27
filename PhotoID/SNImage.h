@@ -59,11 +59,15 @@ public:
 	void SetSrcIplImage(IplImage* pimg);
 	IplImage* GetSrcIplImage() { return m_pSrcImg; }
 	IplImage* GetSrcCopyIplImage() { return m_pSrcImgCopy; }
+//	IplImage* GetSrcSmallIplImage() { return m_pSrcImgSmall; }
 	void SetGLTexture(IplImage* pimg);
-	void RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot);
+	void RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, IplImage* pImg);
 	void SetImageCenter(POINT3D _cpos) { m_vSrcImgCenter = _cpos; }
 	void SetRotateionAngle(float _fangle); 
 	void SetDetectScale(float _scale) { m_fImgDetectScale = _scale; }
+	float GetImgAngle() { return m_fImgAngle; }
+	float GetImgBrightness() { return m_fSrcBrightness; }
+	float GetImgContraast() { return m_fSrcContrast; }
 
 //	std::vector<_MATCHInfo>* GetMatchResult() { return &m_matched_pos; };
 //	int GetResultSize() { return m_matched_pos.size(); }
@@ -72,6 +76,10 @@ public:
 
 	POINT2D convertImageToScreenSpace(POINT2D pnt, int nWidth, int nHeight, bool IsScaled);
 	POINT2D convertScreenToImageSpace(POINT2D pnt, int nWidth, int nHeight);
+
+	
+	void ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value);
+	void ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value);
 
 
 	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
@@ -119,6 +127,7 @@ private:
 
 	IplImage *m_pSrcImg;
 	IplImage *m_pSrcImgCopy;
+//	IplImage *m_pSrcImgSmall;
 
 
 	float m_fImgDeskewAngle, m_fSrcBrightness, m_fSrcContrast, m_fImgAngle;

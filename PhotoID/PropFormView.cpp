@@ -15,6 +15,8 @@ CPropFormView::CPropFormView()
 	, m_sliderRotate(0)
 
 	, m_strRotValue(_T("0"))
+	, m_fBrightNess(0)
+	, m_fContrast(0)
 {
 	m_preRotateSliderPos = 0;
 }
@@ -34,6 +36,12 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_strRotValue);
 	DDV_MaxChars(pDX, m_strRotValue, 5);
 	DDX_Control(pDX, IDC_EDIT_ROT_VALUE, m_EditCtrlRotate);
+	DDX_Slider(pDX, IDC_SLIDER_BRINGTNESS, m_fBrightNess);
+	DDV_MinMaxInt(pDX, m_fBrightNess, -255, 255);
+	DDX_Slider(pDX, IDC_SLIDER_CONTRAST, m_fContrast);
+	DDV_MinMaxInt(pDX, m_fContrast, -100, 100);
+	DDX_Control(pDX, IDC_SLIDER_BRINGTNESS, m_SliderBrightness);
+	DDX_Control(pDX, IDC_SLIDER_CONTRAST, m_SliderContrast);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -41,6 +49,9 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_EN_CHANGE(IDC_EDIT_ROT_VALUE, &CPropFormView::OnEnChangeEditRotValue)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_ROTATE, &CPropFormView::OnNMCustomdrawSliderRotate)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_ROTATE, &CPropFormView::OnNMReleasedcaptureSliderRotate)
+	ON_BN_CLICKED(IDC_BN_AUTOFIT, &CPropFormView::OnBnClickedBnAutofit)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_BRINGTNESS, &CPropFormView::OnNMReleasedcaptureSliderBringtness)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_CONTRAST, &CPropFormView::OnNMReleasedcaptureSliderContrast)
 END_MESSAGE_MAP()
 
 
@@ -71,8 +82,19 @@ void CPropFormView::OnInitialUpdate()
 	// TODO: Add your specialized code here and/or call the base class
 
 
+	
 	m_ctrlSliderRotate.SetRange(-900, 900, TRUE);
 	m_ctrlSliderRotate.SetPos(0);
+	m_ctrlSliderRotate.SetTicFreq(100);
+
+
+	m_SliderBrightness.SetRange(-250, 250, TRUE);
+	m_SliderBrightness.SetPos(0);
+	m_SliderBrightness.SetTicFreq(25);
+
+	m_SliderContrast.SetRange(-100, 100, TRUE);
+	m_SliderContrast.SetPos(0);
+	m_SliderContrast.SetTicFreq(10);
 	
 	m_ctrlSliderRotate.Invalidate(TRUE);
 
@@ -196,20 +218,20 @@ void CPropFormView::OnNMCustomdrawSliderRotate(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 
 	UpdateData(TRUE);
+	//
+
+
+		if (m_preRotateSliderPos != m_ctrlSliderRotate.GetPos()){
+
+			float fRotate = m_ctrlSliderRotate.GetPos();
+			m_strRotValue.Format(L"%3.1f", fRotate*0.1f);
+	//		pView->RotateImage(fRotate*0.1f, false);
+			UpdateData(FALSE);
+
+			m_preRotateSliderPos = m_ctrlSliderRotate.GetPos();
+
+		}
 	
-	if (m_preRotateSliderPos != m_ctrlSliderRotate.GetPos()){
-
-		float fRotate = m_ctrlSliderRotate.GetPos();
-		m_strRotValue.Format(L"%3.1f", fRotate*0.1f);
-		pView->RotateImage(fRotate*0.1f, false);
-		UpdateData(FALSE);
-
-		m_preRotateSliderPos = m_ctrlSliderRotate.GetPos();
-
-	}
-
-	
-
 
 	*pResult = 0;
 }
@@ -219,13 +241,11 @@ void CPropFormView::OnNMReleasedcaptureSliderRotate(NMHDR *pNMHDR, LRESULT *pRes
 {
 	// TODO: Add your control notification handler code here
 
-	UpdateData(TRUE);
-	float fRotate = m_ctrlSliderRotate.GetPos();
-	m_strRotValue.Format(L"%3.1f", fRotate*0.1f);
-	pView->RotateImage(fRotate*0.1f);
-
-
-	//UpdateData(FALSE);
+	//UpdateData(TRUE);
+	//float fRotate = m_ctrlSliderRotate.GetPos();
+	//m_strRotValue.Format(L"%3.1f", fRotate*0.1f);
+	//pView->RotateImage(fRotate*0.1f);
+	////UpdateData(FALSE);
 
 	*pResult = 0;
 }
@@ -260,4 +280,36 @@ BOOL CPropFormView::PreTranslateMessage(MSG* pMsg)
 
 
 	return CFormView::PreTranslateMessage(pMsg);
+}
+
+
+void CPropFormView::OnBnClickedBnAutofit()
+{
+	// TODO: Add your control notification handler code here
+	pView->ProcAutoFitImage();
+}
+
+
+
+
+void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+
+	pView->ChangeBrightness(m_fBrightNess);
+
+	*pResult = 0;
+}
+
+
+void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	float contrast = m_fContrast*0.01f + 1.0f;
+	pView->ChangeContrast(contrast);
+
+
+	*pResult = 0;
 }

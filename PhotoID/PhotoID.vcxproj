@@ -122,6 +122,7 @@
     <ClInclude Include="ImgList.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="math_tool.h" />
+    <ClInclude Include="MySlider.h" />
     <ClInclude Include="OGLWnd.h" />
     <ClInclude Include="PhotoID.h" />
     <ClInclude Include="PhotoIDDoc.h" />
@@ -144,6 +145,7 @@
     <ClCompile Include="ImgList.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="math_tool.cpp" />
+    <ClCompile Include="MySlider.cpp" />
     <ClCompile Include="OGLWnd.cpp" />
     <ClCompile Include="PhotoID.cpp" />
     <ClCompile Include="PhotoIDDoc.cpp" />

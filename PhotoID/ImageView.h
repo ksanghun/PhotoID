@@ -54,10 +54,14 @@ public:
 
 	void ThreadFaceDataLoad();
 	void SetPhotoIDimg(CString strPath);
-	void RotateImage(float fAngle, bool IsRedetect = true);
+	float RotateImage(float fAngle, bool IsRedetect = true);
+	float GetImgAngle(); 
 
 	//POINT2D convertScreenToImageSpace(POINT2D pnt);
 	//POINT2D convertImageToScreenSpace(POINT2D pnt);
+
+	void ChangeBrightness(float _value);
+	void ChangeContrast(float _value);
 
 private:
 //	CWinThread* g_pl;

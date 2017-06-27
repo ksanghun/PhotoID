@@ -187,3 +187,38 @@ void CPhotoIDView::RotateImage(float _fAngle, bool IsRedetect)
 		m_pImageView->RotateImage(_fAngle, IsRedetect);
 	}
 }
+
+void CPhotoIDView::ProcAutoFitImage()
+{
+	if (m_pImageView){
+		for (int i = 0; i < 5; i++){
+			float deskew = 0.0f;
+			if (i == 2){
+				deskew = m_pImageView->RotateImage(0.1f, true);
+			}
+			else{
+				deskew = m_pImageView->RotateImage(0, true);
+			}
+
+			if ((deskew < 0.1) && (deskew > -0.1f)){
+				break;
+			}
+		}
+	}
+}
+
+void CPhotoIDView::ChangeBrightness(float _value)
+{
+	if (m_pImageView){
+		m_pImageView->ChangeBrightness(_value);
+		
+	}
+
+}
+void CPhotoIDView::ChangeContrast(float _value)
+{
+	if (m_pImageView){
+		m_pImageView->ChangeContrast(_value);
+		
+	}
+}

@@ -27,7 +27,9 @@ CSNImage::CSNImage()
 	m_pSrcImgCopy = NULL;
 
 	glGenTextures(1, &thTexId);
-	m_fImgAngle = m_fSrcBrightness = m_fSrcContrast = 0.0f;
+	m_fImgAngle = 0.0f;
+	m_fSrcBrightness = 0.0f;
+	m_fSrcContrast = 1.0f;
 	m_imgRectSize = 0;
 	m_fImgAngle = 0.0f;
 	m_fImgDrawAngle = 0.0f;
@@ -51,6 +53,9 @@ CSNImage::~CSNImage()
 	if (m_pSrcImgCopy){
 		cvReleaseImage(&m_pSrcImgCopy);
 	}
+	//if (m_pSrcImgSmall){
+	//	cvReleaseImage(&m_pSrcImgSmall);
+	//}
 }
 
 //void CSNImage::SetBgColor(float r, float g, float b)
@@ -66,11 +71,29 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	if (m_pSrcImgCopy){
 		cvReleaseImage(&m_pSrcImgCopy);
 	}
+	//if (m_pSrcImgSmall){
+	//	cvReleaseImage(&m_pSrcImgSmall);
+	//}
 
 	m_pSrcImg = pimg;
+
+	//int w = pimg->width / 2;
+	//int h = pimg->height / 2;
+
+	//m_pSrcImgSmall = cvCreateImage(cvSize(w, h), m_pSrcImg->depth, m_pSrcImg->nChannels);
+	//cvResize(m_pSrcImg, m_pSrcImgSmall);
+
+
 	m_pSrcImgCopy = cvCloneImage(m_pSrcImg);
 
-	m_fImgDeskewAngle = 0;
+	// TEST //
+	//ChangeBrightness(m_pSrcImgCopy, 50);
+	//ChangeConstrast(m_pSrcImgCopy, 0.5f);
+	
+	m_fImgDeskewAngle = 0.0f;
+	m_fImgAngle = 0.0f;
+	m_fSrcBrightness = 0.0f;
+	m_fSrcContrast = 1.0f;
 
 	SetGLTexture(m_pSrcImgCopy);
 }
@@ -255,7 +278,7 @@ void CSNImage::DrawThumbNail(float fAlpha)
 	glPushMatrix();
 	
 	glTranslatef(m_pos.x, m_pos.y, m_pos.z);
-//	glRotatef(-m_fImgDrawAngle, 0, 0, 1);
+	glRotatef(-m_fImgDrawAngle, 0, 0, 1);
 
 	// Background//
 	//glDisable(GL_TEXTURE_2D);
@@ -409,24 +432,26 @@ void CSNImage::SetGLTexture(IplImage* pimg)
 	//======================================================================================//
 }
 
-void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot)
+void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, IplImage* pImg)
 {
-	if (m_pSrcImg){
+	if (pImg){
 
 		//	float fAngleDiff = _fAngle;
 		float fAngleDiff = _fAngle - m_fImgDeskewAngle;
+		
 
-		//m_fImgAngle = _fAngle;
-		//m_fImgDrawAngle = m_fImgAngle;
+		m_fImgDrawAngle = _fAngle;
 		
 		// Rotate Image //
 
 		if (IsRot){
+			m_fImgDrawAngle = 0.0f;
+			m_fImgAngle = fAngleDiff;
 
 			float m[6], mat[9];
 			CvMat M = cvMat(2, 3, CV_32F, m);
-			int w = m_pSrcImg->width;
-			int h = m_pSrcImg->height;
+			int w = pImg->width;
+			int h = pImg->height;
 			float angleRadians = fAngleDiff * ((float)CV_PI / 180.0f);
 			m[0] = (float)(cos(angleRadians));
 			m[1] = (float)(sin(angleRadians));
@@ -457,11 +482,11 @@ void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot)
 			sizeRotated.height = cvRound(h);
 
 			// Rotate
-			IplImage *imageRotated = cvCreateImage(sizeRotated, m_pSrcImg->depth, m_pSrcImg->nChannels);
+			IplImage *imageRotated = cvCreateImage(sizeRotated, pImg->depth, pImg->nChannels);
 
 			// Transform the image
 			//	cvGetQuadrangleSubPix(m_pSrcImg, imageRotated, &M);
-			cvGetQuadrangleSubPix(m_pSrcImg, imageRotated, &M);
+			cvGetQuadrangleSubPix(pImg, imageRotated, &M);
 
 			cvReleaseImage(&m_pSrcImgCopy);
 			m_pSrcImgCopy = imageRotated;
@@ -552,4 +577,37 @@ void CSNImage::SetRotateionAngle(float _fangle)
 { 
 	m_fImgDeskewAngle += _fangle; 
 //	m_fImgAngle += m_fImgDeskewAngle;
+}
+
+void CSNImage::ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value)
+{
+	// brightness first //
+	m_fSrcBrightness = _value;
+
+	CvScalar brVal = cvScalarAll(m_fSrcBrightness);
+	cvAddS(pSrc, brVal, pDst, NULL);
+
+	//// contrast //
+	IplImage *pTempImg = cvCreateImage(cvGetSize(pDst), IPL_DEPTH_8U, pDst->nChannels);
+	cvSet(pTempImg, cvScalarAll(1), NULL);
+	cvMul(pDst, pTempImg, pDst, m_fSrcContrast);
+	cvReleaseImage(&pTempImg);
+
+	SetGLTexture(pDst);
+}
+
+void CSNImage::ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value)
+{
+	CvScalar brVal = cvScalarAll(m_fSrcBrightness);
+	cvAddS(pSrc, brVal, pDst, NULL);
+
+
+	m_fSrcContrast = _value;
+
+	IplImage *pTempImg = cvCreateImage(cvGetSize(pSrc), IPL_DEPTH_8U, pSrc->nChannels);
+	cvSet(pTempImg, cvScalarAll(1), NULL);
+	cvMul(pDst, pTempImg, pDst, m_fSrcContrast);
+	cvReleaseImage(&pTempImg);
+
+	SetGLTexture(pDst);
 }
