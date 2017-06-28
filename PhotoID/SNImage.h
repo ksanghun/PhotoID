@@ -80,6 +80,7 @@ public:
 	
 	void ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value);
 	void ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value);
+	void ChangeRotation(IplImage* pSrc, IplImage* pDst);
 
 
 	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
@@ -134,6 +135,8 @@ private:
 	float m_fImgDrawAngle;
 	POINT3D m_vSrcImgCenter;
 	float m_fImgDetectScale;
+
+	float m_matRot[6];
 
 
 };

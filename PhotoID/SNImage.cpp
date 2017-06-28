@@ -34,6 +34,13 @@ CSNImage::CSNImage()
 	m_fImgAngle = 0.0f;
 	m_fImgDrawAngle = 0.0f;
 
+
+
+
+	
+
+
+
 }
 
 
@@ -94,6 +101,20 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	m_fImgAngle = 0.0f;
 	m_fSrcBrightness = 0.0f;
 	m_fSrcContrast = 1.0f;
+
+
+
+	CvMat M = cvMat(2, 3, CV_32F, m_matRot);
+	int w = pimg->width;
+	int h = pimg->height;
+	float angleRadians = 0.0f;
+	m_matRot[0] = (float)(cos(angleRadians));
+	m_matRot[1] = (float)(sin(angleRadians));
+	m_matRot[3] = -m_matRot[1];
+	m_matRot[4] = m_matRot[0];
+	m_matRot[2] = w*0.5f;
+	m_matRot[5] = h*0.5f;
+
 
 	SetGLTexture(m_pSrcImgCopy);
 }
@@ -448,33 +469,33 @@ void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, I
 			m_fImgDrawAngle = 0.0f;
 			m_fImgAngle = fAngleDiff;
 
-			float m[6], mat[9];
-			CvMat M = cvMat(2, 3, CV_32F, m);
+			//float m[6];// , mat[9];
+			CvMat M = cvMat(2, 3, CV_32F, m_matRot);
 			int w = pImg->width;
 			int h = pImg->height;
 			float angleRadians = fAngleDiff * ((float)CV_PI / 180.0f);
-			m[0] = (float)(cos(angleRadians));
-			m[1] = (float)(sin(angleRadians));
-			m[3] = -m[1];
-			m[4] = m[0];
-			m[2] = w*0.5f;
-			m[5] = h*0.5f;
+			m_matRot[0] = (float)(cos(angleRadians));
+			m_matRot[1] = (float)(sin(angleRadians));
+			m_matRot[3] = -m_matRot[1];
+			m_matRot[4] = m_matRot[0];
+			m_matRot[2] = w*0.5f;
+			m_matRot[5] = h*0.5f;
 
 
 			//===============================//
 			//POINT2D iCenter, sCenter;
 			//mtSetPoint2D(&iCenter, m[2], m[5]);
 			//sCenter = convertImageToScreenSpace(iCenter, nWidth, nHeight, false);
-			mat[0] = (float)(cos(angleRadians));
-			mat[3] = (float)(sin(angleRadians));
-			mat[1] = -m[1];
-			mat[4] = m[0];
-			mat[2] = (float)nImgWidth*0.5f / m_fImgDetectScale;
-			mat[5] = (float)nImgWidth*0.5f / m_fImgDetectScale;
+			//mat[0] = (float)(cos(angleRadians));
+			//mat[3] = (float)(sin(angleRadians));
+			//mat[1] = -m[1];
+			//mat[4] = m[0];
+			//mat[2] = (float)nImgWidth*0.5f / m_fImgDetectScale;
+			//mat[5] = (float)nImgWidth*0.5f / m_fImgDetectScale;
 
-			mat[6] = 0.0f;
-			mat[7] = 0.0f;
-			mat[8] = 1.0f;
+			//mat[6] = 0.0f;
+			//mat[7] = 0.0f;
+			//mat[8] = 1.0f;
 
 			// Make a spare image for the result
 			CvSize sizeRotated;
@@ -491,6 +512,8 @@ void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, I
 			cvReleaseImage(&m_pSrcImgCopy);
 			m_pSrcImgCopy = imageRotated;
 			SetGLTexture(m_pSrcImgCopy);
+
+
 			//	return imageRotated;
 			//===================//
 			//		m_fCurrImgAngle = _fAngle;
@@ -521,7 +544,30 @@ void CSNImage::RestoreGuidePos()
 	}
 }
 
+void CSNImage::ChangeRotation(IplImage* pSrc, IplImage* pDst)
+{
+//	if ((m_fImgAngle > 0.01f) || (m_fImgAngle < 0.01f)){
 
+
+		CvMat M = cvMat(2, 3, CV_32F, m_matRot);
+		int w = pSrc->width;
+		int h = pSrc->height;
+
+		// Make a spare image for the result
+		CvSize sizeRotated;
+		sizeRotated.width = cvRound(w);
+		sizeRotated.height = cvRound(h);
+
+		// Rotate
+		IplImage *imageRotated = cvCreateImage(sizeRotated, pSrc->depth, pSrc->nChannels);
+
+		// Transform the image
+		cvGetQuadrangleSubPix(pSrc, imageRotated, &M);
+
+		cvReleaseImage(&pDst);
+		pDst = imageRotated;
+//	}
+}
 
 
 POINT2D CSNImage::convertScreenToImageSpace(POINT2D pnt, int nWidth, int nHeight)
@@ -581,33 +627,48 @@ void CSNImage::SetRotateionAngle(float _fangle)
 
 void CSNImage::ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value)
 {
-	// brightness first //
-	m_fSrcBrightness = _value;
+	// rotation first //
+//	ChangeRotation(pSrc, pDst);
 
-	CvScalar brVal = cvScalarAll(m_fSrcBrightness);
+	// brightness first //
+	//m_fSrcBrightness = _value;
+
+	float fDiff = _value - m_fSrcBrightness;
+
+	CvScalar brVal = cvScalarAll(fDiff);
 	cvAddS(pSrc, brVal, pDst, NULL);
 
 	//// contrast //
-	IplImage *pTempImg = cvCreateImage(cvGetSize(pDst), IPL_DEPTH_8U, pDst->nChannels);
-	cvSet(pTempImg, cvScalarAll(1), NULL);
-	cvMul(pDst, pTempImg, pDst, m_fSrcContrast);
-	cvReleaseImage(&pTempImg);
+	//IplImage *pTempImg = cvCreateImage(cvGetSize(pDst), IPL_DEPTH_8U, pDst->nChannels);
+	//cvSet(pTempImg, cvScalarAll(1), NULL);
+	//cvMul(pDst, pTempImg, pDst, m_fSrcContrast);
+	//cvReleaseImage(&pTempImg);
+
+	m_fSrcBrightness = _value;
 
 	SetGLTexture(pDst);
 }
 
 void CSNImage::ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value)
 {
+	// rotation first
+	//	ChangeRotation(pSrc, pDst);
+
+
 	CvScalar brVal = cvScalarAll(m_fSrcBrightness);
 	cvAddS(pSrc, brVal, pDst, NULL);
 
+	float diffCont = _value / m_fSrcContrast;
+	
 
-	m_fSrcContrast = _value;
 
 	IplImage *pTempImg = cvCreateImage(cvGetSize(pSrc), IPL_DEPTH_8U, pSrc->nChannels);
 	cvSet(pTempImg, cvScalarAll(1), NULL);
-	cvMul(pDst, pTempImg, pDst, m_fSrcContrast);
+	cvMul(pSrc, pTempImg, pDst, diffCont);
 	cvReleaseImage(&pTempImg);
 
 	SetGLTexture(pDst);
+
+	m_fSrcContrast = _value;
+
 }

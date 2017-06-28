@@ -1246,7 +1246,7 @@ void CImageView::OnNcDestroy()
 void CImageView::ChangeBrightness(float _value)
 {
 	if (m_pPhotoImg){
-		m_pPhotoImg->ChangeBrightness(m_pPhotoImg->GetSrcIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
+		m_pPhotoImg->ChangeBrightness(m_pPhotoImg->GetSrcCopyIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
 	}
 
 	
@@ -1255,6 +1255,6 @@ void CImageView::ChangeBrightness(float _value)
 void CImageView::ChangeContrast(float _value)
 {
 	if (m_pPhotoImg){
-		m_pPhotoImg->ChangeConstrast(m_pPhotoImg->GetSrcIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
+		m_pPhotoImg->ChangeConstrast(m_pPhotoImg->GetSrcCopyIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
 	}
 }
