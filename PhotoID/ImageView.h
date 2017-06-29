@@ -16,12 +16,16 @@
 
 #include "SNImage.h"
 #include "GLHScrollBar.h"
+#include "GuideLine.h"
+
 
 enum _RENDERMODE { _BYGROUP = 0, _BYORDER };
 enum _PICKMODE { _PICK_SELECT=0 };
 //enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _TOP_EYE, _BOTTOM_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN};
 //#define _LNADMARK_POS_NUM 9
 #define SEL_BUFF_SIZE 1024
+
+
 
 class CViewTree;
 
@@ -120,6 +124,9 @@ private:
 	
 	//POINT3D m_guidePos[_LNADMARK_POS_NUM];
 	//POINT3D m_guidePosDraw[_LNADMARK_POS_NUM];
+
+
+	CGuideLine m_guideLine[4];// 0: bottom 1: center: 2: top, 3: vertical center
 
 
 public:

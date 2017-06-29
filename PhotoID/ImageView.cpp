@@ -254,7 +254,7 @@ void CImageView::Render2D()
 	//	pointSize = 4;
 
 
-	glLineWidth(1.0f);
+	
 	glPointSize(3);
 
 	if (m_bIsThreadEnd == false){
@@ -280,8 +280,8 @@ void CImageView::Render2D()
 
 
 
-
-		//glColor3f(0.0f, 1.0f, 0.0f);
+		glLineWidth(2.0f);
+		glColor3f(0.0f, 1.0f, 0.0f);
 		//glBegin(GL_POINTS);
 		//for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
 		//	glVertex3f(m_faceLandmarkDraw[i].x, m_faceLandmarkDraw[i].y, m_faceLandmarkDraw[i].z);
@@ -289,40 +289,50 @@ void CImageView::Render2D()
 		//glEnd();
 
 
+		//glBegin(GL_LINES);
 
-		// Draw Lines //
-		glColor3f(0.0f, 1.0f, 0.0f);
+		glLineStipple(2, 0xAAAA);  
+		glEnable(GL_LINE_STIPPLE);
 		glBegin(GL_LINES);
-		glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
-		glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
 
-		//glVertex3f(0.0f, m_guidePosDraw[_LIP].y, 0.0f);
-		//glVertex3f(m_nWidth, m_guidePosDraw[_LIP].y, 0.0f);
+		//glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
+		//glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
 
-		//glVertex3f(0.0f, m_guidePosDraw[_NOSE].y, 0.0f);
-		//glVertex3f(m_nWidth, m_guidePosDraw[_NOSE].y, 0.0f);
+		////glVertex3f(0.0f, m_guidePosDraw[_LIP].y, 0.0f);
+		////glVertex3f(m_nWidth, m_guidePosDraw[_LIP].y, 0.0f);
 
-		glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
-		glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
+		////glVertex3f(0.0f, m_guidePosDraw[_NOSE].y, 0.0f);
+		////glVertex3f(m_nWidth, m_guidePosDraw[_NOSE].y, 0.0f);
 
-		glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
-		glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
+		//glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
+		//glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
+
+		//glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
+		//glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
+
+
+		for (int i = 0; i < 4; i++){
+			m_guideLine[i].DrawLine();
+		}
+
 
 		glEnd();
 
 
+
+// Image Cross Line ==============================//
 		glColor3f(1.0f, 0.0f, 0.0f);
-		glBegin(GL_LINES);
+		glBegin(GL_LINES);	
 
 		glVertex3f(m_pPhotoImg->m_guidePosDraw[_LEFT_EYE].x, m_pPhotoImg->m_guidePosDraw[_LEFT_EYE].y, 0.0f);
 		glVertex3f(m_pPhotoImg->m_guidePosDraw[_RIGHT_EYE].x, m_pPhotoImg->m_guidePosDraw[_RIGHT_EYE].y, 0.0f);
 
 		glVertex3f(m_pPhotoImg->m_guidePosDraw[_TOP_EYE].x, m_pPhotoImg->m_guidePosDraw[_TOP_EYE].y, 0.0f);
 		glVertex3f(m_pPhotoImg->m_guidePosDraw[_BOTTOM_EYE].x, m_pPhotoImg->m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
-
 		glEnd();
+//==================================================
 
-
+		glDisable(GL_LINE_STIPPLE);
 
 
 		//glPointSize(10);
@@ -334,8 +344,7 @@ void CImageView::Render2D()
 		//glVertex3f(m_pPhotoImg->m_tmpVDraw[0].x, m_pPhotoImg->m_tmpVDraw[0].y, 0.0f);
 
 		//glEnd();
-
-
+//		glPopAttrib();
 		DrawDebugInfo();
 
 
@@ -497,17 +506,29 @@ void CImageView::ReSizeIcon()
 		sPnt.z = 0.0f;
 		m_pPhotoImg->SetPosition(sPnt);
 
-		for (int i = 0; i < m_faceLandmark.size(); i++){
-			m_faceLandmarkDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_faceLandmark[i], m_nWidth, m_nHeight, true);
-		}
+		//for (int i = 0; i < m_faceLandmark.size(); i++){
+		//	m_faceLandmarkDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_faceLandmark[i], m_nWidth, m_nHeight, true);
+		//}
 
-		for (int i = 0; i < _LNADMARK_POS_NUM; i++){
+		for (int i = 0; i < 3; i++){  // from 0 to eye top
 			m_pPhotoImg->m_guidePosDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_guidePos[i], m_nWidth, m_nHeight, true);
 		}
 
+		// Boundary //
 		for (int i = 0; i < 4; i++){
 			m_pPhotoImg->m_tmpVDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_tmpV[i], m_nWidth, m_nHeight, true);
 		}
+
+		// Guide Lines =======================
+		POINT2D tmpV;
+		for (int i = 0; i < 4; i++){
+			tmpV = m_pPhotoImg->convertImageToScreenSpace(m_guideLine[i].GetStartPnt(), m_nWidth, m_nHeight, true);
+			m_guideLine[i].SetDrawStartPnt(tmpV.x, tmpV.y);
+
+			tmpV = m_pPhotoImg->convertImageToScreenSpace(m_guideLine[i].GetEndPnt(), m_nWidth, m_nHeight, true);
+			m_guideLine[i].SetDrawEndPnt(tmpV.x, tmpV.y);
+		}
+
 	}
 
 	m_right = m_left + m_nWidth;
@@ -993,16 +1014,6 @@ bool CImageView::FaceDetection(IplImage* pImg)
 			}
 		}
 
-		//if (m_faceLandmarkDraw != NULL){
-		//	delete[] m_faceLandmarkDraw;
-		//	m_faceLandmarkDraw = NULL;
-		//}
-		//	m_faceLandmarkDraw = new POINT3D[m_faceLandmark.size()];
-
-		//	std::copy(m_faceLandmark.begin(), m_faceLandmark.end(), back_inserter(m_faceLandmarkDraw));
-
-		//	imshow("Detected Face", image);
-
 
 		for (int i = 0; i < _LNADMARK_POS_NUM; i++){
 			mtSetPoint2D(&m_pPhotoImg->m_guidePos[i], 0.0f, 0.0f);
@@ -1011,6 +1022,10 @@ bool CImageView::FaceDetection(IplImage* pImg)
 
 
 		if (m_faceLandmark.size()>67){
+//=================================================================================================
+			m_guideLine[_FACEBOTTOM].SetStartPnt(0.0f, m_faceLandmark[8].y, 0.0f);
+			m_guideLine[_FACEBOTTOM].SetEndPnt(newSizeW, m_faceLandmark[8].y, 0.0f);
+//=================================================================================================
 			m_pPhotoImg->m_guidePos[_CHIN] = m_faceLandmark[8];
 			m_pPhotoImg->m_guidePos[_NOSE] = m_faceLandmark[33];
 			m_pPhotoImg->m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
@@ -1030,19 +1045,31 @@ bool CImageView::FaceDetection(IplImage* pImg)
 			m_pPhotoImg->m_guidePos[_RIGHT_EYE].x = (int)(m_pPhotoImg->m_guidePos[_RIGHT_EYE].x*0.16666f);
 			m_pPhotoImg->m_guidePos[_RIGHT_EYE].y = (int)(m_pPhotoImg->m_guidePos[_RIGHT_EYE].y*0.16666f);
 
-			//m_pPhotoImg->m_guidePos[_RIGHT_EYE].x *= 0.16666f;
-			//m_pPhotoImg->m_guidePos[_RIGHT_EYE].y *= 0.16666f;
 
-
-
+			//===========================================================================
 			m_pPhotoImg->m_guidePos[_EYE_CENTER].x = (m_pPhotoImg->m_guidePos[_LEFT_EYE].x + m_pPhotoImg->m_guidePos[_RIGHT_EYE].x)*0.5f;
-			m_pPhotoImg->m_guidePos[_EYE_CENTER].y = (m_pPhotoImg->m_guidePos[_LEFT_EYE].y + m_pPhotoImg->m_guidePos[_RIGHT_EYE].y)*0.5f;
+			m_pPhotoImg->m_guidePos[_EYE_CENTER].y = (m_pPhotoImg->m_guidePos[_LEFT_EYE].y + m_pPhotoImg->m_guidePos[_RIGHT_EYE].y)*0.5f;			
+			//m_pPhotoImg->m_guidePos[_EYE_CENTER].y = (m_pPhotoImg->m_guidePos[_EYE_CENTER].y + m_pPhotoImg->m_guidePos[_NOSE].y)*0.5f;
+			//==========================================================================
+
+
+//=================================================================================================
+			m_guideLine[_FACECENTER].SetStartPnt(0.0f, m_pPhotoImg->m_guidePos[_EYE_CENTER].y, 0.0f);
+			m_guideLine[_FACECENTER].SetEndPnt(newSizeW, m_pPhotoImg->m_guidePos[_EYE_CENTER].y, 0.0f);
+
+			m_guideLine[_VERTICENTER].SetStartPnt(m_pPhotoImg->m_guidePos[_EYE_CENTER].x, 0.0f, 0.0f);
+			m_guideLine[_VERTICENTER].SetEndPnt(m_pPhotoImg->m_guidePos[_EYE_CENTER].x, newSizeH, 0.0f);
+//=================================================================================================
+
 
 			float facewidth = (m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x);
 			float faceheight = 1.618f * facewidth;
 			m_pPhotoImg->m_guidePos[_TOPHEAD].y = m_pPhotoImg->m_guidePos[_CHIN].y - faceheight;
 
-
+//=================================================================================================
+			m_guideLine[_FACETOP].SetStartPnt(0.0f, m_pPhotoImg->m_guidePos[_TOPHEAD].y, 0.0f);
+			m_guideLine[_FACETOP].SetEndPnt(newSizeW, m_pPhotoImg->m_guidePos[_TOPHEAD].y, 0.0f);
+//=================================================================================================
 			// Find eye guide line=============================================
 			POINT3D eDir;
 			eDir.x = m_pPhotoImg->m_guidePos[_LEFT_EYE].x - m_pPhotoImg->m_guidePos[_RIGHT_EYE].x;

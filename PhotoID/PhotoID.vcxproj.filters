@@ -84,6 +84,9 @@
     <ClInclude Include="MySlider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GuideLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhotoID.cpp">
@@ -141,6 +144,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MySlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GuideLine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

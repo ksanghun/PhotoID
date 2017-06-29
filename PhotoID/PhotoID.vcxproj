@@ -118,6 +118,7 @@
     <ClInclude Include="DockFormView.h" />
     <ClInclude Include="FileView.h" />
     <ClInclude Include="GLHScrollBar.h" />
+    <ClInclude Include="GuideLine.h" />
     <ClInclude Include="ImageView.h" />
     <ClInclude Include="ImgList.h" />
     <ClInclude Include="MainFrm.h" />
@@ -141,6 +142,7 @@
     <ClCompile Include="DockFormView.cpp" />
     <ClCompile Include="FileView.cpp" />
     <ClCompile Include="GLHScrollBar.cpp" />
+    <ClCompile Include="GuideLine.cpp" />
     <ClCompile Include="ImageView.cpp" />
     <ClCompile Include="ImgList.cpp" />
     <ClCompile Include="MainFrm.cpp" />
