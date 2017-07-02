@@ -146,7 +146,7 @@ void CSNImage::SetName(CString _strpath, CString _strpname, CString _strname, un
 void CSNImage::SetSize(unsigned short _w, unsigned short _h, float _size)
 {
 	m_imgRectSize = _size;
-	float fMargin = 0.5f;
+	float fMargin = 0.45f;
 	nWidth = _w;
 	nHeight = _h;
 	fARatio = (float)_w / (float)_h;
@@ -343,13 +343,13 @@ void CSNImage::DrawThumbNail(float fAlpha)
 	// Detected //
 	//if (m_matched_pos.size() > 0 ){
 	//	glColor4f(1.0f, 0.2f, 0.1f, fAlpha);
-		glBegin(GL_LINE_STRIP);		
-		glVertex3f(m_vertex[0].x, m_vertex[0].y, m_vertex[0].z);	
-		glVertex3f(m_vertex[1].x, m_vertex[1].y, m_vertex[1].z);	
-		glVertex3f(m_vertex[2].x, m_vertex[2].y, m_vertex[2].z);	
-		glVertex3f(m_vertex[3].x, m_vertex[3].y, m_vertex[3].z);
-		glVertex3f(m_vertex[0].x, m_vertex[0].y, m_vertex[0].z);
-		glEnd();
+		//glBegin(GL_LINE_STRIP);		
+		//glVertex3f(m_vertex[0].x, m_vertex[0].y, m_vertex[0].z);	
+		//glVertex3f(m_vertex[1].x, m_vertex[1].y, m_vertex[1].z);	
+		//glVertex3f(m_vertex[2].x, m_vertex[2].y, m_vertex[2].z);	
+		//glVertex3f(m_vertex[3].x, m_vertex[3].y, m_vertex[3].z);
+		//glVertex3f(m_vertex[0].x, m_vertex[0].y, m_vertex[0].z);
+		//glEnd();
 
 	//	// Draw detected position //
 	//	glColor4f(1.0f, 0.2f, 0.1f, 0.7f);
@@ -707,12 +707,24 @@ void CSNImage::DrawCroppingArea()
 
 }
 
-//void CSNImage::SetCropArea(int faceTop, int faceBottom)
-//{
-////	float faceLength = m_guidePos[_FACE]
-//
-//
-//	m_rectCrop.set(x1, x2, y1, y2);
-//	m_rectCrop.width = x2 - x1;
-//	m_rectCrop.height = y2 - y1;
-//}
+void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter)
+{
+	float cropHeight = (yFaceBot - yFaceTop) * 2;  // face length X 2
+	float cropWidth = cropHeight*0.7143f;
+	
+
+
+	m_rectCrop.set(xFaceCenter - cropWidth*0.5f, xFaceCenter + cropWidth*0.5f,
+		yFaceCenter - cropHeight*0.5f, yFaceCenter + cropHeight*0.5f);
+	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
+	m_rectCrop.height =  m_rectCrop.y2 - m_rectCrop.y1;
+
+
+
+	mtSetPoint2D(&m_vecInBoundery[0], m_rectCrop.x1, m_rectCrop.y1);
+	mtSetPoint2D(&m_vecInBoundery[1], m_rectCrop.x1, m_rectCrop.y2);
+	mtSetPoint2D(&m_vecInBoundery[2], m_rectCrop.x2, m_rectCrop.y2);
+	mtSetPoint2D(&m_vecInBoundery[3], m_rectCrop.x2, m_rectCrop.y1);
+
+
+}

@@ -54,7 +54,7 @@ public:
 	float GetImgWScale() { return m_imgWScale; };
 	float GetImgHScale() { return m_imgHScale; };
 	POINT3D GetLeftTop() { return m_pntLT; };
-	void SetCropArea(int x1, int x2, int y1, int y2);
+	void SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter);
 
 
 	void ClearMatchResult();
@@ -90,15 +90,8 @@ public:
 
 	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
 	POINT2D m_guidePos[_LNADMARK_POS_NUM];
-//	POINT2D m_guidePosDraw[_LNADMARK_POS_NUM];
-
 	POINT2D m_vecOutBoundery[4];
-//	POINT2D m_vecOutBounderyDraw[4];
-
 	POINT2D m_vecInBoundery[4];
-//	POINT2D m_vecInBounderyDraw[4];
-
-
 	RECT2D m_rectCrop;
 
 private:

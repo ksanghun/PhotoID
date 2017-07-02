@@ -3,7 +3,7 @@
 
 CGuideLine::CGuideLine()
 {
-	mtSetPoint2D(&m_increment, 0, 0);
+//	mtSetPoint2D(&m_increment, 0, 0);
 	mtSetPoint2D(&m_sPnt, 0, 0);
 	mtSetPoint2D(&m_ePnt, 0, 0);
 	mtSetPoint2D(&m_sDPnt, 0, 0);
@@ -40,16 +40,27 @@ void CGuideLine::Init(float _r, float _g, float _b, int _size, int _type)
 
 void CGuideLine::DrawLine()
 {
-	glVertex2f(m_sDPnt.x+m_increment.x, m_sDPnt.y+m_increment.y);
-	glVertex2f(m_eDPnt.x+m_increment.x, m_eDPnt.y+m_increment.y);
+	//glVertex2f(m_sDPnt.x+m_increment.x, m_sDPnt.y+m_increment.y);
+	//glVertex2f(m_eDPnt.x+m_increment.x, m_eDPnt.y+m_increment.y);
+
+	glVertex2f(m_sDPnt.x,  m_sDPnt.y);
+	glVertex2f(m_eDPnt.x,  m_eDPnt.y);
 }
 
-void CGuideLine::DrawButtions()
+POINT2D CGuideLine::GetCurrPos()
+{
+	POINT2D res;
+//	mtSetPoint2D(&res, m_sPnt.x + m_increment.x, m_sPnt.y + m_increment.y);
+	mtSetPoint2D(&res, m_sPnt.x, m_sPnt.y);
+	return res;
+}
+void CGuideLine::DrawButtions(float r, float g, float b)
 {
 	glPushMatrix();
-	glTranslatef(m_sDPnt.x + m_increment.x, m_sDPnt.y + m_increment.y, 0.0f);
+//	glTranslatef(m_sDPnt.x + m_increment.x, m_sDPnt.y + m_increment.y, 0.0f);
+	glTranslatef(m_sDPnt.x, m_sDPnt.y, 0.0f);
 
-	glColor3f(1, 1, 0);
+	glColor3f(r, g, b);
 	glBegin(GL_TRIANGLES);
 
 	glVertex2f(m_vecButton[0].x, m_vecButton[0].y);
@@ -70,4 +81,16 @@ void CGuideLine::DrawButtions()
 
 	glPopMatrix();
 
+}
+
+void CGuideLine::SetIncrement(int _dx, int _dy)
+{
+	//m_increment.x += _dx;
+	//m_increment.y += _dy;
+
+	m_sPnt.x += _dx;
+	m_sPnt.y += _dy;
+
+	m_ePnt.x += _dx;
+	m_ePnt.y += _dy;
 }

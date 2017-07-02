@@ -124,13 +124,16 @@ private:
 	
 
 
-	// Image Guide Line //
+	// Image Guide Line =================================================//
+	void DrawCropArea();
+	void SetCropArea();
+
 	POINT2D m_guidePosDraw[_LNADMARK_POS_NUM];
 	POINT2D m_vecOutBounderyDraw[4];
 	POINT2D m_vecInBounderyDraw[4];
-
-
 	CGuideLine m_guideLine[5];// 0: bottom 1: center: 2: top, 3: vertical center
+	int m_selButtonId;
+	//===================================================================//
 
 
 public:

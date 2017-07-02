@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CPhotoIDView, CView)
 	ON_WM_RBUTTONUP()
 	ON_WM_CREATE()
 	ON_WM_SIZE()
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 // CPhotoIDView construction/destruction
@@ -221,4 +222,16 @@ void CPhotoIDView::ChangeContrast(float _value)
 		m_pImageView->ChangeContrast(_value);
 		
 	}
+}
+
+BOOL CPhotoIDView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: Add your message handler code here and/or call default
+	if (m_pImageView){
+		m_pImageView->MouseWheel(zDelta);
+
+	}
+
+
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }

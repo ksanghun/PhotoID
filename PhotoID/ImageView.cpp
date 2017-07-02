@@ -91,6 +91,7 @@ CImageView::CImageView()
 
 	m_guideLine[3].Init(1.0f, 0.0f, 0.0f, 30, 1);
 
+	m_selButtonId = -1;
 }
 
 
@@ -282,9 +283,7 @@ void CImageView::Render2D()
 
 	if (m_pPhotoImg){
 		m_pPhotoImg->DrawThumbNail(1.0f);
-		m_pPhotoImg->DrawCroppingArea();
-
-
+		DrawCropArea();
 
 
 		glLineWidth(2.0f);
@@ -327,7 +326,12 @@ void CImageView::Render2D()
 		glEnd();
 
 		for (int i = 0; i < 4; i++){
-			m_guideLine[i].DrawButtions();
+			if (i == m_selButtonId){
+				m_guideLine[i].DrawButtions(1.0f, 0.0f, 0.0f);
+			}
+			else{
+				m_guideLine[i].DrawButtions(1.0f, 1.0f, 0.0f);
+			}
 		}
 
 
@@ -476,11 +480,11 @@ void CImageView::MouseWheel(short zDelta)
 {
 	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);	
 
-	m_iconSize += zDelta*0.1f;
-	if (m_iconSize < _MIN_ICON_SIZE)
-		m_iconSize = _MIN_ICON_SIZE;
-	if (m_iconSize > m_nWidth)
-		m_iconSize = m_nWidth;
+	//m_iconSize += zDelta*0.1f;
+	//if (m_iconSize < _MIN_ICON_SIZE)
+	//	m_iconSize = _MIN_ICON_SIZE;
+	//if (m_iconSize > m_nWidth)
+	//	m_iconSize = m_nWidth;
 
 	ReSizeIcon();
 }
@@ -490,12 +494,14 @@ void CImageView::ReSizeIcon()
 {
 	if (m_pPhotoImg){
 
+		// Resize Image?? move this code!!//
 		if (m_nWidth < m_nHeight)
 			m_iconSize = m_nWidth;
 		else
 			m_iconSize = m_nHeight;
+		//==============================//
 
-		m_iconSize *= 0.9f;
+		//m_iconSize *= 0.90f;
 
 		m_pPhotoImg->SetSize(m_pPhotoImg->GetWidth(), m_pPhotoImg->GetHeight(), m_iconSize);
 		POINT3D sPnt;
@@ -528,6 +534,7 @@ void CImageView::ReSizeIcon()
 			m_guideLine[i].SetDrawEndPnt(tmpV.x, tmpV.y);
 		}
 
+		SetCropArea();
 	}
 
 	m_right = m_left + m_nWidth;
@@ -548,7 +555,9 @@ void CImageView::OnSize(UINT nType, int cx, int cy)
 	//m_cx = cx;
 	//m_cy = cy;
 	
+	
 
+	
 
 	m_glHScrollBar.SetSize(cx - 50, 50, cx - 20, cy - 50);
 
@@ -637,8 +646,12 @@ bool CImageView::LoadSNImage(CString strPath, CSNImage* pInfo)
 void CImageView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	if (GetCapture()){
+	if (GetCapture() && (m_selButtonId>-1)){
 		ReleaseCapture();
+
+		m_selButtonId = -1;
+		//ReSizeIcon();
+
 		//m_fMoveSpeed = point.y - m_preMmousedown.y;
 	}
 
@@ -662,7 +675,27 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 	}
 
 	
-	//if (GetCapture()){		
+	if (GetCapture()){		
+		int incre = 0;
+		switch (m_selButtonId){
+		case 0:
+		case 1:
+		case 2:
+
+			incre = point.y - m_mousedown.y;
+			m_guideLine[m_selButtonId].SetIncrement(0,incre);
+
+			break;
+		case 3:
+			incre = point.x - m_mousedown.x;
+			m_guideLine[m_selButtonId].SetIncrement(incre, 0);
+			
+			break;
+		}
+
+		//SetCropArea();
+		ReSizeIcon();
+		m_mousedown = point;
 
 		//m_centerx -= (point.x - m_mousedown.x);
 		//m_centery += (point.y - m_mousedown.y);
@@ -686,8 +719,8 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 		//m_preMmousedown = m_mousedown;
 		//m_mousedown = point;
 
-	//	Render();
-	//}	
+		Render();
+	}	
 
 	COGLWnd::OnMouseMove(nFlags, point);
 }
@@ -781,16 +814,16 @@ void CImageView::OnLButtonDown(UINT nFlags, CPoint point)
 //	m_fMoveSpeed = 0.0f;
 	SetCapture();
 
-	//if (select_object_2d(point.x, point.y, 2, 2, _PICK_SELECT) > 0){
-	//	if (m_pCurrSelImg != NULL){
-	//		m_pCurrSelImg->SetSelecttion(false);
-	//	}
-	//	m_pCurrSelImg = GetSNImageByIndex((int)m_sellBuffer[3]);
-	//	m_pCurrSelImg->SetSelecttion(true);
+	if (select_object_2d(point.x, point.y, 2, 2, _PICK_SELECT) > 0){
+		//if (m_pCurrSelImg != NULL){
+		//	m_pCurrSelImg->SetSelecttion(false);
+		//}
+		//m_pCurrSelImg = GetSNImageByIndex((int)m_sellBuffer[3]);
+		//m_pCurrSelImg->SetSelecttion(true);
 
-	//	//m_centerx = m_pCurrSelImg->GetPos().x;
-	//	//m_centery = m_pCurrSelImg->GetPos().y;
-	//}
+		//m_centerx = m_pCurrSelImg->GetPos().x;
+		//m_centery = m_pCurrSelImg->GetPos().y;
+	}
 
 	//PrepareRender();
 	//Render();
@@ -802,6 +835,7 @@ void CImageView::OnLButtonDown(UINT nFlags, CPoint point)
 
 int CImageView::select_object_2d(int x, int y, int rect_width, int rect_height, _PICKMODE _mode)
 {
+	m_selButtonId = -1;
 	GLuint selectBuff[1024];
 	memset(&selectBuff, 0, sizeof(GLuint) * SEL_BUFF_SIZE);
 
@@ -845,12 +879,19 @@ int CImageView::select_object_2d(int x, int y, int rect_width, int rect_height, 
 	//	glPopName();
 	//}
 
+	
+	for (int i = 0; i < 4; i++){
+		glPushName(i + 1000);
+		m_guideLine[i].DrawButtions(1.0f, 1.0f, 1.0f);
+		glPopName();
+	}
+
 	hits = glRenderMode(GL_RENDER);
-	//if (hits>0)
-	//{
-	//	process_select(selectBuff, hits, selmode);
-	//	int a = 0;
-	//}
+	if (hits>0)
+	{
+		int selid = (int)selectBuff[3];
+		m_selButtonId = selid - 1000;
+	}
 	//else
 	//{
 	//	if (selmode == 1)
@@ -966,7 +1007,7 @@ bool CImageView::FaceDetection(IplImage* pImg)
 {
 	Mat oimage, image;
 	oimage = cvarrToMat(pImg);
-	m_fImgDetectScale = (float)oimage.cols / 350.0f;
+	m_fImgDetectScale = (float)oimage.cols / 400.0f;
 	if (m_fImgDetectScale < 1.0f)
 		m_fImgDetectScale = 1.0f;
 
@@ -1067,7 +1108,7 @@ bool CImageView::FaceDetection(IplImage* pImg)
 
 
 			float facewidth = (m_faceLandmarkDraw[16].x - m_faceLandmarkDraw[0].x);
-			float faceheight = 1.618f * facewidth;
+			float faceheight = 1.65f * facewidth;
 			m_pPhotoImg->m_guidePos[_TOPHEAD].y = m_pPhotoImg->m_guidePos[_CHIN].y - faceheight;
 
 //=================================================================================================
@@ -1118,6 +1159,8 @@ bool CImageView::FaceDetection(IplImage* pImg)
 			//=================================================================
 		}
 
+		
+		SetCropArea();
 		m_pPhotoImg->RestoreGuidePos();
 	}
 
@@ -1133,6 +1176,19 @@ bool CImageView::FaceDetection(IplImage* pImg)
 	
 //	ReSizeIcon();
 	return true;
+}
+
+void CImageView::SetCropArea()
+{
+	// 0: bottom, 1: eye, 2: top, 3: vcenter ;;
+	float fTop = m_guideLine[2].GetCurrPos().y;
+	float fBot = m_guideLine[0].GetCurrPos().y;
+
+	float nPos = m_pPhotoImg->m_guidePos[_NOSE].y;
+	float fCenterY = (m_guideLine[1].GetCurrPos().y + nPos)*0.5f;
+	float fCenterX = m_guideLine[3].GetCurrPos().x;
+
+	m_pPhotoImg->SetCropArea(fTop, fBot, fCenterX, fCenterY);
 }
 
 //POINT2D CImageView::convertScreenToImageSpace(POINT2D pnt)
@@ -1288,4 +1344,54 @@ void CImageView::ChangeContrast(float _value)
 	if (m_pPhotoImg){
 		m_pPhotoImg->ChangeConstrast(m_pPhotoImg->GetSrcCopyIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
 	}
+}
+
+void CImageView::DrawCropArea()
+{
+		glEnable(GL_DEPTH_TEST);
+		glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
+		glBegin(GL_QUADS);
+		// inner //
+		glVertex3f(m_vecInBounderyDraw[0].x, m_vecInBounderyDraw[0].y, 1.0f);
+		glVertex3f(m_vecInBounderyDraw[1].x, m_vecInBounderyDraw[1].y, 1.0f);
+		glVertex3f(m_vecInBounderyDraw[2].x, m_vecInBounderyDraw[2].y, 1.0f);
+		glVertex3f(m_vecInBounderyDraw[3].x, m_vecInBounderyDraw[3].y, 1.0f);		
+		glEnd();
+
+
+		glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+		glBegin(GL_QUADS);
+		//// outter //
+		glVertex3f(m_vecOutBounderyDraw[3].x, m_vecOutBounderyDraw[3].y, 0.5f);
+		glVertex3f(m_vecOutBounderyDraw[2].x, m_vecOutBounderyDraw[2].y, 0.5f);
+		glVertex3f(m_vecOutBounderyDraw[1].x, m_vecOutBounderyDraw[1].y, 0.5f);
+		glVertex3f(m_vecOutBounderyDraw[0].x, m_vecOutBounderyDraw[0].y, 0.5f);	
+
+		glEnd();
+
+		glDisable(GL_DEPTH_TEST);
+
+
+
+		glColor4f(0.0f, 0.0f, 0.0f, 0.9f);
+		glBegin(GL_LINE_STRIP);
+		// inner //
+		glVertex3f(m_vecInBounderyDraw[0].x, m_vecInBounderyDraw[0].y, 1.0f);
+		glVertex3f(m_vecInBounderyDraw[1].x, m_vecInBounderyDraw[1].y, 1.0f);
+		glVertex3f(m_vecInBounderyDraw[2].x, m_vecInBounderyDraw[2].y, 1.0f);
+		glVertex3f(m_vecInBounderyDraw[3].x, m_vecInBounderyDraw[3].y, 1.0f);
+		glVertex3f(m_vecInBounderyDraw[0].x, m_vecInBounderyDraw[0].y, 1.0f);
+		glEnd();
+
+
+		
+		glBegin(GL_LINE_STRIP);
+		//// outter //
+		glVertex3f(m_vecOutBounderyDraw[3].x, m_vecOutBounderyDraw[3].y, 0.5f);
+		glVertex3f(m_vecOutBounderyDraw[2].x, m_vecOutBounderyDraw[2].y, 0.5f);
+		glVertex3f(m_vecOutBounderyDraw[1].x, m_vecOutBounderyDraw[1].y, 0.5f);
+		glVertex3f(m_vecOutBounderyDraw[0].x, m_vecOutBounderyDraw[0].y, 0.5f);
+		glVertex3f(m_vecOutBounderyDraw[3].x, m_vecOutBounderyDraw[3].y, 0.5f);
+
+		glEnd();
 }
