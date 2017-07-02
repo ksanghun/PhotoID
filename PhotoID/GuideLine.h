@@ -20,11 +20,16 @@ public:
 	void SetDrawEndPnt(float _x, float _y) { m_eDPnt.x = _x, m_eDPnt.y = _y; }
 
 	void DrawLine();
+	void DrawButtions();
+	void Init(float _r, float _g, float _b, int _size, int _type);
 
 private:
 	POINT2D m_sPnt, m_ePnt;
 	POINT2D m_sDPnt, m_eDPnt;
 	POINT2D m_increment;
+
+	POINT3D m_color;
+	POINT2D m_vecButton[4];
 
 };
 

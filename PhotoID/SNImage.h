@@ -7,7 +7,7 @@
 
 #include "math_tool.h"
 
-enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _TOP_EYE, _BOTTOM_EYE, _LIP, _NOSE, _TOPHEAD, _CHIN };
+enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _FCENTER, _TOP_EYE, _BOTTOM_EYE, _NOSE, _TOPHEAD, _CHIN };
 #define _LNADMARK_POS_NUM 9
 class CSNImage
 {
@@ -26,10 +26,14 @@ public:
 	void SetImgDrawAngle(float _angle) { m_fImgDrawAngle = _angle; }
 //	void SetBgColor(float r, float g, float b);
 
+	void SetBoundary(int _width, int _height);
+	void SetInBoundary(int _width, int _height);
+
 	void DrawThumbNail(float fAlpha);
 	void DrawForPicking();
 	void DrawImage(float fAlpha);
 	void DrawBMPText();
+	void DrawCroppingArea();
 
 	bool AddMatchedPoint(_MATCHInfo info, int search_size);
 
@@ -50,6 +54,7 @@ public:
 	float GetImgWScale() { return m_imgWScale; };
 	float GetImgHScale() { return m_imgHScale; };
 	POINT3D GetLeftTop() { return m_pntLT; };
+	void SetCropArea(int x1, int x2, int y1, int y2);
 
 
 	void ClearMatchResult();
@@ -85,10 +90,16 @@ public:
 
 	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
 	POINT2D m_guidePos[_LNADMARK_POS_NUM];
-	POINT2D m_guidePosDraw[_LNADMARK_POS_NUM];
+//	POINT2D m_guidePosDraw[_LNADMARK_POS_NUM];
 
-	POINT2D m_tmpV[4];
-	POINT2D m_tmpVDraw[4];
+	POINT2D m_vecOutBoundery[4];
+//	POINT2D m_vecOutBounderyDraw[4];
+
+	POINT2D m_vecInBoundery[4];
+//	POINT2D m_vecInBounderyDraw[4];
+
+
+	RECT2D m_rectCrop;
 
 private:
 	CString strPath;

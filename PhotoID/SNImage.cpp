@@ -379,28 +379,11 @@ void CSNImage::DrawThumbNail(float fAlpha)
 	//glVertex3f(m_drawWidth*0.5f, m_guidePos[_TOPHEAD].y, 0.0f);
 
 	//glEnd();
-	//
-
-
-	//glColor3f(1.0f, 0.0f, 0.0f);
-	//glBegin(GL_LINES);
-
-	//glVertex3f(m_guidePos[_LEFT_EYE].x, m_guidePos[_LEFT_EYE].y, 0.0f);
-	//glVertex3f(m_guidePos[_RIGHT_EYE].x, m_guidePos[_RIGHT_EYE].y, 0.0f);
-
-	//glVertex3f(m_guidePos[_TOP_EYE].x, m_guidePos[_TOP_EYE].y, 0.0f);
-	//glVertex3f(m_guidePos[_BOTTOM_EYE].x, m_guidePos[_BOTTOM_EYE].y, 0.0f);
-
-	//glEnd();
-
-//	glPopMatrix();
-
-
-
-
-
-
+	//		
 	glPopMatrix();
+
+
+
 
 }
 
@@ -672,3 +655,64 @@ void CSNImage::ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value)
 	m_fSrcContrast = _value;
 
 }
+
+void CSNImage::SetBoundary(int _width, int _height)
+{
+	mtSetPoint2D(&m_vecOutBoundery[0], 0, 0);
+	mtSetPoint2D(&m_vecOutBoundery[1], _width, 0);
+	mtSetPoint2D(&m_vecOutBoundery[2], _width, _height);
+	mtSetPoint2D(&m_vecOutBoundery[3], 0, _height);
+
+	SetInBoundary(_width, _height);
+}
+
+void CSNImage::SetInBoundary(int _width, int _height)
+{
+	int xOffst = 50;
+	int yOffset = 50;
+	int w = _width*0.5f;
+	int h = _height*0.5f;
+
+	mtSetPoint2D(&m_vecInBoundery[0], xOffst, yOffset);
+	mtSetPoint2D(&m_vecInBoundery[1], w, yOffset);
+	mtSetPoint2D(&m_vecInBoundery[2], w, h);
+	mtSetPoint2D(&m_vecInBoundery[3], xOffst, h);
+
+}
+
+void CSNImage::DrawCroppingArea()
+{
+	//glEnable(GL_DEPTH_TEST);
+	//glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
+	//glBegin(GL_QUADS);
+	//// inner //
+	//glVertex3f(m_vecInBounderyDraw[3].x, m_vecInBounderyDraw[3].y, 1.0f);
+	//glVertex3f(m_vecInBounderyDraw[2].x, m_vecInBounderyDraw[2].y, 1.0f);
+	//glVertex3f(m_vecInBounderyDraw[1].x, m_vecInBounderyDraw[1].y, 1.0f);
+	//glVertex3f(m_vecInBounderyDraw[0].x, m_vecInBounderyDraw[0].y, 1.0f);
+	//glEnd();
+
+
+	//glColor4f(0.0f, 0.0f, 0.0f, 0.3f);
+	//glBegin(GL_QUADS);
+	////// outter //
+	//glVertex3f(m_vecOutBounderyDraw[3].x, m_vecOutBounderyDraw[3].y, 0.5f);
+	//glVertex3f(m_vecOutBounderyDraw[2].x, m_vecOutBounderyDraw[2].y, 0.5f);
+	//glVertex3f(m_vecOutBounderyDraw[1].x, m_vecOutBounderyDraw[1].y, 0.5f);
+	//glVertex3f(m_vecOutBounderyDraw[0].x, m_vecOutBounderyDraw[0].y, 0.5f);	
+
+	//glEnd();
+
+	//glDisable(GL_DEPTH_TEST);
+
+}
+
+//void CSNImage::SetCropArea(int faceTop, int faceBottom)
+//{
+////	float faceLength = m_guidePos[_FACE]
+//
+//
+//	m_rectCrop.set(x1, x2, y1, y2);
+//	m_rectCrop.width = x2 - x1;
+//	m_rectCrop.height = y2 - y1;
+//}

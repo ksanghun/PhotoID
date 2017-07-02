@@ -85,6 +85,12 @@ CImageView::CImageView()
 
 //	m_faceLandmarkDraw = NULL;
 
+	m_guideLine[0].Init(0.0f, 1.0f, 0.0f, 30, 0);
+	m_guideLine[1].Init(0.0f, 1.0f, 0.0f, 30, 0);
+	m_guideLine[2].Init(0.0f, 1.0f, 0.0f, 30, 0);
+
+	m_guideLine[3].Init(1.0f, 0.0f, 0.0f, 30, 1);
+
 }
 
 
@@ -255,7 +261,7 @@ void CImageView::Render2D()
 
 
 	
-	glPointSize(3);
+	glPointSize(5);
 
 	if (m_bIsThreadEnd == false){
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
@@ -276,6 +282,7 @@ void CImageView::Render2D()
 
 	if (m_pPhotoImg){
 		m_pPhotoImg->DrawThumbNail(1.0f);
+		m_pPhotoImg->DrawCroppingArea();
 
 
 
@@ -294,45 +301,35 @@ void CImageView::Render2D()
 		glLineStipple(2, 0xAAAA);  
 		glEnable(GL_LINE_STIPPLE);
 		glBegin(GL_LINES);
-
-		//glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
-		//glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_CHIN].y, 0.0f);
-
-		////glVertex3f(0.0f, m_guidePosDraw[_LIP].y, 0.0f);
-		////glVertex3f(m_nWidth, m_guidePosDraw[_LIP].y, 0.0f);
-
-		////glVertex3f(0.0f, m_guidePosDraw[_NOSE].y, 0.0f);
-		////glVertex3f(m_nWidth, m_guidePosDraw[_NOSE].y, 0.0f);
-
-		//glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
-		//glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_EYE_CENTER].y, 0.0f);
-
-		//glVertex3f(0.0f, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
-		//glVertex3f(m_nWidth, m_pPhotoImg->m_guidePosDraw[_TOPHEAD].y, 0.0f);
-
-
 		for (int i = 0; i < 4; i++){
-			m_guideLine[i].DrawLine();
+			m_guideLine[i].DrawLine();			
 		}
-
-
 		glEnd();
 
-
-
-// Image Cross Line ==============================//
+		// Image Cross Line ==============================//
 		glColor3f(1.0f, 0.0f, 0.0f);
 		glBegin(GL_LINES);	
 
-		glVertex3f(m_pPhotoImg->m_guidePosDraw[_LEFT_EYE].x, m_pPhotoImg->m_guidePosDraw[_LEFT_EYE].y, 0.0f);
-		glVertex3f(m_pPhotoImg->m_guidePosDraw[_RIGHT_EYE].x, m_pPhotoImg->m_guidePosDraw[_RIGHT_EYE].y, 0.0f);
+		glVertex3f(m_guidePosDraw[_LEFT_EYE].x, m_guidePosDraw[_LEFT_EYE].y, 0.0f);
+		glVertex3f(m_guidePosDraw[_RIGHT_EYE].x, m_guidePosDraw[_RIGHT_EYE].y, 0.0f);
 
-		glVertex3f(m_pPhotoImg->m_guidePosDraw[_TOP_EYE].x, m_pPhotoImg->m_guidePosDraw[_TOP_EYE].y, 0.0f);
-		glVertex3f(m_pPhotoImg->m_guidePosDraw[_BOTTOM_EYE].x, m_pPhotoImg->m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
+		glVertex3f(m_guidePosDraw[_TOP_EYE].x, m_guidePosDraw[_TOP_EYE].y, 0.0f);
+		glVertex3f(m_guidePosDraw[_BOTTOM_EYE].x, m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
 		glEnd();
 //==================================================
 
 		glDisable(GL_LINE_STIPPLE);
+		glLineWidth(1.0f);
+
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glBegin(GL_POINTS);
+		glVertex3f(m_guidePosDraw[_FCENTER].x, m_guidePosDraw[_FCENTER].y, 0.0f);
+		glEnd();
+
+		for (int i = 0; i < 4; i++){
+			m_guideLine[i].DrawButtions();
+		}
+
 
 
 		//glPointSize(10);
@@ -350,7 +347,7 @@ void CImageView::Render2D()
 
 
 
-		glLineWidth(1.0f);
+		
 		glPointSize(1.0f);
 	}
 }
@@ -466,6 +463,7 @@ void CImageView::SetPhotoIDimg(CString strPath)
 		//}
 
 		//m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+		
 		pM->SetImageRotateValue(m_fDeSkewAngle);
 		ReSizeIcon();		
 	}
@@ -510,13 +508,14 @@ void CImageView::ReSizeIcon()
 		//	m_faceLandmarkDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_faceLandmark[i], m_nWidth, m_nHeight, true);
 		//}
 
-		for (int i = 0; i < 3; i++){  // from 0 to eye top
-			m_pPhotoImg->m_guidePosDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_guidePos[i], m_nWidth, m_nHeight, true);
+		for (int i = 0; i < 4; i++){  // from 0 to eye top
+			m_guidePosDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_guidePos[i], m_nWidth, m_nHeight, true);
 		}
 
 		// Boundary //
 		for (int i = 0; i < 4; i++){
-			m_pPhotoImg->m_tmpVDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_tmpV[i], m_nWidth, m_nHeight, true);
+			m_vecOutBounderyDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_vecOutBoundery[i], m_nWidth, m_nHeight, true);
+			m_vecInBounderyDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_vecInBoundery[i], m_nWidth, m_nHeight, true);
 		}
 
 		// Guide Lines =======================
@@ -980,11 +979,13 @@ bool CImageView::FaceDetection(IplImage* pImg)
 	if (m_pPhotoImg->GetSrcIplImage()){
 
 
-		mtSetPoint2D(&m_pPhotoImg->m_tmpV[0], 0, 0);
-		mtSetPoint2D(&m_pPhotoImg->m_tmpV[1], newSizeW, 0);
-		mtSetPoint2D(&m_pPhotoImg->m_tmpV[2], newSizeW, newSizeH);
-		mtSetPoint2D(&m_pPhotoImg->m_tmpV[3], 0, newSizeH);
+		m_pPhotoImg->SetBoundary(newSizeW, newSizeH);
+		//mtSetPoint2D(&m_pPhotoImg->m_tmpV[0], 0, 0);
+		//mtSetPoint2D(&m_pPhotoImg->m_tmpV[1], newSizeW, 0);
+		//mtSetPoint2D(&m_pPhotoImg->m_tmpV[2], newSizeW, newSizeH);
+		//mtSetPoint2D(&m_pPhotoImg->m_tmpV[3], 0, newSizeH);
 
+		m_pPhotoImg->SetBoundary(newSizeW, newSizeH);
 
 		m_pPhotoImg->SetDetectScale(m_fImgDetectScale);
 
@@ -1028,7 +1029,7 @@ bool CImageView::FaceDetection(IplImage* pImg)
 //=================================================================================================
 			m_pPhotoImg->m_guidePos[_CHIN] = m_faceLandmark[8];
 			m_pPhotoImg->m_guidePos[_NOSE] = m_faceLandmark[33];
-			m_pPhotoImg->m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
+		//	m_pPhotoImg->m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
 
 			for (int i = 36; i < 42; i++){
 				m_pPhotoImg->m_guidePos[_LEFT_EYE].x += m_faceLandmark[i].x;
@@ -1052,6 +1053,9 @@ bool CImageView::FaceDetection(IplImage* pImg)
 			//m_pPhotoImg->m_guidePos[_EYE_CENTER].y = (m_pPhotoImg->m_guidePos[_EYE_CENTER].y + m_pPhotoImg->m_guidePos[_NOSE].y)*0.5f;
 			//==========================================================================
 
+
+			m_pPhotoImg->m_guidePos[_FCENTER] = m_pPhotoImg->m_guidePos[_EYE_CENTER];
+			m_pPhotoImg->m_guidePos[_FCENTER].y = (m_pPhotoImg->m_guidePos[_EYE_CENTER].y + m_pPhotoImg->m_guidePos[_NOSE].y)*0.5f;
 
 //=================================================================================================
 			m_guideLine[_FACECENTER].SetStartPnt(0.0f, m_pPhotoImg->m_guidePos[_EYE_CENTER].y, 0.0f);
