@@ -168,8 +168,8 @@ void CSNImage::SetSize(unsigned short _w, unsigned short _h, float _size)
 	}
 
 
-	m_fXScale = w*2.0f / (float)nImgWidth;
-	m_fYScale = h*2.0f / (float)nImgHeight;
+	//m_fXScale = w*2.0f / (float)nImgWidth;
+	//m_fYScale = h*2.0f / (float)nImgHeight;
 
 	mtSetPoint3D(&m_vertex[0], -w, -h, 0.0f);		mtSetPoint2D(&m_texcoord[0], 0.0f, 1.0f);
 	mtSetPoint3D(&m_vertex[1], w, -h, 0.0f);		mtSetPoint2D(&m_texcoord[1], 1.0f, 1.0f);
@@ -191,6 +191,12 @@ void CSNImage::SetSize(unsigned short _w, unsigned short _h, float _size)
 	m_pntLT.x = w;
 	m_pntLT.y = h;
 	m_pntLT.z = 0;
+
+
+	//m_fXScale = (float)GetImgWidth() / (GetLeftTop().x * 2);
+	//m_fYScale = (float)GetImgHeight() / (GetLeftTop().y * 2);
+
+
 
 //	MakeGuideDrawPos();
 }

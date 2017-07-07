@@ -78,6 +78,9 @@ void CPhotoIDView::OnFilePrintPreview()
 #ifndef SHARED_HANDLERS
 	AFXPrintPreview(this);
 #endif
+
+//	CPrintDialog dlg(TRUE, PD_RETURNDEFAULT);
+//	dlg.DoModal();
 }
 
 BOOL CPhotoIDView::OnPreparePrinting(CPrintInfo* pInfo)
@@ -89,11 +92,16 @@ BOOL CPhotoIDView::OnPreparePrinting(CPrintInfo* pInfo)
 void CPhotoIDView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
 	// TODO: add extra initialization before printing
+//	CPhotoIDDoc* pDoc = GetDocument();
+//	CMainFrame * mf_ptr = (CMainFrame *)AfxGetMainWnd();
+//	CString doc_title = pDoc->GetTitle();
+//	lcp.OnBeginPrinting(pDC, pInfo, doc_title, mf_ptr->fdc.date);
 }
 
 void CPhotoIDView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
 	// TODO: add cleanup after printing
+//	int j;
 }
 
 void CPhotoIDView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -234,4 +242,157 @@ BOOL CPhotoIDView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
 
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+
+void CPhotoIDView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	CView::OnPrint(pDC, pInfo);
+}
+
+void CPhotoIDView::PrintBitmap(LPCTSTR filename) 
+{
+	CPrintDialog printDlg(FALSE);
+	//printDlg.GetDefaults();
+	// Or get from user:
+	 if (printDlg.DoModal() == IDCANCEL)   
+	        return; 
+	CDC dc;
+	if (!dc.Attach(printDlg.GetPrinterDC())) {
+		AfxMessageBox(_T("No printer found!")); return;
+	}
+
+	dc.m_bPrinting = TRUE;
+	DOCINFO di;
+	// Initialise print document details
+	::ZeroMemory(&di, sizeof(DOCINFO));
+	di.cbSize = sizeof(DOCINFO);
+	di.lpszDocName = filename;
+	BOOL bPrintingOK = dc.StartDoc(&di); // Begin a new print job 
+	// Get the printing extents
+	// and store in the m_rectDraw field of a 
+	// CPrintInfo object
+	CPrintInfo Info;
+	Info.SetMaxPage(1); // just one page 
+	int maxw = dc.GetDeviceCaps(HORZRES);
+	int maxh = dc.GetDeviceCaps(VERTRES);
+	Info.m_rectDraw.SetRect(0, 0, maxw, maxh);
+	for (UINT page = Info.GetMinPage(); page <=
+		Info.GetMaxPage() && bPrintingOK; page++) {
+		dc.StartPage();    // begin new page
+		Info.m_nCurPage = page;
+		CBitmap bitmap;
+		// LoadImage does the trick here, it creates a DIB section
+		// You can also use a resource here
+		// by using MAKEINTRESOURCE() ... etc. 
+		//if (!bitmap.Attach(::LoadImage(
+		//	::GetModuleHandle(NULL), filename, IMAGE_BITMAP, 0, 0,
+		//	LR_LOADFROMFILE | LR_CREATEDIBSECTION | LR_DEFAULTSIZE))) {
+		//	AfxMessageBox(_T("Error loading bitmap!")); return;
+		//}
+		GetCBitmapFromIpl(bitmap, m_pImageView->GetCropPhoto());
+
+
+
+		BITMAP bm;
+		bitmap.GetBitmap(&bm);
+		int w = bm.bmWidth;
+		int h = bm.bmHeight;
+		// create memory device context
+		CDC memDC;
+		memDC.CreateCompatibleDC(&dc);
+		CBitmap *pBmp = memDC.SelectObject(&bitmap);
+		memDC.SetMapMode(dc.GetMapMode());
+		dc.SetStretchBltMode(HALFTONE);
+		// now stretchblt to maximum width on page
+		dc.StretchBlt(0, 0, w, h, &memDC, 0, 0, w, h, SRCCOPY);
+		// clean up
+		memDC.SelectObject(pBmp);
+		bPrintingOK = (dc.EndPage() > 0);   // end page
+	}
+	if (bPrintingOK)
+		dc.EndDoc(); // end a print job
+	else dc.AbortDoc();           // abort job. 
+}
+
+bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img)
+{
+//	IplImage* tmp = cvLoadImage((CStringA)strFile);
+
+	if (img){
+	//	IplImage *img = cvCreateImage(cvSize(32, 32), tmp->depth, tmp->nChannels);
+	//	cvResize(tmp, img);
+
+
+		CDC dc;
+		CDC memDC;
+
+		//CBitmap* newBmp = new CBitmap;
+		CBitmap* pOldBmp;
+
+		if (!dc.CreateDC(_T("DISPLAY"), NULL, NULL, NULL))
+			return NULL;
+
+		if (!memDC.CreateCompatibleDC(&dc))
+			return NULL;
+
+		int w, h;
+		int nWidth = img->width;
+		int nHeight = img->height;
+		BYTE* pSrcBits = (BYTE *)img->imageData;
+		BYTE* pBmpBits = (BYTE *)malloc(sizeof(BYTE)*nWidth*nHeight * 4);
+
+
+		// IplImage에 저장된 값을 직접 읽어서 
+		// 비트맵 데이터를 만듬 
+		BYTE r, g, b;
+		for (h = 0; h < nHeight; ++h)
+		{
+			BYTE* pSrc = pSrcBits + img->widthStep * h;
+			BYTE* pDst = pBmpBits + nWidth * 4 * h;
+			for (w = 0; w < nWidth; ++w)
+			{
+				r = *(pSrc++);
+				g = *(pSrc++);
+				b = *(pSrc++);
+
+				
+				*(pDst++) = b;
+				*(pDst++) = g;
+				*(pDst++) = r;
+				*(pDst++) = 0;
+				
+
+
+				//*(pDst++) = *(pSrc++);
+				//*(pDst++) = *(pSrc++);
+				//*(pDst++) = *(pSrc++);
+				//*(pDst++) = 0;
+			}
+		}
+		//		memDC.CreateCompatibleDC(pDC);
+		bmp.CreateCompatibleBitmap(&dc, nWidth, nHeight);
+		// 위에서 만들어진 데이터를 가지고 
+		// 비트맵을 만듬 
+		bmp.SetBitmapBits(nWidth*nHeight * 4, pBmpBits);
+		pOldBmp = memDC.SelectObject(&bmp);
+
+
+		memDC.SelectObject(pOldBmp);
+		memDC.DeleteDC();
+		dc.DeleteDC();
+
+	//	cvReleaseImage(&img);
+	//	cvReleaseImage(&tmp);
+
+
+		return true;
+	}
+	else{
+		return false;
+	}
+
+
 }

@@ -57,6 +57,7 @@ public:
 	int m_fContrast;
 	CSliderCtrl m_SliderBrightness;
 	CSliderCtrl m_SliderContrast;
+	afx_msg void OnBnClickedBnPrint();
 };
 
 

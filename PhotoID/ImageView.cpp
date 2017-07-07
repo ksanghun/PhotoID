@@ -85,12 +85,7 @@ CImageView::CImageView()
 
 //	m_faceLandmarkDraw = NULL;
 
-	m_guideLine[0].Init(0.0f, 1.0f, 0.0f, 30, 0);
-	m_guideLine[1].Init(0.0f, 1.0f, 0.0f, 30, 0);
-	m_guideLine[2].Init(0.0f, 1.0f, 0.0f, 30, 0);
-
-	m_guideLine[3].Init(1.0f, 0.0f, 0.0f, 30, 1);
-
+	
 	m_selButtonId = -1;
 }
 
@@ -325,14 +320,17 @@ void CImageView::Render2D()
 		glVertex3f(m_guidePosDraw[_FCENTER].x, m_guidePosDraw[_FCENTER].y, 0.0f);
 		glEnd();
 
+
+		glEnable(GL_TEXTURE_2D);
 		for (int i = 0; i < 4; i++){
 			if (i == m_selButtonId){
-				m_guideLine[i].DrawButtions(1.0f, 0.0f, 0.0f);
+				m_guideLine[i].DrawButtions(0.99f, 0.99f, 0.99f);
 			}
 			else{
-				m_guideLine[i].DrawButtions(1.0f, 1.0f, 0.0f);
+				m_guideLine[i].DrawButtions(0.8f, 0.8f, 0.8f);
 			}
 		}
+		glDisable(GL_TEXTURE_2D);
 
 
 
@@ -407,9 +405,9 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	//m_pThread->ResumeThread();
 
 	m_bIsThreadEnd = true;
-	CWinThread* pl;
-	m_bIsThreadEnd = false;
-	pl = AfxBeginThread(MyThread, this);
+	//CWinThread* pl;
+	//m_bIsThreadEnd = false;
+	//pl = AfxBeginThread(MyThread, this);
 
 //	CloseHandle(pl);
 		
@@ -418,6 +416,24 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	
 
 	m_pPhotoImg = new CSNImage;
+
+	m_guideLine[0].Init(0.0f, 1.0f, 0.0f, 30, 0);
+	m_guideLine[1].Init(0.0f, 1.0f, 0.0f, 30, 0);
+	m_guideLine[2].Init(0.0f, 1.0f, 0.0f, 30, 0);
+	m_guideLine[3].Init(1.0f, 0.0f, 0.0f, 30, 1);
+
+	GLuint tid = Load4ChannelImage("./data/arrow_green.tiff");
+//	int tid = 0;
+//	IplImage *pimg = cvLoadImage("./data/arrow_red.tiff", CV_LOAD_IMAGE_UNCHANGED);
+
+
+	m_guideLine[0].SetButtonTexId(tid);
+	m_guideLine[1].SetButtonTexId(tid);
+	m_guideLine[2].SetButtonTexId(tid);
+
+	tid = Load4ChannelImage("./data/arrow_red.tiff");
+	m_guideLine[3].SetButtonTexId(tid);
+
 	//===============================================//
 	SetTimer(_RENDER, 30, NULL);
 }
@@ -567,6 +583,46 @@ void CImageView::OnSize(UINT nType, int cx, int cy)
 	ReSizeIcon();
 }
 
+GLuint CImageView::Load4ChannelImage(char* sz)
+{
+	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
+	GLuint nTexId = 0;
+	//USES_CONVERSION;
+	//char* sz = T2A(strPath);
+
+	IplImage *pimg = cvLoadImage(sz, CV_LOAD_IMAGE_UNCHANGED);
+	if (pimg){
+		//	cvShowImage(sz, pimg);
+		cvCvtColor(pimg, pimg, CV_BGRA2RGBA);
+
+		// glupload Image - Thumnail image=======================================================//
+		glGenTextures(1, &nTexId);
+		glBindTexture(GL_TEXTURE_2D, nTexId);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		//glTexImage2D(GL_TEXTURE_2D, 0, 4, m_texture->sizeX,m_texture->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE,m_texture->data);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, pimg->width, pimg->height, GL_RGBA, GL_UNSIGNED_BYTE, pimg->imageData);
+		//glTexImage2D(GL_TEXTURE_2D,
+		//	0,
+		//	GL_RGBA,
+		//	pimg->width,
+		//	pimg->height,
+		//	0,
+		//	GL_RGBA,
+		//	GL_UNSIGNED_BYTE,
+		//	pimg->imageData
+		//	);
+		//======================================================================================//
+		cvReleaseImage(&pimg);
+	}
+	return nTexId;
+}
+
+
 GLuint CImageView::LoadSNImage(CString strPath)
 {
 	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
@@ -676,18 +732,19 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 
 	
 	if (GetCapture()){		
-		int incre = 0;
+		float incre;
+		
 		switch (m_selButtonId){
 		case 0:
 		case 1:
 		case 2:
-
-			incre = point.y - m_mousedown.y;
+			incre = (point.y - m_mousedown.y)/m_fImgDetectScale;
 			m_guideLine[m_selButtonId].SetIncrement(0,incre);
 
 			break;
 		case 3:
-			incre = point.x - m_mousedown.x;
+			float s = m_pPhotoImg->GetImgWScale();
+			incre = (point.x - m_mousedown.x) / m_fImgDetectScale;
 			m_guideLine[m_selButtonId].SetIncrement(incre, 0);
 			
 			break;
@@ -1394,4 +1451,14 @@ void CImageView::DrawCropArea()
 		glVertex3f(m_vecOutBounderyDraw[3].x, m_vecOutBounderyDraw[3].y, 0.5f);
 
 		glEnd();
+}
+
+IplImage* CImageView::GetCropPhoto()
+{
+	if (m_pPhotoImg){
+		return m_pPhotoImg->GetSrcCopyIplImage();
+	}
+	else{
+		return NULL;
+	}
 }

@@ -29,7 +29,9 @@ public:
 
 	void ChangeBrightness(float _value);
 	void ChangeContrast(float _value);
+	void PrintBitmap(LPCTSTR filename);
 
+	bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img);
 // Overrides
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
@@ -61,6 +63,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	virtual void OnPrint(CDC* pDC, CPrintInfo* pInfo);
 };
 
 #ifndef _DEBUG  // debug version in PhotoIDView.cpp

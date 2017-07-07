@@ -52,6 +52,7 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_BN_CLICKED(IDC_BN_AUTOFIT, &CPropFormView::OnBnClickedBnAutofit)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_BRINGTNESS, &CPropFormView::OnNMReleasedcaptureSliderBringtness)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_CONTRAST, &CPropFormView::OnNMReleasedcaptureSliderContrast)
+	ON_BN_CLICKED(IDC_BN_PRINT, &CPropFormView::OnBnClickedBnPrint)
 END_MESSAGE_MAP()
 
 
@@ -312,4 +313,11 @@ void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pR
 
 
 	*pResult = 0;
+}
+
+
+void CPropFormView::OnBnClickedBnPrint()
+{
+	// TODO: Add your control notification handler code here
+	pView->PrintBitmap(L"./data/sort.bmp");
 }

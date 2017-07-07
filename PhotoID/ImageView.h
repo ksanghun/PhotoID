@@ -67,6 +67,10 @@ public:
 	void ChangeBrightness(float _value);
 	void ChangeContrast(float _value);
 
+	GLuint Load4ChannelImage(char* sz);
+
+	IplImage* GetCropPhoto();
+
 private:
 //	CWinThread* g_pl;
 

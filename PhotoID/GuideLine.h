@@ -23,15 +23,21 @@ public:
 	void DrawLine();
 	void DrawButtions(float r, float g, float b);
 	void Init(float _r, float _g, float _b, int _size, int _type);
-	void SetIncrement(int _dx, int _dy);
+	void SetIncrement(float _dx, float _dy);
+
+	void SetButtonTexId(unsigned int _id) { m_texId = _id; }
 
 private:
+
+	unsigned int m_texId;
+
 	POINT2D m_sPnt, m_ePnt;
 	POINT2D m_sDPnt, m_eDPnt;
 //	POINT2D m_increment;
 
 	POINT3D m_color;
 	POINT2D m_vecButton[4];
+	POINT2D m_texcoord[4];
 
 };
 
