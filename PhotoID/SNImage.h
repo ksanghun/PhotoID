@@ -64,6 +64,7 @@ public:
 	void SetSrcIplImage(IplImage* pimg);
 	IplImage* GetSrcIplImage() { return m_pSrcImg; }
 	IplImage* GetSrcCopyIplImage() { return m_pSrcImgCopy; }
+	IplImage* GetCropImg(float _fScale); // { return m_pCropImg; }
 //	IplImage* GetSrcSmallIplImage() { return m_pSrcImgSmall; }
 	void SetGLTexture(IplImage* pimg);
 	void RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, IplImage* pImg);
@@ -132,6 +133,7 @@ private:
 
 	IplImage *m_pSrcImg;
 	IplImage *m_pSrcImgCopy;
+	IplImage* m_pCropImg;
 //	IplImage *m_pSrcImgSmall;
 
 

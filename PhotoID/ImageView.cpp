@@ -404,10 +404,10 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	//m_pThread->m_bAutoDelete = FALSE;
 	//m_pThread->ResumeThread();
 
-	m_bIsThreadEnd = true;
-	//CWinThread* pl;
-	//m_bIsThreadEnd = false;
-	//pl = AfxBeginThread(MyThread, this);
+	//m_bIsThreadEnd = true;
+	CWinThread* pl;
+	m_bIsThreadEnd = false;
+	pl = AfxBeginThread(MyThread, this);
 
 //	CloseHandle(pl);
 		
@@ -1456,7 +1456,7 @@ void CImageView::DrawCropArea()
 IplImage* CImageView::GetCropPhoto()
 {
 	if (m_pPhotoImg){
-		return m_pPhotoImg->GetSrcCopyIplImage();
+		return m_pPhotoImg->GetCropImg(m_fImgDetectScale);
 	}
 	else{
 		return NULL;

@@ -37,7 +37,7 @@ CSNImage::CSNImage()
 
 
 
-	
+	m_pCropImg = NULL;
 
 
 
@@ -715,7 +715,7 @@ void CSNImage::DrawCroppingArea()
 
 void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter)
 {
-	float cropHeight = (yFaceBot - yFaceTop) * 2;  // face length X 2
+	float cropHeight = (yFaceTop - yFaceBot) * 2;  // face length X 2
 	float cropWidth = cropHeight*0.7143f;
 	
 
@@ -733,4 +733,26 @@ void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, fl
 	mtSetPoint2D(&m_vecInBoundery[3], m_rectCrop.x2, m_rectCrop.y1);
 
 
+}
+
+IplImage* CSNImage::GetCropImg(float _fScale)
+{
+	if (m_pCropImg){
+		cvReleaseImage(&m_pCropImg);
+		m_pCropImg = NULL;
+	}
+
+	m_rectCrop.x1 *= _fScale;
+	m_rectCrop.x2 *= _fScale;
+	m_rectCrop.y1 *= _fScale;
+	m_rectCrop.y2 *= _fScale;
+
+	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
+	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
+
+	m_pCropImg = cvCreateImage(cvSize(m_rectCrop.width, m_rectCrop.height), m_pSrcImg->depth, m_pSrcImg->nChannels);
+	cvSetImageROI(m_pSrcImg, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
+	cvCopy(m_pSrcImg, m_pCropImg);
+
+	return m_pCropImg;
 }
