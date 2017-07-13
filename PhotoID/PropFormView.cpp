@@ -319,5 +319,5 @@ void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pR
 void CPropFormView::OnBnClickedBnPrint()
 {
 	// TODO: Add your control notification handler code here
-	pView->PrintBitmap(L"./data/sort.bmp");
+	pView->PrintBitmap(L"PhtoID");
 }

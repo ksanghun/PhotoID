@@ -2,7 +2,15 @@
 #include "SNImage.h"
 
 
+#define CANADA_WIDTH_MM 50.0f
+#define CANADA_HEIGHT_MM 70.0f
+#define DPI300_PIXEL 11.82f
 
+#define PRINT_SIZEW 1772
+#define PRINT_SIZEH 1181
+#define CANADA_SIZEW 590
+#define CANADA_SIZEH 826
+#define CANADA_RATIO 0.7143
 
 CSNImage::CSNImage()
 {
@@ -25,6 +33,7 @@ CSNImage::CSNImage()
 
 	m_pSrcImg = NULL;
 	m_pSrcImgCopy = NULL;
+	m_PrtImg = NULL;
 
 	glGenTextures(1, &thTexId);
 	m_fImgAngle = 0.0f;
@@ -40,7 +49,7 @@ CSNImage::CSNImage()
 	m_pCropImg = NULL;
 
 
-
+	
 }
 
 
@@ -81,9 +90,14 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	//if (m_pSrcImgSmall){
 	//	cvReleaseImage(&m_pSrcImgSmall);
 	//}
+	if (m_PrtImg){
+		cvReleaseImage(&m_PrtImg);
+	}
+	
+
 
 	m_pSrcImg = pimg;
-
+	m_PrtImg = cvCreateImage(cvSize(PRINT_SIZEW, PRINT_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
 	//int w = pimg->width / 2;
 	//int h = pimg->height / 2;
 
@@ -117,6 +131,7 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 
 
 	SetGLTexture(m_pSrcImgCopy);
+	
 }
 
 bool CSNImage::AddMatchedPoint(_MATCHInfo info, int search_size)
@@ -715,8 +730,11 @@ void CSNImage::DrawCroppingArea()
 
 void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter)
 {
+
+//	float aRatio = CANADA_WIDTH_MM / CANADA_HEIGHT_MM;
+
 	float cropHeight = (yFaceTop - yFaceBot) * 2;  // face length X 2
-	float cropWidth = cropHeight*0.7143f;
+	float cropWidth = cropHeight*CANADA_RATIO;
 	
 
 
@@ -747,12 +765,45 @@ IplImage* CSNImage::GetCropImg(float _fScale)
 	m_rectCrop.y1 *= _fScale;
 	m_rectCrop.y2 *= _fScale;
 
-	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
+	if (m_rectCrop.y1 < 0)					m_rectCrop.y1 = 0;
+	if (m_rectCrop.y2 > m_pSrcImg->height)	m_rectCrop.y2 = m_pSrcImg->height;
+	if (m_rectCrop.x1 < 0)					m_rectCrop.x1 = 0;
+	if (m_rectCrop.x2 > m_pSrcImg->width)	m_rectCrop.x2 = m_pSrcImg->width;
+
+
+	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;	
 	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
 
-	m_pCropImg = cvCreateImage(cvSize(m_rectCrop.width, m_rectCrop.height), m_pSrcImg->depth, m_pSrcImg->nChannels);
+	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
 	cvSetImageROI(m_pSrcImg, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
-	cvCopy(m_pSrcImg, m_pCropImg);
+//	cvCopy(m_pSrcImg, m_pCropImg);
+	cvResize(m_pSrcImg, m_pCropImg);
+	cvResetImageROI(m_pSrcImg);
 
-	return m_pCropImg;
+
+	
+
+	
+	cvSet(m_PrtImg, cvScalar(255, 255, 255));
+
+//#define PRINT_SIZEW 1800
+//#define PRINT_SIZEH 1200
+//#define CANADA_SIZEW 590
+//#define CANADA_SIZEH 826
+
+	int wMargin = (PRINT_SIZEW - CANADA_SIZEW * 2) / 4;
+	int hMargin = (PRINT_SIZEH - CANADA_SIZEW ) / 2;
+
+	cvSetImageROI(m_PrtImg, cvRect(wMargin, hMargin, m_pCropImg->width, m_pCropImg->height));		// posx, posy = left - top
+	cvCopy(m_pCropImg, m_PrtImg);
+	cvResetImageROI(m_PrtImg);
+
+	wMargin += (wMargin * 2 + m_pCropImg->width);
+	cvSetImageROI(m_PrtImg, cvRect(wMargin, hMargin, m_pCropImg->width, m_pCropImg->height));		// posx, posy = left - top
+	cvCopy(m_pCropImg, m_PrtImg);
+	cvResetImageROI(m_PrtImg);
+
+//	cvShowImage("Crop img", m_PrtImg);
+
+	return m_PrtImg;
 }

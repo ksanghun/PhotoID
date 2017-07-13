@@ -144,6 +144,6 @@ private:
 
 	float m_matRot[6];
 
-
+	IplImage* m_PrtImg;
 };
 
