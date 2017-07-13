@@ -321,3 +321,4 @@ void CPropFormView::OnBnClickedBnPrint()
 	// TODO: Add your control notification handler code here
 	pView->PrintBitmap(L"PhtoID");
 }
+

@@ -254,6 +254,9 @@ void CPhotoIDView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 
 void CPhotoIDView::PrintBitmap(LPCTSTR filename) 
 {
+	//m_pImageView->GetCropPhoto();
+	//return;
+
 	CPrintDialog printDlg(FALSE);
 	//printDlg.GetDefaults();
 	// Or get from user:

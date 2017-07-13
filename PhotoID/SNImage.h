@@ -87,7 +87,7 @@ public:
 	void ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value);
 	void ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value);
 	void ChangeRotation(IplImage* pSrc, IplImage* pDst);
-
+	void DrawCrossMark(int length, int thickness, int _x, int _y, IplImage* pImg);
 
 	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
 	POINT2D m_guidePos[_LNADMARK_POS_NUM];
