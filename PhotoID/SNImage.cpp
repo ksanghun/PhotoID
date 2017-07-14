@@ -798,21 +798,27 @@ IplImage* CSNImage::GetCropImg(float _fScale)
 	cvCopy(m_pCropImg, m_PrtImg);
 	cvResetImageROI(m_PrtImg);
 
-//	DrawCrossMark(50, 1, wMargin, hMargin, m_PrtImg);
+	DrawCrossMark(50, 1, wMargin - 1, hMargin-1, m_PrtImg);
+	DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin - 1, m_PrtImg);
+	DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
+	DrawCrossMark(50, 1, wMargin - 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
 
 	wMargin += (wMargin * 2 + m_pCropImg->width);
 	cvSetImageROI(m_PrtImg, cvRect(wMargin, hMargin, m_pCropImg->width, m_pCropImg->height));		// posx, posy = left - top
 	cvCopy(m_pCropImg, m_PrtImg);
 	cvResetImageROI(m_PrtImg);
+
+	DrawCrossMark(50, 1, wMargin - 1, hMargin - 1, m_PrtImg);
+	DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin - 1, m_PrtImg);
+	DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
+	DrawCrossMark(50, 1, wMargin - 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
 	
+	//IplImage* rotated = cvCreateImage(cvSize(m_PrtImg->height, m_PrtImg->width), m_PrtImg->depth, m_PrtImg->nChannels);
+	//cvTranspose(m_PrtImg, rotated);
+	
+//	cvShowImage("Crop img", m_PrtImg);
 
-
-	IplImage* rotated = cvCreateImage(cvSize(m_PrtImg->height, m_PrtImg->width), m_PrtImg->depth, m_PrtImg->nChannels);
-	cvTranspose(m_PrtImg, rotated);
-
-//	cvShowImage("Crop img", rotated);
-
-	return rotated;
+	return m_PrtImg;
 }
 
 void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage* pImg)
@@ -821,7 +827,7 @@ void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage
 //	matBinary->imageData[id]
 	// x direction //
 	for (int x = (_x - length); x < (_x + length); x++){
-		int id = _y*pImg->widthStep + x;
+		int id = _y*pImg->widthStep + x*3;
 		pImg->imageData[id] = 0;
 		pImg->imageData[id+1] = 0;
 		pImg->imageData[id+2] = 0;
@@ -829,7 +835,7 @@ void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage
 
 
 	for (int y = (_y - length); y < (_y + length); y++){
-		int id = y*pImg->widthStep + _x;
+		int id = y*pImg->widthStep + _x*3;
 		pImg->imageData[id] = 0;
 		pImg->imageData[id + 1] = 0;
 		pImg->imageData[id + 2] = 0;

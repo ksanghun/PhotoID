@@ -29,7 +29,7 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
 	DDX_Slider(pDX, IDC_SLIDER_ROTATE, m_sliderRotate);
-	DDV_MinMaxInt(pDX, m_sliderRotate, -900, 900);
+	DDV_MinMaxInt(pDX, m_sliderRotate, -300, 300);
 	DDX_Control(pDX, IDC_SLIDER_ROTATE, m_ctrlSliderRotate);
 	//DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_editRotate);
 	//DDV_MinMaxFloat(pDX, m_editRotate, -90.0, 90.0);
@@ -84,7 +84,7 @@ void CPropFormView::OnInitialUpdate()
 
 
 	
-	m_ctrlSliderRotate.SetRange(-900, 900, TRUE);
+	m_ctrlSliderRotate.SetRange(-300, 300, TRUE);
 	m_ctrlSliderRotate.SetPos(0);
 	m_ctrlSliderRotate.SetTicFreq(100);
 
