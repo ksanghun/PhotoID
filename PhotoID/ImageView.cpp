@@ -435,7 +435,7 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	m_guideLine[3].SetButtonTexId(tid);
 
 	//===============================================//
-	SetTimer(_RENDER, 30, NULL);
+	SetTimer(_RENDER, 100, NULL);
 }
 
 void CImageView::SetPhotoIDimg(CString strPath)
@@ -735,23 +735,23 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 		m_strMousePos.Format(_T("[%d, %d]"), (int)curPos.x, (int)curPos.y);
 	}
 
-	
-	if (GetCapture()){		
+
+	if (GetCapture()){
 		float incre;
-		
+
 		switch (m_selButtonId){
 		case 0:
 		case 1:
 		case 2:
-			incre = (point.y - m_mousedown.y)/m_fImgDetectScale;
-			m_guideLine[m_selButtonId].SetIncrement(0,incre);
+			incre = (point.y - m_mousedown.y) / m_fImgDetectScale;
+			m_guideLine[m_selButtonId].SetIncrement(0, incre);
 
 			break;
 		case 3:
 			float s = m_pPhotoImg->GetImgWScale();
 			incre = (point.x - m_mousedown.x) / m_fImgDetectScale;
 			m_guideLine[m_selButtonId].SetIncrement(incre, 0);
-			
+
 			break;
 		}
 
@@ -780,6 +780,11 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 
 		//m_preMmousedown = m_mousedown;
 		//m_mousedown = point;
+
+		if ((point.x < 0) || (point.y < 0) || (point.x > m_nWidth) || (point.y > m_nHeight)){
+			ReleaseCapture();
+		}
+
 
 		Render();
 	}	
