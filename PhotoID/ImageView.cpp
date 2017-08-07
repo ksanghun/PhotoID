@@ -484,7 +484,7 @@ void CImageView::SetPhotoIDimg(CString strPath)
 
 		//m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
 		
-		pM->SetImageRotateValue(m_fDeSkewAngle);
+		//pM->SetImageRotateValue(m_fDeSkewAngle);
 		ReSizeIcon();		
 	}
 
@@ -702,6 +702,9 @@ bool CImageView::LoadSNImage(CString strPath, CSNImage* pInfo)
 void CImageView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
+
+
 	if (GetCapture() && (m_selButtonId>-1)){
 		ReleaseCapture();
 
@@ -718,6 +721,8 @@ void CImageView::OnLButtonUp(UINT nFlags, CPoint point)
 void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
+	wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
+
 
 
 	if (m_pPhotoImg){
@@ -1337,7 +1342,7 @@ float CImageView::RotateImage(float fAngle, bool IsRedetect)
 		if (IsRedetect){
 
 			CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
-			m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
+		//	m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
 			//RotateImage(0, true);
 
 			//if ((m_fDeSkewAngle > 0.1f) || (m_fDeSkewAngle < 0.1f)){
@@ -1345,8 +1350,9 @@ float CImageView::RotateImage(float fAngle, bool IsRedetect)
 			//	RotateImage(0, true);
 			//}
 
+			float dAngle = -(m_fDeSkewAngle + fAngle);
 			
-			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, true, m_pPhotoImg->GetSrcIplImage());
+			m_pPhotoImg->RotateImage(dAngle, m_nWidth, m_nHeight, true, m_pPhotoImg->GetSrcIplImage());
 			FaceDetection(m_pPhotoImg->GetSrcCopyIplImage());
 
 			//if ((m_fDeSkewAngle > 0.1f) || (m_fDeSkewAngle < 0.1f)){
@@ -1354,7 +1360,8 @@ float CImageView::RotateImage(float fAngle, bool IsRedetect)
 			//	RotateImage(0, true);
 			//}
 
-			pM->SetImageRotateValue(m_fDeSkewAngle);
+		//	pM->SetImageRotateValue(m_fDeSkewAngle);
+		//	pM->SetImageRotateValue(fAngle);
 			ReSizeIcon();
 
 		//	m_pPhotoImg->SetImgDrawAngle(0.0f);

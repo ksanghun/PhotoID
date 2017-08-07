@@ -11,6 +11,7 @@
 
 #include "PhotoIDDoc.h"
 #include "PhotoIDView.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -200,13 +201,17 @@ void CPhotoIDView::RotateImage(float _fAngle, bool IsRedetect)
 void CPhotoIDView::ProcAutoFitImage()
 {
 	if (m_pImageView){
+		CSNImage* pImg = m_pImageView->GetPhotoIDImg();
 		for (int i = 0; i < 5; i++){
 			float deskew = 0.0f;
-			if (i == 2){
+			if (i == 2){				
 				deskew = m_pImageView->RotateImage(0.1f, true);
 			}
 			else{
-				deskew = m_pImageView->RotateImage(0, true);
+			//	pImg->SetRotateionAngle(0.0f);
+				float fCurAngle = m_pImageView->GetImgAngle();
+				float fAngle = m_pImageView->GetDeSkewAngle() - fCurAngle;
+				deskew = m_pImageView->RotateImage(0.0f, true);
 			}
 
 			if ((deskew < 0.1) && (deskew > -0.1f)){
@@ -214,6 +219,10 @@ void CPhotoIDView::ProcAutoFitImage()
 			}
 		}
 	}
+
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+	float fCurAngle = m_pImageView->GetImgAngle();
+	pM->SetImageRotateValue(fCurAngle);
 }
 
 void CPhotoIDView::ChangeBrightness(float _value)

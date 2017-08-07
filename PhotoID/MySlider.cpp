@@ -13,7 +13,7 @@ IMPLEMENT_DYNAMIC(CMySlider, CSliderCtrl)
 
 CMySlider::CMySlider()
 {
-
+	m_prePos = 0.0f;
 }
 
 CMySlider::~CMySlider()
@@ -50,7 +50,11 @@ void CMySlider::OnMouseMove(UINT nFlags, CPoint point)
 		UpdateData(TRUE);
 		float fRotate = GetPos();
 		//	m_strRotValue.Format(L"%3.1f", fRotate*0.1f);
-		pView->RotateImage(fRotate*0.1f, false);
+
+		float dangle = fRotate - m_prePos;
+		pView->RotateImage(dangle*0.1f, false);
+
+		m_prePos = fRotate;
 		UpdateData(FALSE);
 	}
 
@@ -63,7 +67,9 @@ void CMySlider::OnLButtonUp(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	UpdateData(TRUE);
 	float fRotate = GetPos();
-	pView->RotateImage(fRotate*0.1f);
+	float dangle = fRotate - m_prePos;
+	pView->RotateImage(dangle*0.1f);
+	m_prePos = fRotate;
 	UpdateData(FALSE);
 
 

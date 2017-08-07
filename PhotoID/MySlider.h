@@ -11,6 +11,9 @@ public:
 	CMySlider();
 	virtual ~CMySlider();
 
+private:
+	float m_prePos;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 public:

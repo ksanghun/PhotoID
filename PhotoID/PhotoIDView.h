@@ -24,6 +24,7 @@ private:
 public:
 	void SetPhotoIDimg(CString strPath);
 	void RotateImage(float _fAngle, bool IsRedetect = true);
+	
 
 	void ProcAutoFitImage();
 

@@ -75,6 +75,7 @@ public:
 	float GetImgBrightness() { return m_fSrcBrightness; }
 	float GetImgContraast() { return m_fSrcContrast; }
 
+
 //	std::vector<_MATCHInfo>* GetMatchResult() { return &m_matched_pos; };
 //	int GetResultSize() { return m_matched_pos.size(); }
 

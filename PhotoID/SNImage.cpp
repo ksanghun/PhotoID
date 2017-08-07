@@ -40,7 +40,6 @@ CSNImage::CSNImage()
 	m_fSrcBrightness = 0.0f;
 	m_fSrcContrast = 1.0f;
 	m_imgRectSize = 0;
-	m_fImgAngle = 0.0f;
 	m_fImgDrawAngle = 0.0f;
 
 
@@ -462,22 +461,25 @@ void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, I
 	if (pImg){
 
 		//	float fAngleDiff = _fAngle;
-		float fAngleDiff = _fAngle - m_fImgDeskewAngle;
+		//float fAngleDiff = _fAngle - m_fImgDeskewAngle;
 		
-
-		m_fImgDrawAngle = _fAngle;
+		
+		m_fImgDrawAngle += _fAngle;
 		
 		// Rotate Image //
 
 		if (IsRot){
+			
+		//	m_fImgAngle = fAngleDiff;
+			m_fImgAngle += m_fImgDrawAngle;
 			m_fImgDrawAngle = 0.0f;
-			m_fImgAngle = fAngleDiff;
 
 			//float m[6];// , mat[9];
 			CvMat M = cvMat(2, 3, CV_32F, m_matRot);
 			int w = pImg->width;
 			int h = pImg->height;
-			float angleRadians = fAngleDiff * ((float)CV_PI / 180.0f);
+		//	float angleRadians = fAngleDiff * ((float)CV_PI / 180.0f);
+			float angleRadians = m_fImgAngle * ((float)CV_PI / 180.0f);
 			m_matRot[0] = (float)(cos(angleRadians));
 			m_matRot[1] = (float)(sin(angleRadians));
 			m_matRot[3] = -m_matRot[1];
@@ -625,8 +627,10 @@ POINT2D CSNImage::convertImageToScreenSpace(POINT2D pnt, int nWidth, int nHeight
 
 void CSNImage::SetRotateionAngle(float _fangle)
 { 
-	m_fImgDeskewAngle += _fangle; 
+//	m_fImgDeskewAngle += _fangle; 
 //	m_fImgAngle += m_fImgDeskewAngle;
+//	m_fImgDeskewAngle = _fangle;
+	m_fImgDrawAngle = _fangle;
 }
 
 void CSNImage::ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value)

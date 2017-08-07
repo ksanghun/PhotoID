@@ -60,6 +60,7 @@ public:
 	void SetPhotoIDimg(CString strPath);
 	float RotateImage(float fAngle, bool IsRedetect = true);
 	float GetImgAngle(); 
+	float GetDeSkewAngle() { return m_fDeSkewAngle; }
 
 	//POINT2D convertScreenToImageSpace(POINT2D pnt);
 	//POINT2D convertImageToScreenSpace(POINT2D pnt);
@@ -70,6 +71,7 @@ public:
 	GLuint Load4ChannelImage(char* sz);
 
 	IplImage* GetCropPhoto();
+	CSNImage* GetPhotoIDImg() { return m_pPhotoImg; }
 
 private:
 //	CWinThread* g_pl;
