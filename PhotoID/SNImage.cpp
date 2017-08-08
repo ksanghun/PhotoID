@@ -466,6 +466,8 @@ void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, I
 		
 		m_fImgDrawAngle += _fAngle;
 		
+		TRACE(L"%3.2f - %3.2f\n", m_fImgDrawAngle, _fAngle);
+
 		// Rotate Image //
 
 		if (IsRot){

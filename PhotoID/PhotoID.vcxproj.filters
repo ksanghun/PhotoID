@@ -87,6 +87,9 @@
     <ClInclude Include="GuideLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HoverButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhotoID.cpp">
@@ -147,6 +150,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GuideLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HoverButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -223,6 +229,30 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Toolbar256.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\fitface.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bmpcrop.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\facecrop.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\stamp.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\blur.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\print.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

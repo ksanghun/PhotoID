@@ -204,14 +204,13 @@ void CPhotoIDView::ProcAutoFitImage()
 		CSNImage* pImg = m_pImageView->GetPhotoIDImg();
 		for (int i = 0; i < 5; i++){
 			float deskew = 0.0f;
-			if (i == 2){				
-				deskew = m_pImageView->RotateImage(0.1f, true);
+			if (i == 2){			
+				float dAngle = -m_pImageView->GetDeSkewAngle() + 0.1f;
+				deskew = m_pImageView->RotateImage(dAngle, true);
 			}
 			else{
-			//	pImg->SetRotateionAngle(0.0f);
-				float fCurAngle = m_pImageView->GetImgAngle();
-				float fAngle = m_pImageView->GetDeSkewAngle() - fCurAngle;
-				deskew = m_pImageView->RotateImage(0.0f, true);
+				float dAngle = -m_pImageView->GetDeSkewAngle();
+				deskew = m_pImageView->RotateImage(dAngle, true);
 			}
 
 			if ((deskew < 0.1) && (deskew > -0.1f)){

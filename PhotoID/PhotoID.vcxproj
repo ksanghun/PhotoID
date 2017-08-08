@@ -119,6 +119,7 @@
     <ClInclude Include="FileView.h" />
     <ClInclude Include="GLHScrollBar.h" />
     <ClInclude Include="GuideLine.h" />
+    <ClInclude Include="HoverButton.h" />
     <ClInclude Include="ImageView.h" />
     <ClInclude Include="ImgList.h" />
     <ClInclude Include="MainFrm.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="FileView.cpp" />
     <ClCompile Include="GLHScrollBar.cpp" />
     <ClCompile Include="GuideLine.cpp" />
+    <ClCompile Include="HoverButton.cpp" />
     <ClCompile Include="ImageView.cpp" />
     <ClCompile Include="ImgList.cpp" />
     <ClCompile Include="MainFrm.cpp" />
@@ -165,26 +167,34 @@
     <ResourceCompile Include="PhotoID.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\blur.bmp" />
+    <Image Include="res\bmpcrop.bmp" />
     <Image Include="res\classview.bmp" />
     <Image Include="res\classview_hc.bmp" />
     <Image Include="res\class_view.ico" />
     <Image Include="res\class_view_hc.ico" />
     <Image Include="res\explorer.bmp" />
     <Image Include="res\explorer_hc.bmp" />
+    <Image Include="res\facecrop.bmp" />
     <Image Include="res\fileview.bmp" />
     <Image Include="res\fileview_hc.bmp" />
     <Image Include="res\file_view.ico" />
     <Image Include="res\file_view_hc.ico" />
+    <Image Include="res\fitface.bmp" />
     <Image Include="res\menuimages.bmp" />
     <Image Include="res\menuimages_hc.bmp" />
     <Image Include="res\PhotoID.ico" />
     <Image Include="res\PhotoIDDoc.ico" />
+    <Image Include="res\print.bmp" />
     <Image Include="res\properties.bmp" />
     <Image Include="res\properties_hc.bmp" />
     <Image Include="res\properties_wnd.ico" />
     <Image Include="res\properties_wnd_hc.ico" />
     <Image Include="res\sort.bmp" />
     <Image Include="res\sort_hc.bmp" />
+    <Image Include="res\stamp.bmp" />
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\Toolbar256.bmp" />
     <Image Include="UserImages.bmp" />

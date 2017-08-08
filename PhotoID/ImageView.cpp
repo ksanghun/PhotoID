@@ -435,7 +435,7 @@ void CImageView::InitGLview(int _nWidth, int _nHeight)
 	m_guideLine[3].SetButtonTexId(tid);
 
 	//===============================================//
-	SetTimer(_RENDER, 100, NULL);
+	SetTimer(_RENDER, 50, NULL);
 }
 
 void CImageView::SetPhotoIDimg(CString strPath)
@@ -1355,9 +1355,9 @@ float CImageView::RotateImage(float fAngle, bool IsRedetect)
 			//	RotateImage(0, true);
 			//}
 
-			float dAngle = -(m_fDeSkewAngle + fAngle);
+			//float dAngle = -(m_fDeSkewAngle + fAngle);
 			
-			m_pPhotoImg->RotateImage(dAngle, m_nWidth, m_nHeight, true, m_pPhotoImg->GetSrcIplImage());
+			m_pPhotoImg->RotateImage(fAngle, m_nWidth, m_nHeight, true, m_pPhotoImg->GetSrcIplImage());
 			FaceDetection(m_pPhotoImg->GetSrcCopyIplImage());
 
 			//if ((m_fDeSkewAngle > 0.1f) || (m_fDeSkewAngle < 0.1f)){

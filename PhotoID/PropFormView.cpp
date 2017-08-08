@@ -42,6 +42,11 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, m_fContrast, -100, 100);
 	DDX_Control(pDX, IDC_SLIDER_BRINGTNESS, m_SliderBrightness);
 	DDX_Control(pDX, IDC_SLIDER_CONTRAST, m_SliderContrast);
+	DDX_Control(pDX, IDC_BN_AUTOFIT, m_pButtonAutoFit);
+	DDX_Control(pDX, IDC_BN_CROPIMG, m_pButtonCrop);
+	DDX_Control(pDX, IDC_BN_STEMP, m_pButtonStamp);
+	DDX_Control(pDX, IDC_BN_STEMP2, m_pButtonBlur);
+	DDX_Control(pDX, IDC_BN_PRINT, m_pButtonPrint);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -98,6 +103,44 @@ void CPropFormView::OnInitialUpdate()
 	m_SliderContrast.SetTicFreq(10);
 	
 	m_ctrlSliderRotate.Invalidate(TRUE);
+
+
+	// Set Button Icon //
+	m_pButtonAutoFit.MoveWindow(5, 5, 64, 64);
+	m_pButtonCrop.MoveWindow(70, 5, 64, 64);
+	m_pButtonStamp.MoveWindow(135, 5, 64, 64);
+	m_pButtonBlur.MoveWindow(200, 5, 64, 64);
+	m_pButtonPrint.MoveWindow(265, 5, 64, 64);
+
+	//m_pButtonAutoFit.SetBitmap((HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_BITMAP_FITFACE), IMAGE_BITMAP, 64, 64, LR_COLOR));
+	//m_pButtonCrop.SetBitmap((HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_BITMAP_CROP), IMAGE_BITMAP, 64, 64, LR_COLOR));
+	//m_pButtonStamp.SetBitmap((HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_BITMAP_STAMP), IMAGE_BITMAP, 64, 64, LR_COLOR));
+	//m_pButtonBlur.SetBitmap((HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_BITMAP_BLUR), IMAGE_BITMAP, 64, 64, LR_COLOR));
+	//m_pButtonPrint.SetBitmap((HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_BITMAP_PRINT), IMAGE_BITMAP, 64, 64, LR_COLOR));
+	//CRect rect;
+	//m_pButtonAutoFit.GetWindowRect(&rect);
+
+
+	CString text = _T("Automatic a\Adjustment of Image Angle");
+	m_pButtonAutoFit.LoadBitmap(IDB_BITMAP_FITFACE);	
+	m_pButtonAutoFit.SetToolTipText(&text);
+
+	text = _T("Crop Image for Photo ID");
+	m_pButtonCrop.LoadBitmap(IDB_BITMAP_CROP);
+	m_pButtonCrop.SetToolTipText(&text);
+
+	text = _T("Stamp Tool");
+	m_pButtonStamp.LoadBitmap(IDB_BITMAP_STAMP);
+	m_pButtonStamp.SetToolTipText(&text);
+
+	text = _T("Blur Tool");
+	m_pButtonBlur.LoadBitmap(IDB_BITMAP_BLUR);
+	m_pButtonBlur.SetToolTipText(&text);
+
+	text = _T("Print");
+	m_pButtonPrint.LoadBitmap(IDB_BITMAP_PRINT);
+	m_pButtonPrint.SetToolTipText(&text);
+
 
 	UpdateData(TRUE);
 

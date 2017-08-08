@@ -5,6 +5,7 @@
 #include "afxwin.h"
 
 #include "MySlider.h"
+#include "HoverButton.h"
 
 // CPropFormView form view
 
@@ -58,6 +59,11 @@ public:
 	CSliderCtrl m_SliderBrightness;
 	CSliderCtrl m_SliderContrast;
 	afx_msg void OnBnClickedBnPrint();
+	CHoverButton m_pButtonAutoFit;
+	CHoverButton m_pButtonCrop;
+	CHoverButton m_pButtonStamp;
+	CHoverButton m_pButtonBlur;
+	CHoverButton m_pButtonPrint;
 };
 
 
