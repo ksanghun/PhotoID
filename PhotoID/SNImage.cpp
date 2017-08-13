@@ -759,32 +759,33 @@ void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, fl
 
 }
 
-IplImage* CSNImage::GetCropImg(float _fScale)
+IplImage* CSNImage::GetPrintImg(float _fScale)
 {
-	if (m_pCropImg){
-		cvReleaseImage(&m_pCropImg);
-		m_pCropImg = NULL;
+	if (m_pCropImg==NULL){
+		//cvReleaseImage(&m_pCropImg);
+		//m_pCropImg = NULL;
+		return NULL;
 	}
 
-	m_rectCrop.x1 *= _fScale;
-	m_rectCrop.x2 *= _fScale;
-	m_rectCrop.y1 *= _fScale;
-	m_rectCrop.y2 *= _fScale;
-
-	if (m_rectCrop.y1 < 0)					m_rectCrop.y1 = 0;
-	if (m_rectCrop.y2 > m_pSrcImg->height)	m_rectCrop.y2 = m_pSrcImg->height;
-	if (m_rectCrop.x1 < 0)					m_rectCrop.x1 = 0;
-	if (m_rectCrop.x2 > m_pSrcImg->width)	m_rectCrop.x2 = m_pSrcImg->width;
-
-
-	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;	
-	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
-
-	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
-	cvSetImageROI(m_pSrcImg, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
-//	cvCopy(m_pSrcImg, m_pCropImg);
-	cvResize(m_pSrcImg, m_pCropImg);
-	cvResetImageROI(m_pSrcImg);
+//	m_rectCrop.x1 *= _fScale;
+//	m_rectCrop.x2 *= _fScale;
+//	m_rectCrop.y1 *= _fScale;
+//	m_rectCrop.y2 *= _fScale;
+//
+//	if (m_rectCrop.y1 < 0)					m_rectCrop.y1 = 0;
+//	if (m_rectCrop.y2 > m_pSrcImg->height)	m_rectCrop.y2 = m_pSrcImg->height;
+//	if (m_rectCrop.x1 < 0)					m_rectCrop.x1 = 0;
+//	if (m_rectCrop.x2 > m_pSrcImg->width)	m_rectCrop.x2 = m_pSrcImg->width;
+//
+//
+//	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;	
+//	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
+//
+//	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
+//	cvSetImageROI(m_pSrcImg, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
+////	cvCopy(m_pSrcImg, m_pCropImg);
+//	cvResize(m_pSrcImg, m_pCropImg);
+//	cvResetImageROI(m_pSrcImg);
 
 
 	
@@ -847,4 +848,33 @@ void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage
 		pImg->imageData[id + 2] = 0;
 	}
 
+}
+
+
+void CSNImage::SetCropImg(float _fScale)
+{
+	if (m_pCropImg){
+		cvReleaseImage(&m_pCropImg);
+		m_pCropImg = NULL;
+	}
+
+	m_rectCrop.x1 *= _fScale;
+	m_rectCrop.x2 *= _fScale;
+	m_rectCrop.y1 *= _fScale;
+	m_rectCrop.y2 *= _fScale;
+
+	if (m_rectCrop.y1 < 0)					m_rectCrop.y1 = 0;
+	if (m_rectCrop.y2 > m_pSrcImg->height)	m_rectCrop.y2 = m_pSrcImg->height;
+	if (m_rectCrop.x1 < 0)					m_rectCrop.x1 = 0;
+	if (m_rectCrop.x2 > m_pSrcImg->width)	m_rectCrop.x2 = m_pSrcImg->width;
+
+
+	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
+	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
+
+	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
+	cvSetImageROI(m_pSrcImg, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
+	//	cvCopy(m_pSrcImg, m_pCropImg);
+	cvResize(m_pSrcImg, m_pCropImg);
+	cvResetImageROI(m_pSrcImg);
 }

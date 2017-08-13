@@ -32,7 +32,8 @@ public:
 	void ChangeContrast(float _value);
 	void PrintBitmap(LPCTSTR filename);
 
-	bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img);
+	bool GetCBitmapFromIpl(CBitmap& bmp, IplImage* img);
+	void CropImage();
 // Overrides
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view

@@ -70,7 +70,8 @@ public:
 
 	GLuint Load4ChannelImage(char* sz);
 
-	IplImage* GetCropPhoto();
+	IplImage* GetPrintPhoto();
+	void SetCropPhoto();
 	CSNImage* GetPhotoIDImg() { return m_pPhotoImg; }
 
 private:

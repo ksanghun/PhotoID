@@ -40,9 +40,9 @@ public:
 
 protected:  // control bar embedded members
 //	CMFCMenuBar       m_wndMenuBar;
-	CMFCToolBar       m_wndToolBar;
-	CMFCStatusBar     m_wndStatusBar;
-	CMFCToolBarImages m_UserImages;
+	//CMFCToolBar       m_wndToolBar;
+	//CMFCStatusBar     m_wndStatusBar;
+	//CMFCToolBarImages m_UserImages;
 	CFileView         m_wndFileView;
 	CClassView        m_wndClassView;
 //	CPropertiesWnd    m_wndProperties;

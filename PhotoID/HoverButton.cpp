@@ -125,7 +125,6 @@ void CHoverButton::ActivateTooltip(BOOL bActivate)
 void CHoverButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) 
 {
 	// TODO: Add your code to draw the specified item
-
 	CDC *mydc=CDC::FromHandle(lpDrawItemStruct->hDC);
 
 	CDC * pMemDC = new CDC;

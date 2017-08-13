@@ -1059,6 +1059,7 @@ CBitmap* CImageView::GetLogCBitmap(CString strFile)
 		memDC.DeleteDC();
 		dc.DeleteDC();
 
+		free(pBmpBits);
 		cvReleaseImage(&img);
 		cvReleaseImage(&tmp);
 
@@ -1465,12 +1466,21 @@ void CImageView::DrawCropArea()
 		glEnd();
 }
 
-IplImage* CImageView::GetCropPhoto()
+IplImage* CImageView::GetPrintPhoto()
 {
 	if (m_pPhotoImg){
-		return m_pPhotoImg->GetCropImg(m_fImgDetectScale);
+		return m_pPhotoImg->GetPrintImg(m_fImgDetectScale);
 	}
 	else{
 		return NULL;
 	}
+}
+
+void CImageView::SetCropPhoto()
+{
+	if (m_pPhotoImg){
+	//	m_pPhotoImg->GetCropImg(m_fImgDetectScale);
+		m_pPhotoImg->SetCropImg(m_fImgDetectScale);
+	}
+
 }

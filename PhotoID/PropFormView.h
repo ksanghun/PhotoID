@@ -64,6 +64,10 @@ public:
 	CHoverButton m_pButtonStamp;
 	CHoverButton m_pButtonBlur;
 	CHoverButton m_pButtonPrint;
+
+	bool m_IsBtnCreated;
+
+	afx_msg void OnBnClickedBnCropimg();
 };
 
 

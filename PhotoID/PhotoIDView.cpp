@@ -262,70 +262,77 @@ void CPhotoIDView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 
 void CPhotoIDView::PrintBitmap(LPCTSTR filename) 
 {
-	//m_pImageView->GetCropPhoto();
-	//return;
+	if (m_pImageView){
+		IplImage* pPrintImg = m_pImageView->GetPrintPhoto();
+		if (pPrintImg == NULL){
+			AfxMessageBox(L"Crop Image first!");
+			return;
+		}
+			//m_pImageView->GetCropPhoto();
+			//return;
 
-	CPrintDialog printDlg(FALSE);
-	//printDlg.GetDefaults();
-	// Or get from user:
-	 if (printDlg.DoModal() == IDCANCEL)   
-	        return; 
-	CDC dc;
-	if (!dc.Attach(printDlg.GetPrinterDC())) {
-		AfxMessageBox(_T("No printer found!")); return;
+		CPrintDialog printDlg(FALSE);
+		//printDlg.GetDefaults();
+		// Or get from user:
+		if (printDlg.DoModal() == IDCANCEL)
+			return;
+		CDC dc;
+		if (!dc.Attach(printDlg.GetPrinterDC())) {
+			AfxMessageBox(_T("No printer found!")); return;
+		}
+
+		dc.m_bPrinting = TRUE;
+		DOCINFO di;
+		// Initialise print document details
+		::ZeroMemory(&di, sizeof(DOCINFO));
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = filename;
+		BOOL bPrintingOK = dc.StartDoc(&di); // Begin a new print job 
+		// Get the printing extents
+		// and store in the m_rectDraw field of a 
+		// CPrintInfo object
+		CPrintInfo Info;
+		Info.SetMaxPage(1); // just one page 
+		int maxw = dc.GetDeviceCaps(HORZRES);
+		int maxh = dc.GetDeviceCaps(VERTRES);
+		Info.m_rectDraw.SetRect(0, 0, maxw, maxh);
+		for (UINT page = Info.GetMinPage(); page <=
+			Info.GetMaxPage() && bPrintingOK; page++) {
+			dc.StartPage();    // begin new page
+			Info.m_nCurPage = page;
+			CBitmap bitmap;
+			// LoadImage does the trick here, it creates a DIB section
+			// You can also use a resource here
+			// by using MAKEINTRESOURCE() ... etc. 
+			//if (!bitmap.Attach(::LoadImage(
+			//	::GetModuleHandle(NULL), filename, IMAGE_BITMAP, 0, 0,
+			//	LR_LOADFROMFILE | LR_CREATEDIBSECTION | LR_DEFAULTSIZE))) {
+			//	AfxMessageBox(_T("Error loading bitmap!")); return;
+			//}
+			GetCBitmapFromIpl(bitmap, m_pImageView->GetPrintPhoto());
+			
+
+			BITMAP bm;
+			bitmap.GetBitmap(&bm);
+			int w = bm.bmWidth;
+			int h = bm.bmHeight;
+			// create memory device context
+			CDC memDC;
+			memDC.CreateCompatibleDC(&dc);
+			CBitmap *pBmp = memDC.SelectObject(&bitmap);
+			memDC.SetMapMode(dc.GetMapMode());
+			dc.SetStretchBltMode(HALFTONE);
+			// now stretchblt to maximum width on page
+			dc.StretchBlt(0, 0, w, h, &memDC, 0, 0, w, h, SRCCOPY);
+			// clean up
+			memDC.SelectObject(pBmp);
+			bPrintingOK = (dc.EndPage() > 0);   // end page
+		}
+		if (bPrintingOK)
+			dc.EndDoc(); // end a print job
+		else dc.AbortDoc();           // abort job. 
+
 	}
-
-	dc.m_bPrinting = TRUE;
-	DOCINFO di;
-	// Initialise print document details
-	::ZeroMemory(&di, sizeof(DOCINFO));
-	di.cbSize = sizeof(DOCINFO);
-	di.lpszDocName = filename;
-	BOOL bPrintingOK = dc.StartDoc(&di); // Begin a new print job 
-	// Get the printing extents
-	// and store in the m_rectDraw field of a 
-	// CPrintInfo object
-	CPrintInfo Info;
-	Info.SetMaxPage(1); // just one page 
-	int maxw = dc.GetDeviceCaps(HORZRES);
-	int maxh = dc.GetDeviceCaps(VERTRES);
-	Info.m_rectDraw.SetRect(0, 0, maxw, maxh);
-	for (UINT page = Info.GetMinPage(); page <=
-		Info.GetMaxPage() && bPrintingOK; page++) {
-		dc.StartPage();    // begin new page
-		Info.m_nCurPage = page;
-		CBitmap bitmap;
-		// LoadImage does the trick here, it creates a DIB section
-		// You can also use a resource here
-		// by using MAKEINTRESOURCE() ... etc. 
-		//if (!bitmap.Attach(::LoadImage(
-		//	::GetModuleHandle(NULL), filename, IMAGE_BITMAP, 0, 0,
-		//	LR_LOADFROMFILE | LR_CREATEDIBSECTION | LR_DEFAULTSIZE))) {
-		//	AfxMessageBox(_T("Error loading bitmap!")); return;
-		//}
-		GetCBitmapFromIpl(bitmap, m_pImageView->GetCropPhoto());
-
-
-
-		BITMAP bm;
-		bitmap.GetBitmap(&bm);
-		int w = bm.bmWidth;
-		int h = bm.bmHeight;
-		// create memory device context
-		CDC memDC;
-		memDC.CreateCompatibleDC(&dc);
-		CBitmap *pBmp = memDC.SelectObject(&bitmap);
-		memDC.SetMapMode(dc.GetMapMode());
-		dc.SetStretchBltMode(HALFTONE);
-		// now stretchblt to maximum width on page
-		dc.StretchBlt(0, 0, w, h, &memDC, 0, 0, w, h, SRCCOPY);
-		// clean up
-		memDC.SelectObject(pBmp);
-		bPrintingOK = (dc.EndPage() > 0);   // end page
-	}
-	if (bPrintingOK)
-		dc.EndDoc(); // end a print job
-	else dc.AbortDoc();           // abort job. 
 }
 
 bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img)
@@ -391,6 +398,7 @@ bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img)
 		pOldBmp = memDC.SelectObject(&bmp);
 
 
+		free(pBmpBits);
 		memDC.SelectObject(pOldBmp);
 		memDC.DeleteDC();
 		dc.DeleteDC();
@@ -406,4 +414,10 @@ bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img)
 	}
 
 
+}
+
+
+void CPhotoIDView::CropImage()
+{
+	m_pImageView->SetCropPhoto();
 }

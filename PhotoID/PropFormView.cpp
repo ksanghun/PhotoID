@@ -19,6 +19,7 @@ CPropFormView::CPropFormView()
 	, m_fContrast(0)
 {
 	m_preRotateSliderPos = 0;
+	m_IsBtnCreated = false;
 }
 
 CPropFormView::~CPropFormView()
@@ -58,6 +59,7 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_BRINGTNESS, &CPropFormView::OnNMReleasedcaptureSliderBringtness)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_CONTRAST, &CPropFormView::OnNMReleasedcaptureSliderContrast)
 	ON_BN_CLICKED(IDC_BN_PRINT, &CPropFormView::OnBnClickedBnPrint)
+	ON_BN_CLICKED(IDC_BN_CROPIMG, &CPropFormView::OnBnClickedBnCropimg)
 END_MESSAGE_MAP()
 
 
@@ -120,26 +122,29 @@ void CPropFormView::OnInitialUpdate()
 	//CRect rect;
 	//m_pButtonAutoFit.GetWindowRect(&rect);
 
+	if (m_IsBtnCreated == false){
+		CString text = _T("Automatic a\Adjustment of Image Angle");
+		m_pButtonAutoFit.LoadBitmap(IDB_BITMAP_FITFACE);
+		m_pButtonAutoFit.SetToolTipText(&text);
 
-	CString text = _T("Automatic a\Adjustment of Image Angle");
-	m_pButtonAutoFit.LoadBitmap(IDB_BITMAP_FITFACE);	
-	m_pButtonAutoFit.SetToolTipText(&text);
+		text = _T("Crop Image for Photo ID");
+		m_pButtonCrop.LoadBitmap(IDB_BITMAP_CROP);
+		m_pButtonCrop.SetToolTipText(&text);
 
-	text = _T("Crop Image for Photo ID");
-	m_pButtonCrop.LoadBitmap(IDB_BITMAP_CROP);
-	m_pButtonCrop.SetToolTipText(&text);
+		text = _T("Stamp Tool");
+		m_pButtonStamp.LoadBitmap(IDB_BITMAP_STAMP);
+		m_pButtonStamp.SetToolTipText(&text);
 
-	text = _T("Stamp Tool");
-	m_pButtonStamp.LoadBitmap(IDB_BITMAP_STAMP);
-	m_pButtonStamp.SetToolTipText(&text);
+		text = _T("Blur Tool");
+		m_pButtonBlur.LoadBitmap(IDB_BITMAP_BLUR);
+		m_pButtonBlur.SetToolTipText(&text);
 
-	text = _T("Blur Tool");
-	m_pButtonBlur.LoadBitmap(IDB_BITMAP_BLUR);
-	m_pButtonBlur.SetToolTipText(&text);
+		text = _T("Print");
+		m_pButtonPrint.LoadBitmap(IDB_BITMAP_PRINT);
+		m_pButtonPrint.SetToolTipText(&text);
 
-	text = _T("Print");
-	m_pButtonPrint.LoadBitmap(IDB_BITMAP_PRINT);
-	m_pButtonPrint.SetToolTipText(&text);
+		m_IsBtnCreated = true;
+	}
 
 
 	UpdateData(TRUE);
@@ -365,3 +370,10 @@ void CPropFormView::OnBnClickedBnPrint()
 	pView->PrintBitmap(L"PhtoID");
 }
 
+
+
+void CPropFormView::OnBnClickedBnCropimg()
+{
+	// TODO: Add your control notification handler code here
+	pView->CropImage();
+}

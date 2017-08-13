@@ -17,9 +17,9 @@ CImgList::CImgList()
 
 CImgList::~CImgList()
 {
-	//if (m_pDragImage){
-	//	delete m_pDragImage;
-	//}
+	if (m_pDragImage){
+		delete m_pDragImage;
+	}
 }
 
 
