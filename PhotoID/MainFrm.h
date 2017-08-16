@@ -29,6 +29,7 @@ public:
 	void UpdateImgListCtrl(CString strPath);
 
 	void SetImageRotateValue(float _fAngle);
+	void SetSliderStatus(bool IsCrop);
 
 // Implementation
 public:

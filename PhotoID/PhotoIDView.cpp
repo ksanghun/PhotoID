@@ -202,6 +202,8 @@ void CPhotoIDView::ProcAutoFitImage()
 {
 	if (m_pImageView){
 		CSNImage* pImg = m_pImageView->GetPhotoIDImg();
+		pImg->SetCropImgStatus(false);
+
 		for (int i = 0; i < 5; i++){
 			float deskew = 0.0f;
 			if (i == 2){			
@@ -224,18 +226,18 @@ void CPhotoIDView::ProcAutoFitImage()
 	pM->SetImageRotateValue(fCurAngle);
 }
 
-void CPhotoIDView::ChangeBrightness(float _value)
+void CPhotoIDView::ChangeBrightness(float _value, bool IsApply)
 {
 	if (m_pImageView){
-		m_pImageView->ChangeBrightness(_value);
+		m_pImageView->ChangeBrightness(_value, IsApply);
 		
 	}
 
 }
-void CPhotoIDView::ChangeContrast(float _value)
+void CPhotoIDView::ChangeContrast(float _value, bool IsApply)
 {
 	if (m_pImageView){
-		m_pImageView->ChangeContrast(_value);
+		m_pImageView->ChangeContrast(_value, IsApply);
 		
 	}
 }

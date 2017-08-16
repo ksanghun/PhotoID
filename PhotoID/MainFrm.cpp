@@ -432,3 +432,10 @@ void CMainFrame::SetImageRotateValue(float _fAngle)
 		m_wndFormView.SetImageRotateValue(_fAngle);
 	}
 }
+
+void CMainFrame::SetSliderStatus(bool IsCrop)
+{
+	if (m_wndFormView){
+		m_wndFormView.SetSliderStatus(IsCrop);
+	}
+}

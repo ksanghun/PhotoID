@@ -7,6 +7,7 @@
 #include "PhotoIDView.h"
 
 // CPropFormView
+#include "DlgApply.h"
 
 IMPLEMENT_DYNCREATE(CPropFormView, CFormView)
 
@@ -17,9 +18,14 @@ CPropFormView::CPropFormView()
 	, m_strRotValue(_T("0"))
 	, m_fBrightNess(0)
 	, m_fContrast(0)
+	, m_fEditBrightness(0)
+	, m_fEditContrast(0)
 {
 	m_preRotateSliderPos = 0;
 	m_IsBtnCreated = false;
+
+	m_fPreBrightness = 0;
+	m_fPreContrast = 0;
 }
 
 CPropFormView::~CPropFormView()
@@ -38,7 +44,7 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_strRotValue, 5);
 	DDX_Control(pDX, IDC_EDIT_ROT_VALUE, m_EditCtrlRotate);
 	DDX_Slider(pDX, IDC_SLIDER_BRINGTNESS, m_fBrightNess);
-	DDV_MinMaxInt(pDX, m_fBrightNess, -255, 255);
+	DDV_MinMaxInt(pDX, m_fBrightNess, -100, 100);
 	DDX_Slider(pDX, IDC_SLIDER_CONTRAST, m_fContrast);
 	DDV_MinMaxInt(pDX, m_fContrast, -100, 100);
 	DDX_Control(pDX, IDC_SLIDER_BRINGTNESS, m_SliderBrightness);
@@ -48,6 +54,8 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BN_STEMP, m_pButtonStamp);
 	DDX_Control(pDX, IDC_BN_STEMP2, m_pButtonBlur);
 	DDX_Control(pDX, IDC_BN_PRINT, m_pButtonPrint);
+	DDX_Text(pDX, IDC_EDIT_BRINGT_VALUE, m_fEditBrightness);
+	DDX_Text(pDX, IDC_EDIT_CONT_VALUE, m_fEditContrast);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -60,6 +68,8 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_CONTRAST, &CPropFormView::OnNMReleasedcaptureSliderContrast)
 	ON_BN_CLICKED(IDC_BN_PRINT, &CPropFormView::OnBnClickedBnPrint)
 	ON_BN_CLICKED(IDC_BN_CROPIMG, &CPropFormView::OnBnClickedBnCropimg)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_BRINGTNESS, &CPropFormView::OnNMCustomdrawSliderBringtness)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CONTRAST, &CPropFormView::OnNMCustomdrawSliderContrast)
 END_MESSAGE_MAP()
 
 
@@ -96,15 +106,18 @@ void CPropFormView::OnInitialUpdate()
 	m_ctrlSliderRotate.SetTicFreq(100);
 
 
-	m_SliderBrightness.SetRange(-250, 250, TRUE);
+	m_SliderBrightness.SetRange(-100, 100, TRUE);
 	m_SliderBrightness.SetPos(0);
-	m_SliderBrightness.SetTicFreq(25);
+	m_SliderBrightness.SetTicFreq(10);
 
 	m_SliderContrast.SetRange(-100, 100, TRUE);
 	m_SliderContrast.SetPos(0);
 	m_SliderContrast.SetTicFreq(10);
 	
 	m_ctrlSliderRotate.Invalidate(TRUE);
+
+
+	SetSliderMode(false);
 
 
 	// Set Button Icon //
@@ -123,7 +136,7 @@ void CPropFormView::OnInitialUpdate()
 	//m_pButtonAutoFit.GetWindowRect(&rect);
 
 	if (m_IsBtnCreated == false){
-		CString text = _T("Automatic a\Adjustment of Image Angle");
+		CString text = _T("Automatic Adjustment of Image Angle");
 		m_pButtonAutoFit.LoadBitmap(IDB_BITMAP_FITFACE);
 		m_pButtonAutoFit.SetToolTipText(&text);
 
@@ -151,6 +164,20 @@ void CPropFormView::OnInitialUpdate()
 
 }
 
+
+void CPropFormView::SetSliderMode(bool IsCropMode)
+{
+	if (IsCropMode == false){
+		m_ctrlSliderRotate.EnableWindow(TRUE);
+		m_SliderBrightness.EnableWindow(FALSE);
+		m_SliderContrast.EnableWindow(FALSE);
+	}
+	else{
+		m_ctrlSliderRotate.EnableWindow(FALSE);
+		m_SliderBrightness.EnableWindow(TRUE);
+		m_SliderContrast.EnableWindow(TRUE);
+	}
+}
 
 CPropFormView *CPropFormView::CreateOne(CWnd *pParent)
 {
@@ -336,6 +363,7 @@ void CPropFormView::OnBnClickedBnAutofit()
 {
 	// TODO: Add your control notification handler code here
 	pView->ProcAutoFitImage();
+	SetSliderMode(false);
 }
 
 
@@ -344,9 +372,29 @@ void CPropFormView::OnBnClickedBnAutofit()
 void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-
-	pView->ChangeBrightness(m_fBrightNess);
+	CDlgApply dlg;
+	if (dlg.DoModal() == IDOK){
+		UpdateData(TRUE);
+		
+		pView->ChangeBrightness(m_fBrightNess, true);		
+		
+		m_fPreBrightness = 0;
+		m_SliderBrightness.SetPos(0);
+		
+		m_fEditBrightness = 0;
+		UpdateData(FALSE);
+	}
+	else{
+		UpdateData(TRUE);
+		
+		pView->ChangeBrightness(0, true);
+				
+		m_fPreBrightness = 0;
+		m_SliderBrightness.SetPos(0);	
+		m_fEditBrightness = 0;
+		
+		UpdateData(FALSE);
+	}	
 
 	*pResult = 0;
 }
@@ -355,9 +403,32 @@ void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *
 void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-	float contrast = m_fContrast*0.01f + 1.0f;
-	pView->ChangeContrast(contrast);
+	CDlgApply dlg;
+	if (dlg.DoModal() == IDOK){
+		UpdateData(TRUE);
+		float contrast = m_fContrast*0.01f + 1.0f;
+		pView->ChangeContrast(contrast, true);
+
+		m_fContrast = 0;
+		m_fPreContrast = 0;		
+		m_SliderContrast.SetPos(0);
+		m_fEditContrast = 0;
+		UpdateData(FALSE);
+	}
+	else{
+		UpdateData(TRUE);
+
+		pView->ChangeBrightness(1.0f, true);		
+		
+		m_fContrast = 0;
+		m_fPreContrast = 0;
+		m_SliderContrast.SetPos(0);
+		m_fEditContrast = 0;
+		
+		UpdateData(FALSE);
+	}
+
+
 
 
 	*pResult = 0;
@@ -376,4 +447,40 @@ void CPropFormView::OnBnClickedBnCropimg()
 {
 	// TODO: Add your control notification handler code here
 	pView->CropImage();
+	SetSliderMode(true);
+}
+
+
+void CPropFormView::OnNMCustomdrawSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	if (m_fPreBrightness != m_fBrightNess){
+
+		pView->ChangeBrightness(m_fBrightNess, false);
+		m_fEditBrightness = m_fBrightNess;
+		m_fPreBrightness = m_fBrightNess;
+		
+	}
+	UpdateData(FALSE);
+	*pResult = 0;
+}
+
+
+void CPropFormView::OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	if (m_fPreContrast != m_fContrast){
+
+		float contrast = m_fContrast*0.01f + 1.0f;
+		pView->ChangeContrast(contrast, false);
+		m_fEditContrast = m_fContrast;
+		m_fPreContrast = m_fContrast;
+
+	}
+	UpdateData(FALSE);
+	*pResult = 0;
 }

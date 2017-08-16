@@ -65,8 +65,8 @@ public:
 	//POINT2D convertScreenToImageSpace(POINT2D pnt);
 	//POINT2D convertImageToScreenSpace(POINT2D pnt);
 
-	void ChangeBrightness(float _value);
-	void ChangeContrast(float _value);
+	void ChangeBrightness(float _value, bool IsApply);
+	void ChangeContrast(float _value, bool IsApply);
 
 	GLuint Load4ChannelImage(char* sz);
 

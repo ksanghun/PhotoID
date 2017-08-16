@@ -39,6 +39,13 @@ void CDockFormView::SetImageRotateValue(float _fAngle)
 
 }
 
+void CDockFormView::SetSliderStatus(bool IsCropMode)
+{
+	if (m_pMyFormView){
+		m_pMyFormView->SetSliderMode(IsCropMode);
+	}
+}
+
 
 int CDockFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {

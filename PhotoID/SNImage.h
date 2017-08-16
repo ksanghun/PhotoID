@@ -82,13 +82,15 @@ public:
 //	int GetResultSize() { return m_matched_pos.size(); }
 
 	void RestoreGuidePos();
+	bool IsCropImage() { return m_IsCropImg; }
+	void SetCropImgStatus(bool isCrop) { m_IsCropImg = isCrop; }
 
 	POINT2D convertImageToScreenSpace(POINT2D pnt, int nWidth, int nHeight, bool IsScaled);
 	POINT2D convertScreenToImageSpace(POINT2D pnt, int nWidth, int nHeight);
 
 	
-	void ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value);
-	void ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value);
+	void ChangeBrightness(float _value, bool IsApply);
+	void ChangeConstrast(float _value, bool IsApply);
 	void ChangeRotation(IplImage* pSrc, IplImage* pDst);
 	void DrawCrossMark(int length, int thickness, int _x, int _y, IplImage* pImg);
 
@@ -120,6 +122,7 @@ private:
 
 	POINT3D m_vBgColor;
 	bool	m_bIsSelected;
+	bool	m_IsCropImg;
 
 
 	unsigned short nImgWidth;
@@ -137,7 +140,7 @@ private:
 	IplImage *m_pSrcImg;
 	IplImage *m_pSrcImgCopy;
 	IplImage* m_pCropImg;
-//	IplImage *m_pSrcImgSmall;
+	IplImage *m_pCropImgSmall;
 
 
 	float m_fImgDeskewAngle, m_fSrcBrightness, m_fSrcContrast, m_fImgAngle;

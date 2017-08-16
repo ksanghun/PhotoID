@@ -115,6 +115,7 @@
     <ClInclude Include="Camera2Axis.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="data_type.h" />
+    <ClInclude Include="DlgApply.h" />
     <ClInclude Include="DockFormView.h" />
     <ClInclude Include="FileView.h" />
     <ClInclude Include="GLHScrollBar.h" />
@@ -140,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="Camera2Axis.cpp" />
     <ClCompile Include="ClassView.cpp" />
+    <ClCompile Include="DlgApply.cpp" />
     <ClCompile Include="DockFormView.cpp" />
     <ClCompile Include="FileView.cpp" />
     <ClCompile Include="GLHScrollBar.cpp" />

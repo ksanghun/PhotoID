@@ -15,6 +15,8 @@ public:
 	virtual ~CDockFormView();
 
 	void SetImageRotateValue(float _fAngle);
+	void SetSliderStatus(bool IsCropMode);
+
 
 protected:
 	DECLARE_MESSAGE_MAP()

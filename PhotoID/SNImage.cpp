@@ -35,7 +35,7 @@ CSNImage::CSNImage()
 	m_pSrcImgCopy = NULL;
 	m_PrtImg = NULL;
 
-	glGenTextures(1, &thTexId);
+	
 	m_fImgAngle = 0.0f;
 	m_fSrcBrightness = 0.0f;
 	m_fSrcContrast = 1.0f;
@@ -46,7 +46,8 @@ CSNImage::CSNImage()
 
 
 	m_pCropImg = NULL;
-
+	m_pCropImgSmall = NULL;
+	m_IsCropImg = false;
 
 	
 }
@@ -68,6 +69,18 @@ CSNImage::~CSNImage()
 	if (m_pSrcImgCopy){
 		cvReleaseImage(&m_pSrcImgCopy);
 	}
+
+
+	if (m_pCropImg){
+		cvReleaseImage(&m_pCropImg);
+	}
+
+	if (m_pCropImgSmall){
+		cvReleaseImage(&m_pCropImgSmall);
+	}
+
+
+	
 	//if (m_pSrcImgSmall){
 	//	cvReleaseImage(&m_pSrcImgSmall);
 	//}
@@ -92,6 +105,11 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	if (m_PrtImg){
 		cvReleaseImage(&m_PrtImg);
 	}
+
+	m_IsCropImg = false;
+	if (m_pCropImg){
+		cvReleaseImage(&m_pCropImg);		
+	}
 	
 
 
@@ -102,7 +120,7 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 
 	//m_pSrcImgSmall = cvCreateImage(cvSize(w, h), m_pSrcImg->depth, m_pSrcImg->nChannels);
 	//cvResize(m_pSrcImg, m_pSrcImgSmall);
-
+		
 
 	m_pSrcImgCopy = cvCloneImage(m_pSrcImg);
 
@@ -117,16 +135,16 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 
 
 
-	CvMat M = cvMat(2, 3, CV_32F, m_matRot);
-	int w = pimg->width;
-	int h = pimg->height;
-	float angleRadians = 0.0f;
-	m_matRot[0] = (float)(cos(angleRadians));
-	m_matRot[1] = (float)(sin(angleRadians));
-	m_matRot[3] = -m_matRot[1];
-	m_matRot[4] = m_matRot[0];
-	m_matRot[2] = w*0.5f;
-	m_matRot[5] = h*0.5f;
+	//CvMat M = cvMat(2, 3, CV_32F, m_matRot);
+	//int w = pimg->width;
+	//int h = pimg->height;
+	//float angleRadians = 0.0f;
+	//m_matRot[0] = (float)(cos(angleRadians));
+	//m_matRot[1] = (float)(sin(angleRadians));
+	//m_matRot[3] = -m_matRot[1];
+	//m_matRot[4] = m_matRot[0];
+	//m_matRot[2] = w*0.5f;
+	//m_matRot[5] = h*0.5f;
 
 
 	SetGLTexture(m_pSrcImgCopy);
@@ -443,15 +461,26 @@ bool CSNImage::IsDuplicate(POINT3D pos, int search_size)
 
 void CSNImage::SetGLTexture(IplImage* pimg)
 {
+	SetImgSize(pimg->width, pimg->height);
+	SetSize(pimg->width, pimg->height, m_imgRectSize);
+
+
+	if (thTexId > 0){
+		glDeleteTextures(1, &thTexId);
+	}
+	glGenTextures(1, &thTexId);
+
 	// glupload Image - Thumnail image=======================================================//
 	glBindTexture(GL_TEXTURE_2D, thTexId);
+
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	//glTexImage2D(GL_TEXTURE_2D, 0, 3, m_texture->sizeX,m_texture->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE,m_texture->data);
+
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_INTENSITY, pimg->width, pimg->height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pimg->imageData);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pimg->width, pimg->height, GL_RGB, GL_UNSIGNED_BYTE, pimg->imageData);
 	//======================================================================================//
 }
@@ -459,19 +488,10 @@ void CSNImage::SetGLTexture(IplImage* pimg)
 void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, IplImage* pImg)
 {
 	if (pImg){
-
-		//	float fAngleDiff = _fAngle;
-		//float fAngleDiff = _fAngle - m_fImgDeskewAngle;
-		
-		
-		m_fImgDrawAngle += _fAngle;
-		
+		m_fImgDrawAngle += _fAngle;		
 		TRACE(L"%3.2f - %3.2f\n", m_fImgDrawAngle, _fAngle);
 
-		// Rotate Image //
-
-		if (IsRot){
-			
+		if (IsRot){			
 		//	m_fImgAngle = fAngleDiff;
 			m_fImgAngle += m_fImgDrawAngle;
 			m_fImgDrawAngle = 0.0f;
@@ -489,30 +509,14 @@ void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, I
 			m_matRot[2] = w*0.5f;
 			m_matRot[5] = h*0.5f;
 
-
-			//===============================//
-			//POINT2D iCenter, sCenter;
-			//mtSetPoint2D(&iCenter, m[2], m[5]);
-			//sCenter = convertImageToScreenSpace(iCenter, nWidth, nHeight, false);
-			//mat[0] = (float)(cos(angleRadians));
-			//mat[3] = (float)(sin(angleRadians));
-			//mat[1] = -m[1];
-			//mat[4] = m[0];
-			//mat[2] = (float)nImgWidth*0.5f / m_fImgDetectScale;
-			//mat[5] = (float)nImgWidth*0.5f / m_fImgDetectScale;
-
-			//mat[6] = 0.0f;
-			//mat[7] = 0.0f;
-			//mat[8] = 1.0f;
-
 			// Make a spare image for the result
 			CvSize sizeRotated;
 			sizeRotated.width = cvRound(w);
 			sizeRotated.height = cvRound(h);
 
+
 			// Rotate
 			IplImage *imageRotated = cvCreateImage(sizeRotated, pImg->depth, pImg->nChannels);
-
 			// Transform the image
 			//	cvGetQuadrangleSubPix(m_pSrcImg, imageRotated, &M);
 			cvGetQuadrangleSubPix(pImg, imageRotated, &M);
@@ -521,27 +525,8 @@ void CSNImage::RotateImage(float _fAngle, int nWidth, int nHeight, bool IsRot, I
 			m_pSrcImgCopy = imageRotated;
 			SetGLTexture(m_pSrcImgCopy);
 
-
-			//	return imageRotated;
-			//===================//
-			//		m_fCurrImgAngle = _fAngle;
-
-
-			// Rotate LandMark Point //
-			//for (int i = 0; i < _LNADMARK_POS_NUM; i++){
-			//	float in[3] = { m_guidePosOri[i].x - mat[2], m_guidePosOri[i].y - mat[5], 1.0f };
-			//	float out[3] = { 0.0f, 0.0f, 0.0f };
-
-			//	mtMultMatrixVec(static_cast<const float*>(mat), static_cast<const float*>(in), out, 3);
-			//	m_guidePos[i].x = out[0];
-			//	m_guidePos[i].y = out[1];
-			//}
-
 			m_fImgDrawAngle = 0.0f;
 		}
-		//else{
-		//	m_fImgDrawAngle = m_fImgAngle;
-		//}
 	}
 }
 
@@ -635,52 +620,67 @@ void CSNImage::SetRotateionAngle(float _fangle)
 	m_fImgDrawAngle = _fangle;
 }
 
-void CSNImage::ChangeBrightness(IplImage* pSrc, IplImage* pDst, float _value)
+void CSNImage::ChangeBrightness(float _value, bool IsApply)
 {
-	// rotation first //
-//	ChangeRotation(pSrc, pDst);
+	if (m_pCropImg == NULL){
+		AfxMessageBox(L"Image is not cropped");
+	}
+	else{
+		if (IsApply){
+			CvScalar brVal = cvScalarAll(_value);
+			cvAddS(m_pCropImg, brVal, m_pCropImg, NULL);
 
-	// brightness first //
-	//m_fSrcBrightness = _value;
+			m_fSrcBrightness = 0;
+			SetGLTexture(m_pCropImg);
 
-	float fDiff = _value - m_fSrcBrightness;
+			// Update small crop image
+			cvResize(m_pCropImg, m_pCropImgSmall);
+			TRACE(L"Apply Brightness\n");
+		}
+		else{
+			IplImage* pTmp = cvCloneImage(m_pCropImgSmall);
+			CvScalar brVal = cvScalarAll(_value);
+			cvAddS(m_pCropImgSmall, brVal, pTmp, NULL);
 
-	CvScalar brVal = cvScalarAll(fDiff);
-	cvAddS(pSrc, brVal, pDst, NULL);
+			m_fSrcBrightness = _value;
+			SetGLTexture(pTmp);
+			cvReleaseImage(&pTmp);
 
-	//// contrast //
-	//IplImage *pTempImg = cvCreateImage(cvGetSize(pDst), IPL_DEPTH_8U, pDst->nChannels);
-	//cvSet(pTempImg, cvScalarAll(1), NULL);
-	//cvMul(pDst, pTempImg, pDst, m_fSrcContrast);
-	//cvReleaseImage(&pTempImg);
-
-	m_fSrcBrightness = _value;
-
-	SetGLTexture(pDst);
+			TRACE(L"Not Apply Brightness\n");
+		}
+	}
 }
 
-void CSNImage::ChangeConstrast(IplImage* pSrc, IplImage* pDst, float _value)
+void CSNImage::ChangeConstrast(float _value, bool IsApply)
 {
-	// rotation first
-	//	ChangeRotation(pSrc, pDst);
+	if (m_pCropImg == NULL){
+		AfxMessageBox(L"Image is not cropped");
+	}
+	else{
+		if (IsApply){
+			IplImage *pTempImg = cvCreateImage(cvGetSize(m_pCropImg), IPL_DEPTH_8U, m_pCropImg->nChannels);
+			cvSet(pTempImg, cvScalarAll(1), NULL);
+			cvMul(m_pCropImg, pTempImg, m_pCropImg, _value);
+			cvReleaseImage(&pTempImg);
 
+			SetGLTexture(m_pCropImg);
+			m_fSrcContrast = 0;
 
-	CvScalar brVal = cvScalarAll(m_fSrcBrightness);
-	cvAddS(pSrc, brVal, pDst, NULL);
+			// Update small crop image
+			cvResize(m_pCropImg, m_pCropImgSmall);
+		}
+		else{
+			IplImage* pTmp = cvCloneImage(m_pCropImgSmall);
+			IplImage *pTempImg = cvCreateImage(cvGetSize(m_pCropImgSmall), IPL_DEPTH_8U, m_pCropImgSmall->nChannels);
+			cvSet(pTempImg, cvScalarAll(1), NULL);
+			cvMul(m_pCropImgSmall, pTempImg, pTmp, _value);
+			cvReleaseImage(&pTempImg);
 
-	float diffCont = _value / m_fSrcContrast;
-	
-
-
-	IplImage *pTempImg = cvCreateImage(cvGetSize(pSrc), IPL_DEPTH_8U, pSrc->nChannels);
-	cvSet(pTempImg, cvScalarAll(1), NULL);
-	cvMul(pSrc, pTempImg, pDst, diffCont);
-	cvReleaseImage(&pTempImg);
-
-	SetGLTexture(pDst);
-
-	m_fSrcContrast = _value;
-
+			SetGLTexture(pTmp);
+			m_fSrcContrast = _value;
+			cvReleaseImage(&pTmp);
+		}
+	}
 }
 
 void CSNImage::SetBoundary(int _width, int _height)
@@ -856,6 +856,9 @@ void CSNImage::SetCropImg(float _fScale)
 	if (m_pCropImg){
 		cvReleaseImage(&m_pCropImg);
 		m_pCropImg = NULL;
+
+		cvReleaseImage(&m_pCropImgSmall);
+		m_pCropImgSmall = NULL;
 	}
 
 	m_rectCrop.x1 *= _fScale;
@@ -864,17 +867,27 @@ void CSNImage::SetCropImg(float _fScale)
 	m_rectCrop.y2 *= _fScale;
 
 	if (m_rectCrop.y1 < 0)					m_rectCrop.y1 = 0;
-	if (m_rectCrop.y2 > m_pSrcImg->height)	m_rectCrop.y2 = m_pSrcImg->height;
+	if (m_rectCrop.y2 > m_pSrcImgCopy->height)	m_rectCrop.y2 = m_pSrcImgCopy->height;
 	if (m_rectCrop.x1 < 0)					m_rectCrop.x1 = 0;
-	if (m_rectCrop.x2 > m_pSrcImg->width)	m_rectCrop.x2 = m_pSrcImg->width;
+	if (m_rectCrop.x2 > m_pSrcImgCopy->width)	m_rectCrop.x2 = m_pSrcImgCopy->width;
 
 
 	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
 	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
 
-	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
-	cvSetImageROI(m_pSrcImg, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
+	float fRatio = (float)CANADA_SIZEW / (float)CANADA_SIZEH;
+	int sHeight = 200;
+	int sWidth = sHeight * fRatio;
+	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImgCopy->depth, m_pSrcImgCopy->nChannels);
+	m_pCropImgSmall = cvCreateImage(cvSize(sWidth, sHeight), m_pSrcImgCopy->depth, m_pSrcImgCopy->nChannels);
+	cvSetImageROI(m_pSrcImgCopy, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
 	//	cvCopy(m_pSrcImg, m_pCropImg);
-	cvResize(m_pSrcImg, m_pCropImg);
-	cvResetImageROI(m_pSrcImg);
+	cvResize(m_pSrcImgCopy, m_pCropImg);
+	cvResize(m_pSrcImgCopy, m_pCropImgSmall);
+	cvResetImageROI(m_pSrcImgCopy);
+
+	
+	// Set Crop image as main image
+	SetGLTexture(m_pCropImg);
+	m_IsCropImg = true;
 }

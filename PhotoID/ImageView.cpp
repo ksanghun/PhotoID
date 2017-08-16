@@ -278,79 +278,75 @@ void CImageView::Render2D()
 
 	if (m_pPhotoImg){
 		m_pPhotoImg->DrawThumbNail(1.0f);
-		DrawCropArea();
+
+		if (m_pPhotoImg->IsCropImage() == false){
+			DrawCropArea();
 
 
-		glLineWidth(2.0f);
-		glColor3f(0.0f, 1.0f, 0.0f);
-		//glBegin(GL_POINTS);
-		//for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
-		//	glVertex3f(m_faceLandmarkDraw[i].x, m_faceLandmarkDraw[i].y, m_faceLandmarkDraw[i].z);
-		//}
-		//glEnd();
+			glLineWidth(2.0f);
+			glColor3f(0.0f, 1.0f, 0.0f);
+			//glBegin(GL_POINTS);
+			//for (int i = 0; i < m_faceLandmarkDraw.size(); i++){
+			//	glVertex3f(m_faceLandmarkDraw[i].x, m_faceLandmarkDraw[i].y, m_faceLandmarkDraw[i].z);
+			//}
+			//glEnd();
 
 
-		//glBegin(GL_LINES);
+			//glBegin(GL_LINES);
 
-		glLineStipple(2, 0xAAAA);  
-		glEnable(GL_LINE_STIPPLE);
-		glBegin(GL_LINES);
-		for (int i = 0; i < 4; i++){
-			m_guideLine[i].DrawLine();			
-		}
-		glEnd();
-
-		// Image Cross Line ==============================//
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glBegin(GL_LINES);	
-
-		glVertex3f(m_guidePosDraw[_LEFT_EYE].x, m_guidePosDraw[_LEFT_EYE].y, 0.0f);
-		glVertex3f(m_guidePosDraw[_RIGHT_EYE].x, m_guidePosDraw[_RIGHT_EYE].y, 0.0f);
-
-		glVertex3f(m_guidePosDraw[_TOP_EYE].x, m_guidePosDraw[_TOP_EYE].y, 0.0f);
-		glVertex3f(m_guidePosDraw[_BOTTOM_EYE].x, m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
-		glEnd();
-//==================================================
-
-		glDisable(GL_LINE_STIPPLE);
-		glLineWidth(1.0f);
-
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glBegin(GL_POINTS);
-		glVertex3f(m_guidePosDraw[_FCENTER].x, m_guidePosDraw[_FCENTER].y, 0.0f);
-		glEnd();
-
-
-		glEnable(GL_TEXTURE_2D);
-		for (int i = 0; i < 4; i++){
-			if (i == m_selButtonId){
-				m_guideLine[i].DrawButtions(0.99f, 0.99f, 0.99f);
+			glLineStipple(2, 0xAAAA);
+			glEnable(GL_LINE_STIPPLE);
+			glBegin(GL_LINES);
+			for (int i = 0; i < 4; i++){
+				m_guideLine[i].DrawLine();
 			}
-			else{
-				m_guideLine[i].DrawButtions(0.8f, 0.8f, 0.8f);
+			glEnd();
+
+			// Image Cross Line ==============================//
+			glColor3f(1.0f, 0.0f, 0.0f);
+			glBegin(GL_LINES);
+
+			glVertex3f(m_guidePosDraw[_LEFT_EYE].x, m_guidePosDraw[_LEFT_EYE].y, 0.0f);
+			glVertex3f(m_guidePosDraw[_RIGHT_EYE].x, m_guidePosDraw[_RIGHT_EYE].y, 0.0f);
+
+			glVertex3f(m_guidePosDraw[_TOP_EYE].x, m_guidePosDraw[_TOP_EYE].y, 0.0f);
+			glVertex3f(m_guidePosDraw[_BOTTOM_EYE].x, m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
+			glEnd();
+			//==================================================
+
+			glDisable(GL_LINE_STIPPLE);
+			glLineWidth(1.0f);
+
+			glColor3f(1.0f, 0.0f, 0.0f);
+			glBegin(GL_POINTS);
+			glVertex3f(m_guidePosDraw[_FCENTER].x, m_guidePosDraw[_FCENTER].y, 0.0f);
+			glEnd();
+
+
+			glEnable(GL_TEXTURE_2D);
+			for (int i = 0; i < 4; i++){
+				if (i == m_selButtonId){
+					m_guideLine[i].DrawButtions(0.99f, 0.99f, 0.99f);
+				}
+				else{
+					m_guideLine[i].DrawButtions(0.8f, 0.8f, 0.8f);
+				}
 			}
+			glDisable(GL_TEXTURE_2D);
+
+			//glPointSize(10);
+			//glBegin(GL_LINE_STRIP);
+
+			//for (int i = 0; i < 4; i++){
+			//	glVertex3f(m_pPhotoImg->m_tmpVDraw[i].x, m_pPhotoImg->m_tmpVDraw[i].y, 0.0f);
+			//}
+			//glVertex3f(m_pPhotoImg->m_tmpVDraw[0].x, m_pPhotoImg->m_tmpVDraw[0].y, 0.0f);
+
+			//glEnd();
+			//		glPopAttrib();
+			DrawDebugInfo();
+			glPointSize(1.0f);
 		}
-		glDisable(GL_TEXTURE_2D);
-
-
-
-		//glPointSize(10);
-		//glBegin(GL_LINE_STRIP);
-
-		//for (int i = 0; i < 4; i++){
-		//	glVertex3f(m_pPhotoImg->m_tmpVDraw[i].x, m_pPhotoImg->m_tmpVDraw[i].y, 0.0f);
-		//}
-		//glVertex3f(m_pPhotoImg->m_tmpVDraw[0].x, m_pPhotoImg->m_tmpVDraw[0].y, 0.0f);
-
-		//glEnd();
-//		glPopAttrib();
-		DrawDebugInfo();
-
-
-
-
-		
-		glPointSize(1.0f);
 	}
 }
 
@@ -445,7 +441,7 @@ void CImageView::SetPhotoIDimg(CString strPath)
 		m_fDeSkewAngle = 0.0f;
 		m_pPhotoImg->SetRotateionAngle(m_fDeSkewAngle);
 		pM->SetImageRotateValue(m_fDeSkewAngle);
-
+		pM->SetSliderStatus(false);
 
 
 		BeginWaitCursor();
@@ -1400,19 +1396,16 @@ void CImageView::OnNcDestroy()
 }
 
 
-void CImageView::ChangeBrightness(float _value)
+void CImageView::ChangeBrightness(float _value, bool IsApply)
 {
 	if (m_pPhotoImg){
-		m_pPhotoImg->ChangeBrightness(m_pPhotoImg->GetSrcCopyIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
+		m_pPhotoImg->ChangeBrightness(_value, IsApply);
 	}
-
-	
-
 }
-void CImageView::ChangeContrast(float _value)
+void CImageView::ChangeContrast(float _value, bool IsApply)
 {
 	if (m_pPhotoImg){
-		m_pPhotoImg->ChangeConstrast(m_pPhotoImg->GetSrcCopyIplImage(), m_pPhotoImg->GetSrcCopyIplImage(), _value);
+		m_pPhotoImg->ChangeConstrast(_value, IsApply);
 	}
 }
 

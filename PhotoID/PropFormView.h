@@ -37,6 +37,7 @@ public:
 	virtual void OnInitialUpdate();
 
 	void SetImageRotateValue(float _fAngle);
+	void SetSliderMode(bool IsCropMode);
 	
 	afx_msg int OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT message);
 	int m_sliderRotate;
@@ -66,8 +67,14 @@ public:
 	CHoverButton m_pButtonPrint;
 
 	bool m_IsBtnCreated;
+	int m_fPreBrightness;
+	int m_fPreContrast;
 
 	afx_msg void OnBnClickedBnCropimg();
+	float m_fEditBrightness;
+	float m_fEditContrast;
+	afx_msg void OnNMCustomdrawSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 

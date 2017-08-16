@@ -81,8 +81,8 @@
 #define IDB_BITMAP_CROP                 312
 #define IDB_BITMAP_STAMP                313
 #define IDB_BITMAP_BLUR                 314
-#define IDB_BITMAP1                     315
 #define IDB_BITMAP_PRINT                315
+#define IDD_DIALOG1                     316
 #define IDC_SLIDER_ROTATE               1000
 #define IDC_SLIDER_BRINGTNESS           1001
 #define IDC_EDIT_ROT_VALUE              1002
@@ -100,7 +100,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        316
+#define _APS_NEXT_RESOURCE_VALUE        317
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           310

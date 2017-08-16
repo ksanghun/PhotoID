@@ -28,8 +28,8 @@ public:
 
 	void ProcAutoFitImage();
 
-	void ChangeBrightness(float _value);
-	void ChangeContrast(float _value);
+	void ChangeBrightness(float _value, bool IsApply);
+	void ChangeContrast(float _value, bool IsApply);
 	void PrintBitmap(LPCTSTR filename);
 
 	bool GetCBitmapFromIpl(CBitmap& bmp, IplImage* img);
