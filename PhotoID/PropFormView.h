@@ -46,12 +46,12 @@ public:
 	CMySlider m_ctrlSliderRotate;
 	int m_preRotateSliderPos;
 
-	afx_msg void OnEnChangeEditRotValue();
+//	afx_msg void OnEnChangeEditRotValue();
 	afx_msg void OnNMCustomdrawSliderRotate(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMReleasedcaptureSliderRotate(NMHDR *pNMHDR, LRESULT *pResult);
 	CString m_strRotValue;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	CEdit m_EditCtrlRotate;
+//	CEdit m_EditCtrlRotate;
 	afx_msg void OnBnClickedBnAutofit();
 	afx_msg void OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pResult);
@@ -71,8 +71,8 @@ public:
 	int m_fPreContrast;
 
 	afx_msg void OnBnClickedBnCropimg();
-	float m_fEditBrightness;
-	float m_fEditContrast;
+	//float m_fEditBrightness;
+	//float m_fEditContrast;
 	afx_msg void OnNMCustomdrawSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult);
 };

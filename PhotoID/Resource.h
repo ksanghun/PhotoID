@@ -87,7 +87,6 @@
 #define IDC_SLIDER_BRINGTNESS           1001
 #define IDC_EDIT_ROT_VALUE              1002
 #define IDC_BN_AUTOFIT                  1003
-#define IDC_EDIT_BRINGT_VALUE           1004
 #define IDC_SLIDER_CONTRAST             1005
 #define IDC_EDIT_CONT_VALUE             1006
 #define IDC_BN_PRINT                    1007

@@ -18,8 +18,8 @@ CPropFormView::CPropFormView()
 	, m_strRotValue(_T("0"))
 	, m_fBrightNess(0)
 	, m_fContrast(0)
-	, m_fEditBrightness(0)
-	, m_fEditContrast(0)
+	//, m_fEditBrightness(0)
+	//, m_fEditContrast(0)
 {
 	m_preRotateSliderPos = 0;
 	m_IsBtnCreated = false;
@@ -40,9 +40,9 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_ROTATE, m_ctrlSliderRotate);
 	//DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_editRotate);
 	//DDV_MinMaxFloat(pDX, m_editRotate, -90.0, 90.0);
-	DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_strRotValue);
-	DDV_MaxChars(pDX, m_strRotValue, 5);
-	DDX_Control(pDX, IDC_EDIT_ROT_VALUE, m_EditCtrlRotate);
+//	DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_strRotValue);
+//	DDV_MaxChars(pDX, m_strRotValue, 5);
+//	DDX_Control(pDX, IDC_EDIT_ROT_VALUE, m_EditCtrlRotate);
 	DDX_Slider(pDX, IDC_SLIDER_BRINGTNESS, m_fBrightNess);
 	DDV_MinMaxInt(pDX, m_fBrightNess, -100, 100);
 	DDX_Slider(pDX, IDC_SLIDER_CONTRAST, m_fContrast);
@@ -54,13 +54,13 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BN_STEMP, m_pButtonStamp);
 	DDX_Control(pDX, IDC_BN_STEMP2, m_pButtonBlur);
 	DDX_Control(pDX, IDC_BN_PRINT, m_pButtonPrint);
-	DDX_Text(pDX, IDC_EDIT_BRINGT_VALUE, m_fEditBrightness);
-	DDX_Text(pDX, IDC_EDIT_CONT_VALUE, m_fEditContrast);
+//	DDX_Text(pDX, IDC_EDIT_BRINGT_VALUE, m_fEditBrightness);
+//	DDX_Text(pDX, IDC_EDIT_CONT_VALUE, m_fEditContrast);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_WM_MOUSEACTIVATE()
-	ON_EN_CHANGE(IDC_EDIT_ROT_VALUE, &CPropFormView::OnEnChangeEditRotValue)
+//	ON_EN_CHANGE(IDC_EDIT_ROT_VALUE, &CPropFormView::OnEnChangeEditRotValue)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_ROTATE, &CPropFormView::OnNMCustomdrawSliderRotate)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_ROTATE, &CPropFormView::OnNMReleasedcaptureSliderRotate)
 	ON_BN_CLICKED(IDC_BN_AUTOFIT, &CPropFormView::OnBnClickedBnAutofit)
@@ -265,25 +265,25 @@ int CPropFormView::OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT messag
 
 
 
-void CPropFormView::OnEnChangeEditRotValue()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CFormView::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
-
-	// TODO:  Add your control notification handler code here
-
-	//UpdateData(TRUE);
-	//float fAngle = _wtof(m_strRotValue);
-	//if ((!m_strRotValue.IsEmpty()) && (fAngle)){
-
-	//	int sPos = fAngle * 10;
-	//	m_ctrlSliderRotate.SetPos(sPos);
-	//	pView->RotateImage(fAngle);
-	//}
-	//UpdateData(FALSE);
-}
+//void CPropFormView::OnEnChangeEditRotValue()
+//{
+//	// TODO:  If this is a RICHEDIT control, the control will not
+//	// send this notification unless you override the CFormView::OnInitDialog()
+//	// function and call CRichEditCtrl().SetEventMask()
+//	// with the ENM_CHANGE flag ORed into the mask.
+//
+//	// TODO:  Add your control notification handler code here
+//
+//	//UpdateData(TRUE);
+//	//float fAngle = _wtof(m_strRotValue);
+//	//if ((!m_strRotValue.IsEmpty()) && (fAngle)){
+//
+//	//	int sPos = fAngle * 10;
+//	//	m_ctrlSliderRotate.SetPos(sPos);
+//	//	pView->RotateImage(fAngle);
+//	//}
+//	//UpdateData(FALSE);
+//}
 
 
 
@@ -345,7 +345,8 @@ BOOL CPropFormView::PreTranslateMessage(MSG* pMsg)
 
 		UpdateData(TRUE);
 		float fAngle = _wtof(m_strRotValue);
-		if ((!m_strRotValue.IsEmpty()) && m_EditCtrlRotate.GetFocus()){
+		//if ((!m_strRotValue.IsEmpty()) && m_EditCtrlRotate.GetFocus()){
+		if ((!m_strRotValue.IsEmpty())){
 
 			int sPos = fAngle * 10;
 			m_ctrlSliderRotate.SetPos(sPos);
@@ -381,7 +382,7 @@ void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *
 		m_fPreBrightness = 0;
 		m_SliderBrightness.SetPos(0);
 		
-		m_fEditBrightness = 0;
+	//	m_fEditBrightness = 0;
 		UpdateData(FALSE);
 	}
 	else{
@@ -391,7 +392,7 @@ void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *
 				
 		m_fPreBrightness = 0;
 		m_SliderBrightness.SetPos(0);	
-		m_fEditBrightness = 0;
+	//	m_fEditBrightness = 0;
 		
 		UpdateData(FALSE);
 	}	
@@ -412,7 +413,7 @@ void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pR
 		m_fContrast = 0;
 		m_fPreContrast = 0;		
 		m_SliderContrast.SetPos(0);
-		m_fEditContrast = 0;
+	//	m_fEditContrast = 0;
 		UpdateData(FALSE);
 	}
 	else{
@@ -423,7 +424,7 @@ void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pR
 		m_fContrast = 0;
 		m_fPreContrast = 0;
 		m_SliderContrast.SetPos(0);
-		m_fEditContrast = 0;
+	//	m_fEditContrast = 0;
 		
 		UpdateData(FALSE);
 	}
@@ -459,7 +460,7 @@ void CPropFormView::OnNMCustomdrawSliderBringtness(NMHDR *pNMHDR, LRESULT *pResu
 	if (m_fPreBrightness != m_fBrightNess){
 
 		pView->ChangeBrightness(m_fBrightNess, false);
-		m_fEditBrightness = m_fBrightNess;
+	//	m_fEditBrightness = m_fBrightNess;
 		m_fPreBrightness = m_fBrightNess;
 		
 	}
@@ -477,7 +478,7 @@ void CPropFormView::OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult
 
 		float contrast = m_fContrast*0.01f + 1.0f;
 		pView->ChangeContrast(contrast, false);
-		m_fEditContrast = m_fContrast;
+	//	m_fEditContrast = m_fContrast;
 		m_fPreContrast = m_fContrast;
 
 	}

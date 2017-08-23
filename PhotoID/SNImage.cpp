@@ -853,6 +853,8 @@ void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage
 
 void CSNImage::SetCropImg(float _fScale)
 {
+	if (m_IsCropImg == true) return;
+
 	if (m_pCropImg){
 		cvReleaseImage(&m_pCropImg);
 		m_pCropImg = NULL;
