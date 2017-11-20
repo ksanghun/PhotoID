@@ -75,6 +75,8 @@ public:
 	//float m_fEditContrast;
 	afx_msg void OnNMCustomdrawSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedBnBlur();
+	afx_msg void OnBnClickedBnStemp();
 };
 
 

@@ -9,6 +9,8 @@
 // CPropFormView
 #include "DlgApply.h"
 
+using namespace cv;
+
 IMPLEMENT_DYNCREATE(CPropFormView, CFormView)
 
 CPropFormView::CPropFormView()
@@ -70,6 +72,8 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_BN_CLICKED(IDC_BN_CROPIMG, &CPropFormView::OnBnClickedBnCropimg)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_BRINGTNESS, &CPropFormView::OnNMCustomdrawSliderBringtness)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CONTRAST, &CPropFormView::OnNMCustomdrawSliderContrast)
+	ON_BN_CLICKED(IDC_BN_STEMP2, &CPropFormView::OnBnClickedBnBlur)
+	ON_BN_CLICKED(IDC_BN_STEMP, &CPropFormView::OnBnClickedBnStemp)
 END_MESSAGE_MAP()
 
 
@@ -484,4 +488,73 @@ void CPropFormView::OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult
 	}
 	UpdateData(FALSE);
 	*pResult = 0;
+}
+
+
+void CPropFormView::OnBnClickedBnBlur()
+{
+	// TODO: Add your control notification handler code here
+	// TEST // iPlimge --> cv mat --> blur --> Iplimage
+	IplImage *pimg = cvLoadImage("D:/face.jpg");
+	cvShowImage("before", pimg);
+	
+	cv::Mat m = cv::cvarrToMat(pimg);
+	int orignaltype = m.type();
+
+	Mat mask = Mat::zeros(m.size(), m.type());
+	// mask is a disk
+	int radious = 30;
+	circle(mask, Point(200, 200), radious, Scalar(255, 255, 255), -1);
+	Mat md;
+	m.copyTo(md);
+
+	Size blurSize(7, 7);
+	blur(mask, mask, blurSize);
+	blur(md, md, blurSize);
+
+	mask.convertTo(mask, CV_32FC3, 1.0 / 255); // 
+	md.convertTo(md, CV_32FC3);
+	m.convertTo(m, CV_32FC3);
+
+	multiply(mask, md, md);
+	multiply(Scalar::all(1.0) - mask, m, m);
+
+	Mat ouImage = Mat::zeros(m.size(), m.type());
+	add(md, m, ouImage);
+
+	ouImage.convertTo(ouImage, orignaltype);
+
+	cvReleaseImage(&pimg);
+	pimg = new IplImage(ouImage);
+	cvShowImage("blur", pimg);
+
+	
+	// ** Direct Access Pixels //
+	//void alphaBlend(Mat& foreground, Mat& background, Mat& alpha, Mat& outImage)
+	//{
+	//	// Find number of pixels. 
+	//	int numberOfPixels = foreground.rows * foreground.cols * foreground.channels();
+
+	//	// Get floating point pointers to the data matrices
+	//	float* fptr = reinterpret_cast<float*>(foreground.data);
+	//	float* bptr = reinterpret_cast<float*>(background.data);
+	//	float* aptr = reinterpret_cast<float*>(alpha.data);
+	//	float* outImagePtr = reinterpret_cast<float*>(outImage.data);
+
+	//	// Loop over all pixesl ONCE
+	//	for (
+	//		int i = 0;
+	//		i < numberOfPixels;
+	//	i++, outImagePtr++, fptr++, aptr++, bptr++
+	//		)
+	//	{
+	//		*outImagePtr = (*fptr)*(*aptr) + (*bptr)*(1 - *aptr);
+	//	}
+	//}
+}
+
+
+void CPropFormView::OnBnClickedBnStemp()
+{
+	// TODO: Add your control notification handler code here
 }
