@@ -17,9 +17,14 @@ CImgList::CImgList()
 
 CImgList::~CImgList()
 {
+	//if (m_pDragImage){
+	////	delete m_pDragImage;
+	//	m_pDragImage->
+	//}
 	if (m_pDragImage){
-		delete m_pDragImage;
+		while (m_pDragImage->GetImageCount()) m_pDragImage->Remove(0);
 	}
+
 }
 
 

@@ -607,7 +607,7 @@ void CImageView::ReSizeIcon()
 		// Update Cursor Size ///
 		POINT2D v1, v2;
 		mtSetPoint2D(&v1, 0, 0);
-		mtSetPoint2D(&v2, m_cursorSize*0.25f, 0);
+		mtSetPoint2D(&v2, m_cursorSize*0.5f, 0);
 		v1 = m_pPhotoImg->convertImageToScreenSpace(v1, m_nWidth, m_nHeight, false);
 		v2 = m_pPhotoImg->convertImageToScreenSpace(v2, m_nWidth, m_nHeight, false);
 		m_cursorSizeForDisp = v2.x - v1.x;
@@ -1497,7 +1497,7 @@ void CImageView::SetUserCursorSize(int _size)
 	m_cursorSize = _size;
 	POINT2D v1, v2;
 	mtSetPoint2D(&v1, 0, 0);
-	mtSetPoint2D(&v2, m_cursorSize*0.25f, 0);
+	mtSetPoint2D(&v2, m_cursorSize*0.5f, 0);
 	v1 = m_pPhotoImg->convertImageToScreenSpace(v1, m_nWidth, m_nHeight, false);
 	v2 = m_pPhotoImg->convertImageToScreenSpace(v2, m_nWidth, m_nHeight, false);
 	m_cursorSizeForDisp = v2.x - v1.x;

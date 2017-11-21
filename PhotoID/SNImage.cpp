@@ -951,7 +951,7 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 		imgMat(cutRect).copyTo(imgBlur);
 		imgMat(cutRect).copyTo(imgOri);
 
-		imgBlur.setTo(255);
+	//	imgBlur.setTo(255);
 
 	//	cv::Size blurSize(7, 7);
 		blur(mask, mask, blurSize);
