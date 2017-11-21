@@ -32,8 +32,13 @@ public:
 	void ChangeContrast(float _value, bool IsApply);
 	void PrintBitmap(LPCTSTR filename);
 
+	void SetUserCursorSize(int _size);
+
+
 	bool GetCBitmapFromIpl(CBitmap& bmp, IplImage* img);
 	void CropImage();
+	void BlurImage(int _size);
+	void StampImage();
 // Overrides
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view

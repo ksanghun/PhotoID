@@ -88,6 +88,8 @@
 #define IDC_EDIT_ROT_VALUE              1002
 #define IDC_BN_AUTOFIT                  1003
 #define IDC_SLIDER_CONTRAST             1005
+#define IDC_SLIDER_CONTRAST2            1006
+#define IDC_SLIDER_CURSOR_SIZE          1006
 #define IDC_BN_PRINT                    1007
 #define IDC_BN_CROPIMG                  1008
 #define IDC_BN_STEMP                    1009

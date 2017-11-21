@@ -47,6 +47,7 @@ public:
 	void Render2D();
 	void RenderMenu();
 	void DrawDebugInfo();
+	void DrawCircle(POINT2D pos, float fScale);
 	void InitGLview(int _nWidth, int _nHeight);
 	void MouseWheel(short zDelta);
 
@@ -67,11 +68,14 @@ public:
 
 	void ChangeBrightness(float _value, bool IsApply);
 	void ChangeContrast(float _value, bool IsApply);
+	void SetUserCursorSize(int _size);
 
 	GLuint Load4ChannelImage(char* sz);
 
 	IplImage* GetPrintPhoto();
 	void SetCropPhoto();
+	void BlurPhoto(int _size);
+	void StampImage();
 	CSNImage* GetPhotoIDImg() { return m_pPhotoImg; }
 
 private:
@@ -130,6 +134,13 @@ private:
 	unsigned int m_iFrameCnt;
 	
 
+	POINT3D m_vecCircle[36];
+	POINT2D m_curPos;	
+	float m_cursorSize;
+	float m_cursorSizeForDisp;
+	bool m_bBlurMode;
+	bool m_bStampMode;
+	bool m_bStampCopied;
 
 	// Image Guide Line =================================================//
 	void DrawCropArea();
@@ -142,6 +153,10 @@ private:
 	int m_selButtonId;
 	//===================================================================//
 
+
+
+//	cv::Mat m_imgStampcut;
+	cv::Rect m_rectForStamp;
 
 public:
 	DECLARE_MESSAGE_MAP()
@@ -163,5 +178,6 @@ public:
 	afx_msg void OnNcDestroy();
 
 
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 };
 

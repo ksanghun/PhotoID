@@ -94,6 +94,12 @@ public:
 	void ChangeRotation(IplImage* pSrc, IplImage* pDst);
 	void DrawCrossMark(int length, int thickness, int _x, int _y, IplImage* pImg);
 
+
+	void BlurImage(cv::Rect targetRect, cv::Size blurSize);
+	void CpoyForStamp(cv::Rect targetRect, cv::Mat& stampCut);
+	void StampImage(cv::Rect srcRect, cv::Rect targetRect, cv::Size blurSize);
+
+
 	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
 	POINT2D m_guidePos[_LNADMARK_POS_NUM];
 	POINT2D m_vecOutBoundery[4];

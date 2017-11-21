@@ -113,9 +113,9 @@ void CPhotoIDView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 
 void CPhotoIDView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 {
-#ifndef SHARED_HANDLERS
-	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
-#endif
+//#ifndef SHARED_HANDLERS
+//	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
+//#endif
 }
 
 
@@ -226,13 +226,19 @@ void CPhotoIDView::ProcAutoFitImage()
 	pM->SetImageRotateValue(fCurAngle);
 }
 
+void CPhotoIDView::SetUserCursorSize(int _size)
+{
+	if (m_pImageView){
+		m_pImageView->SetUserCursorSize(_size);
+	}
+}
+
 void CPhotoIDView::ChangeBrightness(float _value, bool IsApply)
 {
 	if (m_pImageView){
 		m_pImageView->ChangeBrightness(_value, IsApply);
 		
 	}
-
 }
 void CPhotoIDView::ChangeContrast(float _value, bool IsApply)
 {
@@ -422,4 +428,14 @@ bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img)
 void CPhotoIDView::CropImage()
 {
 	m_pImageView->SetCropPhoto();
+}
+
+void CPhotoIDView::BlurImage(int _size)
+{
+	m_pImageView->BlurPhoto(_size);
+}
+
+void CPhotoIDView::StampImage()
+{
+	m_pImageView->StampImage();
 }

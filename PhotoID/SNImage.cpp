@@ -815,34 +815,34 @@ IplImage* CSNImage::GetPrintImg(float _fScale)
 	cvCopy(m_pCropImg, m_PrtImg);
 	cvResetImageROI(m_PrtImg);
 
-	DrawCrossMark(50, 1, wMargin - 1, hMargin - 1, m_PrtImg);
-	DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin - 1, m_PrtImg);
-	DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
-	DrawCrossMark(50, 1, wMargin - 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
-	
-	//IplImage* rotated = cvCreateImage(cvSize(m_PrtImg->height, m_PrtImg->width), m_PrtImg->depth, m_PrtImg->nChannels);
-	//cvTranspose(m_PrtImg, rotated);
-	
+DrawCrossMark(50, 1, wMargin - 1, hMargin - 1, m_PrtImg);
+DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin - 1, m_PrtImg);
+DrawCrossMark(50, 1, wMargin + m_pCropImg->width + 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
+DrawCrossMark(50, 1, wMargin - 1, hMargin + m_pCropImg->height + 1, m_PrtImg);
+
+//IplImage* rotated = cvCreateImage(cvSize(m_PrtImg->height, m_PrtImg->width), m_PrtImg->depth, m_PrtImg->nChannels);
+//cvTranspose(m_PrtImg, rotated);
+
 //	cvShowImage("Crop img", m_PrtImg);
 
-	return m_PrtImg;
+return m_PrtImg;
 }
 
 void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage* pImg)
 {
-//	int id = y*matBinary->widthStep + x;
-//	matBinary->imageData[id]
+	//	int id = y*matBinary->widthStep + x;
+	//	matBinary->imageData[id]
 	// x direction //
 	for (int x = (_x - length); x < (_x + length); x++){
-		int id = _y*pImg->widthStep + x*3;
+		int id = _y*pImg->widthStep + x * 3;
 		pImg->imageData[id] = 0;
-		pImg->imageData[id+1] = 0;
-		pImg->imageData[id+2] = 0;
+		pImg->imageData[id + 1] = 0;
+		pImg->imageData[id + 2] = 0;
 	}
 
 
 	for (int y = (_y - length); y < (_y + length); y++){
-		int id = y*pImg->widthStep + _x*3;
+		int id = y*pImg->widthStep + _x * 3;
 		pImg->imageData[id] = 0;
 		pImg->imageData[id + 1] = 0;
 		pImg->imageData[id + 2] = 0;
@@ -888,8 +888,160 @@ void CSNImage::SetCropImg(float _fScale)
 	cvResize(m_pSrcImgCopy, m_pCropImgSmall);
 	cvResetImageROI(m_pSrcImgCopy);
 
-	
+
 	// Set Crop image as main image
 	SetGLTexture(m_pCropImg);
 	m_IsCropImg = true;
+
+
+
+	nImgWidth = m_pCropImg->width;
+	nImgHeight = m_pCropImg->height;
+}
+
+
+void CSNImage::CpoyForStamp(cv::Rect targetRect, cv::Mat& stampCut)
+{
+	if (m_IsCropImg == true){
+		cv::Rect cutRect = targetRect;
+		int margin = 10;
+		cutRect.x -= margin;
+		cutRect.y -= margin;
+		cutRect.width += margin * 2;
+		cutRect.height += margin * 2;
+
+		if ((cutRect.x < 0) || (cutRect.y < 0) ||
+			((cutRect.x + cutRect.width) >= nWidth) || ((cutRect.y + cutRect.height) >= nHeight)){
+			return;
+		}
+
+		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);
+		imgMat(cutRect).copyTo(stampCut);
+
+	}
+}
+
+
+void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
+{
+	if (m_IsCropImg == true){
+
+		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);
+		int orignaltype = imgMat.type();
+
+		cv::Rect cutRect = targetRect;
+		int margin = 10;
+		cutRect.x -= margin;
+		cutRect.y -= margin;
+		cutRect.width += margin * 2;
+		cutRect.height += margin * 2;
+
+
+		if ((cutRect.x < 0) || (cutRect.y < 0) ||
+			((cutRect.x + cutRect.width) >= nWidth) || ((cutRect.y + cutRect.height) >= nHeight)){
+			return;
+		}
+
+
+		cv::Mat mask = cv::Mat::zeros(cv::Size(cutRect.width, cutRect.height), imgMat.type());
+		// mask is a disk	
+		int radious = targetRect.width / 2;
+		circle(mask, cv::Point(cutRect.width / 2, cutRect.height/2), radious, cv::Scalar(255, 255, 255), -1);
+		cv::Mat imgBlur, imgOri;
+		imgMat(cutRect).copyTo(imgBlur);
+		imgMat(cutRect).copyTo(imgOri);
+
+		imgBlur.setTo(255);
+
+	//	cv::Size blurSize(7, 7);
+		blur(mask, mask, blurSize);
+		blur(imgBlur, imgBlur, blurSize);
+
+		//cv::imshow("blur1", mask);
+		//cv::imshow("blur2", imgBlur);
+
+		mask.convertTo(mask, CV_32FC3, 1.0 / 255); // 
+		imgBlur.convertTo(imgBlur, CV_32FC3);
+		imgOri.convertTo(imgOri, CV_32FC3);
+
+		multiply(mask, imgBlur, imgBlur);
+		multiply(cv::Scalar::all(1.0) - mask, imgOri, imgOri);
+
+		cv::Mat ouImage = cv::Mat::zeros(imgOri.size(), imgOri.type());
+		add(imgBlur, imgOri, ouImage);
+
+		ouImage.convertTo(ouImage, orignaltype);
+		ouImage.copyTo(imgMat(cutRect));
+
+//		cv::imshow("Result", imgMat);
+
+		//cvReleaseImage(&pimg);
+		//pimg = new IplImage(ouImage);
+//		cvShowImage("cropimg", m_pCropImg);
+
+		SetGLTexture(m_pCropImg);
+	}
+}
+void CSNImage::StampImage(cv::Rect _srcRect, cv::Rect targetRect, cv::Size blurSize)
+{
+	if (m_IsCropImg == true){
+
+		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);
+		int orignaltype = imgMat.type();
+
+		cv::Rect cutRect = targetRect;
+		int margin = 10;
+		cutRect.x -= margin;
+		cutRect.y -= margin;
+		cutRect.width += margin * 2;
+		cutRect.height += margin * 2;
+
+		cv::Rect srcRect = _srcRect;
+		srcRect.x -= margin;
+		srcRect.y -= margin;
+		srcRect.width += margin * 2;
+		srcRect.height += margin * 2;
+
+
+		if ((cutRect.x < 0) || (cutRect.y < 0) ||
+			((cutRect.x + cutRect.width) >= nWidth) || ((cutRect.y + cutRect.height) >= nHeight)){
+			return;
+		}
+
+
+		cv::Mat mask = cv::Mat::zeros(cv::Size(cutRect.width, cutRect.height), imgMat.type());
+		// mask is a disk	
+		int radious = targetRect.width / 2;
+		circle(mask, cv::Point(cutRect.width / 2, cutRect.height / 2), radious, cv::Scalar(255, 255, 255), -1);
+		cv::Mat cutImg, srcImg;
+		imgMat(cutRect).copyTo(cutImg);
+		imgMat(srcRect).copyTo(srcImg);
+
+		//	cv::Size blurSize(7, 7);
+		blur(mask, mask, blurSize);
+
+		//cv::imshow("blur1", mask);
+		//cv::imshow("blur2", imgBlur);
+
+		mask.convertTo(mask, CV_32FC3, 1.0 / 255); // 
+		cutImg.convertTo(cutImg, CV_32FC3);
+		srcImg.convertTo(srcImg, CV_32FC3);
+
+		multiply(mask, srcImg, srcImg);
+		multiply(cv::Scalar::all(1.0) - mask, cutImg, cutImg);
+
+		cv::Mat ouImage = cv::Mat::zeros(srcImg.size(), srcImg.type());
+		add(cutImg, srcImg, ouImage);
+
+		ouImage.convertTo(ouImage, orignaltype);
+		ouImage.copyTo(imgMat(cutRect));
+
+		//		cv::imshow("Result", imgMat);
+
+		//cvReleaseImage(&pimg);
+		//pimg = new IplImage(ouImage);
+		//		cvShowImage("cropimg", m_pCropImg);
+
+		SetGLTexture(m_pCropImg);
+	}
 }

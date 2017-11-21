@@ -77,6 +77,8 @@ public:
 	afx_msg void OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedBnBlur();
 	afx_msg void OnBnClickedBnStemp();
+	CSliderCtrl m_sliderCurSize;
+	afx_msg void OnNMCustomdrawSliderCursorSize(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 

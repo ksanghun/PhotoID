@@ -42,9 +42,9 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_ROTATE, m_ctrlSliderRotate);
 	//DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_editRotate);
 	//DDV_MinMaxFloat(pDX, m_editRotate, -90.0, 90.0);
-//	DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_strRotValue);
-//	DDV_MaxChars(pDX, m_strRotValue, 5);
-//	DDX_Control(pDX, IDC_EDIT_ROT_VALUE, m_EditCtrlRotate);
+	//	DDX_Text(pDX, IDC_EDIT_ROT_VALUE, m_strRotValue);
+	//	DDV_MaxChars(pDX, m_strRotValue, 5);
+	//	DDX_Control(pDX, IDC_EDIT_ROT_VALUE, m_EditCtrlRotate);
 	DDX_Slider(pDX, IDC_SLIDER_BRINGTNESS, m_fBrightNess);
 	DDV_MinMaxInt(pDX, m_fBrightNess, -100, 100);
 	DDX_Slider(pDX, IDC_SLIDER_CONTRAST, m_fContrast);
@@ -56,8 +56,9 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BN_STEMP, m_pButtonStamp);
 	DDX_Control(pDX, IDC_BN_STEMP2, m_pButtonBlur);
 	DDX_Control(pDX, IDC_BN_PRINT, m_pButtonPrint);
-//	DDX_Text(pDX, IDC_EDIT_BRINGT_VALUE, m_fEditBrightness);
-//	DDX_Text(pDX, IDC_EDIT_CONT_VALUE, m_fEditContrast);
+	//	DDX_Text(pDX, IDC_EDIT_BRINGT_VALUE, m_fEditBrightness);
+	//	DDX_Text(pDX, IDC_EDIT_CONT_VALUE, m_fEditContrast);
+	DDX_Control(pDX, IDC_SLIDER_CURSOR_SIZE, m_sliderCurSize);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -74,6 +75,7 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CONTRAST, &CPropFormView::OnNMCustomdrawSliderContrast)
 	ON_BN_CLICKED(IDC_BN_STEMP2, &CPropFormView::OnBnClickedBnBlur)
 	ON_BN_CLICKED(IDC_BN_STEMP, &CPropFormView::OnBnClickedBnStemp)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CURSOR_SIZE, &CPropFormView::OnNMCustomdrawSliderCursorSize)
 END_MESSAGE_MAP()
 
 
@@ -120,6 +122,13 @@ void CPropFormView::OnInitialUpdate()
 	
 	m_ctrlSliderRotate.Invalidate(TRUE);
 
+
+
+	m_sliderCurSize.SetRange(10, 100, TRUE);
+	m_sliderCurSize.SetPos(50);
+	m_sliderCurSize.SetTicFreq(1);
+
+	pView->SetUserCursorSize(m_sliderCurSize.GetPos());
 
 	SetSliderMode(false);
 
@@ -175,10 +184,12 @@ void CPropFormView::SetSliderMode(bool IsCropMode)
 		m_ctrlSliderRotate.EnableWindow(TRUE);
 		m_SliderBrightness.EnableWindow(FALSE);
 		m_SliderContrast.EnableWindow(FALSE);
+		m_sliderCurSize.EnableWindow(FALSE);
 	}
 	else{
 		m_ctrlSliderRotate.EnableWindow(FALSE);
 		m_SliderBrightness.EnableWindow(TRUE);
+		m_sliderCurSize.EnableWindow(TRUE);
 		m_SliderContrast.EnableWindow(TRUE);
 	}
 }
@@ -494,39 +505,47 @@ void CPropFormView::OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult
 void CPropFormView::OnBnClickedBnBlur()
 {
 	// TODO: Add your control notification handler code here
+
+
+	pView->BlurImage(0);
+
 	// TEST // iPlimge --> cv mat --> blur --> Iplimage
-	IplImage *pimg = cvLoadImage("D:/face.jpg");
-	cvShowImage("before", pimg);
-	
-	cv::Mat m = cv::cvarrToMat(pimg);
-	int orignaltype = m.type();
+	//IplImage *pimg = cvLoadImage("D:/face.jpg");
+	//cvShowImage("before", pimg);
+	//
+	//cv::Mat m = cv::cvarrToMat(pimg);
+	//int orignaltype = m.type();
 
-	Mat mask = Mat::zeros(m.size(), m.type());
-	// mask is a disk
-	int radious = 30;
-	circle(mask, Point(200, 200), radious, Scalar(255, 255, 255), -1);
-	Mat md;
-	m.copyTo(md);
+	//Mat mask = Mat::zeros(m.size(), m.type());
+	//// mask is a disk
+	//int radious = 100;
+	//circle(mask, Point(200, 200), radious, Scalar(255, 255, 255), -1);
+	//Mat md;
+	//m.copyTo(md);
 
-	Size blurSize(7, 7);
-	blur(mask, mask, blurSize);
-	blur(md, md, blurSize);
+	//Size blurSize(7, 7);
+	//blur(mask, mask, blurSize);
+	//blur(md, md, blurSize);
 
-	mask.convertTo(mask, CV_32FC3, 1.0 / 255); // 
-	md.convertTo(md, CV_32FC3);
-	m.convertTo(m, CV_32FC3);
+	//mask.convertTo(mask, CV_32FC3, 1.0 / 255); // 
+	//md.convertTo(md, CV_32FC3);
+	//m.convertTo(m, CV_32FC3);
 
-	multiply(mask, md, md);
-	multiply(Scalar::all(1.0) - mask, m, m);
+	//multiply(mask, md, md);
+	//multiply(Scalar::all(1.0) - mask, m, m);
 
-	Mat ouImage = Mat::zeros(m.size(), m.type());
-	add(md, m, ouImage);
+	//Mat ouImage = Mat::zeros(m.size(), m.type());
+	//add(md, m, ouImage);
 
-	ouImage.convertTo(ouImage, orignaltype);
+	//ouImage.convertTo(ouImage, orignaltype);
 
-	cvReleaseImage(&pimg);
-	pimg = new IplImage(ouImage);
-	cvShowImage("blur", pimg);
+	//cvReleaseImage(&pimg);
+	//pimg = new IplImage(ouImage);
+	//cvShowImage("blur", pimg);
+
+
+
+
 
 	
 	// ** Direct Access Pixels //
@@ -557,4 +576,15 @@ void CPropFormView::OnBnClickedBnBlur()
 void CPropFormView::OnBnClickedBnStemp()
 {
 	// TODO: Add your control notification handler code here
+	pView->StampImage();
+}
+
+
+void CPropFormView::OnNMCustomdrawSliderCursorSize(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	pView->SetUserCursorSize(m_sliderCurSize.GetPos());
+
+	*pResult = 0;
 }

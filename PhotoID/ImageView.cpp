@@ -31,9 +31,9 @@ CImageView::CImageView()
 	memset(&m_LogFontBig, 0, sizeof(m_LogFontBig));
 	//	strcpy((char*)m_LogFont.lfFaceName, ("Arial"));
 	m_LogFontBig.lfCharSet = ANSI_CHARSET;
-	m_LogFontBig.lfHeight = -16;
+	m_LogFontBig.lfHeight = -12;
 	m_LogFontBig.lfWidth = 0;
-	m_LogFont.lfWeight = FW_BOLD;
+	//m_LogFont.lfWeight = FW_BOLD;
 
 
 	m_pBmpInfo = (BITMAPINFO *)malloc(sizeof(BITMAPINFOHEADER) + (sizeof(RGBQUAD) * 256));
@@ -87,6 +87,22 @@ CImageView::CImageView()
 
 	
 	m_selButtonId = -1;
+
+	
+	// Init Mouse Circle Cursor //
+	float rad = 1.0f;
+	float angleStep = 2.0f*3.141529f/36.0f;
+	for (int i = 0; i < 36; i++){
+		m_vecCircle[i].x = rad*cos(angleStep*i);
+		m_vecCircle[i].y = rad*sin(angleStep*i);
+		m_vecCircle[i].z = 0;
+	}
+
+
+	m_bBlurMode = false;
+	m_bStampMode = false;
+	m_cursorSize = 0;
+
 }
 
 
@@ -115,10 +131,6 @@ CImageView::~CImageView()
 	delete m_pBmpInfo;
 	ReleaseImageData();
 
-
-	
-
-
 }
 
 BEGIN_MESSAGE_MAP(CImageView, COGLWnd)
@@ -132,6 +144,7 @@ BEGIN_MESSAGE_MAP(CImageView, COGLWnd)
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_DROPFILES()
 	ON_WM_NCDESTROY()
+	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -182,7 +195,22 @@ void CImageView::ResetIconTextureId()
 {
 }
 
+void CImageView::DrawCircle(POINT2D pos, float fScale)
+{
+	glPushMatrix();
+//	
+	glTranslatef(pos.x, m_nHeight-pos.y, 0.0f);
+	glScalef(fScale, fScale, fScale);	
 
+	glBegin(GL_LINE_STRIP);
+	for (int i = 0; i < 36; i++){
+		glVertex3f(m_vecCircle[i].x, m_vecCircle[i].y, 0.0f);
+	}
+	glVertex3f(m_vecCircle[0].x, m_vecCircle[0].y, 0.0f);
+	glEnd();
+
+	glPopMatrix();
+}
 
 void CImageView::Render()
 {
@@ -344,9 +372,36 @@ void CImageView::Render2D()
 
 			//glEnd();
 			//		glPopAttrib();
-			DrawDebugInfo();
+			
 			glPointSize(1.0f);
 		}
+
+
+		else{
+			DrawDebugInfo();
+
+			if (m_bBlurMode){
+				glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+				DrawCircle(m_curPos, m_cursorSizeForDisp);
+			}
+
+			if (m_bStampMode){
+				POINT3D tPos;
+				mtSetPoint3D(&tPos, m_curPos.x, m_nHeight - m_curPos.y, 0.0f);
+				
+				if (m_bStampCopied){
+					glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
+					gl_DrawText(tPos, L"Stamp", m_LogFontBig, 1, m_pBmpInfo, m_CDCPtr);
+				}
+				else{
+					glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+					gl_DrawText(tPos, L"Copy", m_LogFontBig, 1, m_pBmpInfo, m_CDCPtr);
+				}				
+				
+				DrawCircle(m_curPos, m_cursorSizeForDisp);
+			}
+		}
+
 	}
 }
 
@@ -547,6 +602,16 @@ void CImageView::ReSizeIcon()
 		}
 
 		SetCropArea();
+
+
+		// Update Cursor Size ///
+		POINT2D v1, v2;
+		mtSetPoint2D(&v1, 0, 0);
+		mtSetPoint2D(&v2, m_cursorSize*0.25f, 0);
+		v1 = m_pPhotoImg->convertImageToScreenSpace(v1, m_nWidth, m_nHeight, false);
+		v2 = m_pPhotoImg->convertImageToScreenSpace(v2, m_nWidth, m_nHeight, false);
+		m_cursorSizeForDisp = v2.x - v1.x;
+
 	}
 
 	m_right = m_left + m_nWidth;
@@ -726,9 +791,14 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 		curPos.x = (float)point.x;
 		curPos.y = (float)point.y;
 
+		
+		m_curPos = curPos;
 
 		curPos = m_pPhotoImg->convertScreenToImageSpace(curPos, m_nWidth, m_nHeight);
 		m_strMousePos.Format(_T("[%d, %d]"), (int)curPos.x, (int)curPos.y);
+
+	//	m_curPos = m_pPhotoImg->convertImageToScreenSpace(curPos, m_nWidth, m_nHeight, true);
+		
 	}
 
 
@@ -888,6 +958,33 @@ void CImageView::OnLButtonDown(UINT nFlags, CPoint point)
 		//m_centery = m_pCurrSelImg->GetPos().y;
 	}
 
+
+
+	if (m_bBlurMode){
+		if (m_pPhotoImg){
+			POINT2D curPos = m_pPhotoImg->convertScreenToImageSpace(m_curPos, m_nWidth, m_nHeight);
+			cv::Rect rect(curPos.x - m_cursorSize*0.5f, curPos.y - m_cursorSize*0.5f, m_cursorSize, m_cursorSize);
+			m_pPhotoImg->BlurImage(rect, cv::Size(10, 10));
+		}
+	}
+
+	if (m_bStampMode){
+		POINT2D curPos = m_pPhotoImg->convertScreenToImageSpace(m_curPos, m_nWidth, m_nHeight);
+		cv::Rect rect(curPos.x - m_cursorSize*0.5f, curPos.y - m_cursorSize*0.5f, m_cursorSize, m_cursorSize);
+
+		if (m_bStampCopied == false){
+			// Copy image
+			//m_imgStampcut.release();
+			//m_pPhotoImg->CpoyForStamp(rect, m_imgStampcut);
+			m_rectForStamp = rect;
+			m_bStampCopied = true;
+		}
+		else{
+			// paste image
+			m_pPhotoImg->StampImage(m_rectForStamp, rect, cv::Size(10, 10));
+		}
+	}
+	
 	//PrepareRender();
 	//Render();
 	COGLWnd::OnLButtonDown(nFlags, point);
@@ -1395,6 +1492,20 @@ void CImageView::OnNcDestroy()
 	//}
 }
 
+void CImageView::SetUserCursorSize(int _size)
+{
+	m_cursorSize = _size;
+	POINT2D v1, v2;
+	mtSetPoint2D(&v1, 0, 0);
+	mtSetPoint2D(&v2, m_cursorSize*0.25f, 0);
+	v1 = m_pPhotoImg->convertImageToScreenSpace(v1, m_nWidth, m_nHeight, false);
+	v2 = m_pPhotoImg->convertImageToScreenSpace(v2, m_nWidth, m_nHeight, false);
+	m_cursorSizeForDisp = v2.x - v1.x;
+
+	if (m_bStampCopied){
+		m_bStampCopied = false;
+	}
+}
 
 void CImageView::ChangeBrightness(float _value, bool IsApply)
 {
@@ -1476,4 +1587,58 @@ void CImageView::SetCropPhoto()
 		m_pPhotoImg->SetCropImg(m_fImgDetectScale);
 	}
 
+}
+
+void CImageView::BlurPhoto(int _size)
+{
+	if (m_pPhotoImg){
+		//	m_pPhotoImg->GetCropImg(m_fImgDetectScale);
+		m_bBlurMode = true;
+		m_bStampMode = false;
+
+		// Update Cursor Size ///
+		POINT2D v1, v2;
+		mtSetPoint2D(&v1, 0, 0);
+		mtSetPoint2D(&v2, m_cursorSize*0.5f, 0);
+		v1 = m_pPhotoImg->convertImageToScreenSpace(v1, m_nWidth, m_nHeight, false);
+		v2 = m_pPhotoImg->convertImageToScreenSpace(v2, m_nWidth, m_nHeight, false);
+		m_cursorSizeForDisp = v2.x - v1.x;
+	}
+}
+
+
+void CImageView::StampImage()
+{
+	if (m_pPhotoImg){
+		//	m_pPhotoImg->GetCropImg(m_fImgDetectScale);
+		m_bBlurMode = false;
+		m_bStampMode = true;
+
+		if (m_bStampCopied){
+			m_bStampCopied = false;
+		}
+
+		// Update Cursor Size ///
+		POINT2D v1, v2;
+		mtSetPoint2D(&v1, 0, 0);
+		mtSetPoint2D(&v2, m_cursorSize*0.5f, 0);
+		v1 = m_pPhotoImg->convertImageToScreenSpace(v1, m_nWidth, m_nHeight, false);
+		v2 = m_pPhotoImg->convertImageToScreenSpace(v2, m_nWidth, m_nHeight, false);
+		m_cursorSizeForDisp = v2.x - v1.x;
+	}
+
+}
+
+void CImageView::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	m_bBlurMode = false;
+	m_bStampMode = false;
+
+	if (m_bStampCopied){
+		m_bStampCopied = false;
+	}
+
+	COGLWnd::OnRButtonDown(nFlags, point);
 }
