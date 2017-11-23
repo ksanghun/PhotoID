@@ -59,6 +59,7 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	//	DDX_Text(pDX, IDC_EDIT_BRINGT_VALUE, m_fEditBrightness);
 	//	DDX_Text(pDX, IDC_EDIT_CONT_VALUE, m_fEditContrast);
 	DDX_Control(pDX, IDC_SLIDER_CURSOR_SIZE, m_sliderCurSize);
+	DDX_Control(pDX, IDC_COMBO1, m_comboCountryList);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -76,6 +77,7 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_BN_CLICKED(IDC_BN_STEMP2, &CPropFormView::OnBnClickedBnBlur)
 	ON_BN_CLICKED(IDC_BN_STEMP, &CPropFormView::OnBnClickedBnStemp)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CURSOR_SIZE, &CPropFormView::OnNMCustomdrawSliderCursorSize)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CPropFormView::OnCbnSelchangeCombo1)
 END_MESSAGE_MAP()
 
 
@@ -98,15 +100,54 @@ void CPropFormView::Dump(CDumpContext& dc) const
 
 // CPropFormView message handlers
 
+void CPropFormView::LoadCountryListFile()
+{
 
+	std::ifstream in;
+	in.open("PhotoSize.txt");
+	std::string strName;
+	int width, height;
+
+
+	m_countryList.clear();
+	while (!in.eof())
+	{
+		in >> strName >> width >> height;		
+		_PHOTOID_FORMAT item;
+		item.name = strName.data();
+		item.photoSizeW = width;
+		item.photoSizeH = height;
+		m_countryList.push_back(item);
+	}
+
+	for (auto i = 0; i < m_countryList.size(); i++){
+		CString strItem;
+		strItem.Format(L"%s: %dmm X %dmm", m_countryList[i].name, m_countryList[i].photoSizeW, m_countryList[i].photoSizeH);
+		m_comboCountryList.InsertString(i, strItem);
+	}
+
+	if (m_countryList.size() > 0){
+		m_comboCountryList.SetCurSel(0);
+		pView->SetPhotoFomat(m_countryList[0]);
+		UpdateData(FALSE);
+	}
+
+	// Load File//
+	// Format //
+	// Nation, width(mm), height(mm) //
+	// ex) Canada: 50mm X 70mm 
+	// Add list //
+	// Set ComboBox //
+
+
+
+}
 void CPropFormView::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
 
 	// TODO: Add your specialized code here and/or call the base class
 
-
-	
 	m_ctrlSliderRotate.SetRange(-300, 300, TRUE);
 	m_ctrlSliderRotate.SetPos(0);
 	m_ctrlSliderRotate.SetTicFreq(100);
@@ -587,4 +628,15 @@ void CPropFormView::OnNMCustomdrawSliderCursorSize(NMHDR *pNMHDR, LRESULT *pResu
 	pView->SetUserCursorSize(m_sliderCurSize.GetPos());
 
 	*pResult = 0;
+}
+
+
+void CPropFormView::OnCbnSelchangeCombo1()
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	int pos = m_comboCountryList.GetCurSel();
+	if (pos < m_countryList.size()){
+		pView->SetPhotoFomat(m_countryList[pos]);
+	}
 }

@@ -69,6 +69,7 @@ public:
 	void ChangeBrightness(float _value, bool IsApply);
 	void ChangeContrast(float _value, bool IsApply);
 	void SetUserCursorSize(int _size);
+	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 
 	GLuint Load4ChannelImage(char* sz);
 
@@ -145,6 +146,7 @@ private:
 	// Image Guide Line =================================================//
 	void DrawCropArea();
 	void SetCropArea();
+	
 
 	POINT2D m_guidePosDraw[_LNADMARK_POS_NUM];
 	POINT2D m_vecOutBounderyDraw[4];

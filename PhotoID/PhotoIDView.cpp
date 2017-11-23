@@ -427,15 +427,24 @@ bool CPhotoIDView::GetCBitmapFromIpl(CBitmap& bmp, IplImage* img)
 
 void CPhotoIDView::CropImage()
 {
-	m_pImageView->SetCropPhoto();
+	if (m_pImageView)
+		m_pImageView->SetCropPhoto();
 }
 
 void CPhotoIDView::BlurImage(int _size)
 {
-	m_pImageView->BlurPhoto(_size);
+	if (m_pImageView)
+		m_pImageView->BlurPhoto(_size);
 }
 
 void CPhotoIDView::StampImage()
 {
-	m_pImageView->StampImage();
+	if (m_pImageView)
+		m_pImageView->StampImage();
+}
+
+void CPhotoIDView::SetPhotoFomat(_PHOTOID_FORMAT _format)
+{
+	if (m_pImageView)
+		m_pImageView->SetPhotoFomat(_format);
 }

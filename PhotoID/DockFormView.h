@@ -16,7 +16,7 @@ public:
 
 	void SetImageRotateValue(float _fAngle);
 	void SetSliderStatus(bool IsCropMode);
-
+	void LoadCountryFormat();
 
 protected:
 	DECLARE_MESSAGE_MAP()

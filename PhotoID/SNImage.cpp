@@ -2,15 +2,23 @@
 #include "SNImage.h"
 
 
-#define CANADA_WIDTH_MM 50.0f
-#define CANADA_HEIGHT_MM 70.0f
-#define DPI300_PIXEL 11.82f
+#define PHOTO_WIDTH_MM 50.0f
+#define PHOTO_HEIGHT_MM 70.0f
+#define PRINT_WIDTH_MM 150.0f
+#define PRIMT_HEIGHT_MM 100.0f
 
-#define PRINT_SIZEW 2418
-#define PRINT_SIZEH 1612
-#define CANADA_SIZEW 793
-#define CANADA_SIZEH 1111
-#define CANADA_RATIO 0.7143
+//#define DPI300_PIXEL 11.82f
+
+
+
+#define PRINT_SIZEW 2400
+#define PRINT_SIZEH 1600
+//#define CANADA_SIZEW 793
+//#define CANADA_SIZEH 1111
+//#define CANADA_RATIO 0.7143
+
+
+
 
 CSNImage::CSNImage()
 {
@@ -50,8 +58,14 @@ CSNImage::CSNImage()
 	m_IsCropImg = false;
 
 	
+	m_printFormat.set(L"Canada", 50, 70);
 }
 
+
+void CSNImage::SetPhotoFomat(_PHOTOID_FORMAT _format)
+{
+	m_printFormat.set(_format.name, _format.photoSizeW, _format.photoSizeH);
+}
 
 CSNImage::~CSNImage()
 {
@@ -114,7 +128,9 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 
 
 	m_pSrcImg = pimg;
+//	m_PrtImg = cvCreateImage(cvSize(PRINT_SIZEW, PRINT_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
 	m_PrtImg = cvCreateImage(cvSize(PRINT_SIZEW, PRINT_SIZEH), m_pSrcImg->depth, m_pSrcImg->nChannels);
+
 	//int w = pimg->width / 2;
 	//int h = pimg->height / 2;
 
@@ -739,8 +755,11 @@ void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, fl
 
 //	float aRatio = CANADA_WIDTH_MM / CANADA_HEIGHT_MM;
 
-	float cropHeight = (yFaceTop - yFaceBot) * 2;  // face length X 2
-	float cropWidth = cropHeight*CANADA_RATIO;
+	// need to know the ratio of face length / image height
+
+	float cropHeight = (yFaceTop - yFaceBot) * 1.5;  // face length X 2
+//	float cropWidth = cropHeight*CANADA_RATIO;
+	float cropWidth = cropHeight*m_printFormat.aRatio;
 	
 
 
@@ -798,8 +817,12 @@ IplImage* CSNImage::GetPrintImg(float _fScale)
 //#define CANADA_SIZEW 590
 //#define CANADA_SIZEH 826
 
-	int wMargin = (PRINT_SIZEW - CANADA_SIZEW * 2) / 4;
-	int hMargin = (PRINT_SIZEH - CANADA_SIZEW ) / 2;
+	//int wMargin = (PRINT_SIZEW - CANADA_SIZEW * 2) / 4;
+	//int hMargin = (PRINT_SIZEH - CANADA_SIZEW ) / 2;
+
+	int wMargin = (PRINT_SIZEW - m_printFormat.photoSizeW * 2) / 4;
+	int hMargin = (PRINT_SIZEH - m_printFormat.photoSizeH) / 2;
+
 
 	cvSetImageROI(m_PrtImg, cvRect(wMargin, hMargin, m_pCropImg->width, m_pCropImg->height));		// posx, posy = left - top
 	cvCopy(m_pCropImg, m_PrtImg);
@@ -877,10 +900,11 @@ void CSNImage::SetCropImg(float _fScale)
 	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
 	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
 
-	float fRatio = (float)CANADA_SIZEW / (float)CANADA_SIZEH;
+	float fRatio = m_printFormat.aRatio;
 	int sHeight = 200;
 	int sWidth = sHeight * fRatio;
-	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImgCopy->depth, m_pSrcImgCopy->nChannels);
+//	m_pCropImg = cvCreateImage(cvSize(CANADA_SIZEW, CANADA_SIZEH), m_pSrcImgCopy->depth, m_pSrcImgCopy->nChannels);
+	m_pCropImg = cvCreateImage(cvSize(m_printFormat.photoSizeW, m_printFormat.photoSizeH), m_pSrcImgCopy->depth, m_pSrcImgCopy->nChannels);
 	m_pCropImgSmall = cvCreateImage(cvSize(sWidth, sHeight), m_pSrcImgCopy->depth, m_pSrcImgCopy->nChannels);
 	cvSetImageROI(m_pSrcImgCopy, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
 	//	cvCopy(m_pSrcImg, m_pCropImg);

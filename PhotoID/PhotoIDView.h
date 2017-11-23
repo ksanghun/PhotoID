@@ -39,6 +39,7 @@ public:
 	void CropImage();
 	void BlurImage(int _size);
 	void StampImage();
+	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 // Overrides
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view

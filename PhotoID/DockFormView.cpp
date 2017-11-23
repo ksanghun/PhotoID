@@ -46,6 +46,12 @@ void CDockFormView::SetSliderStatus(bool IsCropMode)
 	}
 }
 
+void CDockFormView::LoadCountryFormat()
+{
+	if (m_pMyFormView){
+		m_pMyFormView->LoadCountryListFile();
+	}
+}
 
 int CDockFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {

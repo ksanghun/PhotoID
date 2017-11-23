@@ -10,7 +10,7 @@
 
 
 
-enum TIMEREVNT { _RENDER=100, _ADDIMG , _SEARCHIMG};
+enum TIMEREVNT { _RENDER=100, _ADDIMG , _SEARCHIMG, _UPDATE_IMAGE};
 #define _MIN_ICON_SIZE 16
 #define FACE_DETECT_SIZE 100
 #define _PI 3.1414529
@@ -891,6 +891,14 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent == _SEARCHIMG){
 
 	}
+
+	if (nIDEvent == _UPDATE_IMAGE){
+		wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
+		SetCropArea();
+		ReSizeIcon();
+		Render();
+		KillTimer(_UPDATE_IMAGE);
+	}
 	COGLWnd::OnTimer(nIDEvent);
 }
 
@@ -1641,4 +1649,19 @@ void CImageView::OnRButtonDown(UINT nFlags, CPoint point)
 	}
 
 	COGLWnd::OnRButtonDown(nFlags, point);
+}
+
+
+void CImageView::SetPhotoFomat(_PHOTOID_FORMAT _format)
+{
+	if (m_pPhotoImg){
+		m_pPhotoImg->SetPhotoFomat(_format);
+
+		//wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
+		//ReSizeIcon();
+		//Render();
+
+		SetTimer(_UPDATE_IMAGE, 500, NULL);
+	}
+
 }

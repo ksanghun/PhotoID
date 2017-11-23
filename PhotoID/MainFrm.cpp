@@ -242,6 +242,8 @@ BOOL CMainFrame::CreateDockingWindows()
 		TRACE0("Failed to create Properties window\n");
 		return FALSE; // failed to create
 	}
+	m_wndFormView.LoadCountryFormat();
+	
 	//if (!m_wndFormView.Create(strPropertiesWnd, this, CRect(0, 0, 205, 157), TRUE,
 	//	ID_VIEW_PROPERTIESWND,
 	//	WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |

@@ -6,6 +6,7 @@
 
 #include "MySlider.h"
 #include "HoverButton.h"
+#include "data_type.h"
 
 // CPropFormView form view
 
@@ -70,6 +71,11 @@ public:
 	int m_fPreBrightness;
 	int m_fPreContrast;
 
+
+	void LoadCountryListFile();
+	std::vector<_PHOTOID_FORMAT>m_countryList;
+
+
 	afx_msg void OnBnClickedBnCropimg();
 	//float m_fEditBrightness;
 	//float m_fEditContrast;
@@ -79,6 +85,8 @@ public:
 	afx_msg void OnBnClickedBnStemp();
 	CSliderCtrl m_sliderCurSize;
 	afx_msg void OnNMCustomdrawSliderCursorSize(NMHDR *pNMHDR, LRESULT *pResult);
+	CComboBox m_comboCountryList;
+	afx_msg void OnCbnSelchangeCombo1();
 };
 
 

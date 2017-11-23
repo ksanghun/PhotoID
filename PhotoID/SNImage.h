@@ -9,6 +9,10 @@
 
 enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _FCENTER, _TOP_EYE, _BOTTOM_EYE, _NOSE, _TOPHEAD, _CHIN };
 #define _LNADMARK_POS_NUM 9
+
+
+
+
 class CSNImage
 {
 public:
@@ -55,7 +59,7 @@ public:
 	float GetImgHScale() { return m_imgHScale; };
 	POINT3D GetLeftTop() { return m_pntLT; };
 	void SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter);
-
+	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 
 	void ClearMatchResult();
 
@@ -157,5 +161,7 @@ private:
 	float m_matRot[6];
 
 	IplImage* m_PrtImg;
+
+	_PHOTOID_FORMAT m_printFormat;
 };
 

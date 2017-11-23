@@ -430,5 +430,23 @@ typedef struct _MATCHInfo
 	float accuracy;
 }_MATCHInfo;
 
+#define DPI300_PIXEL_MM 16.0f
+struct _PHOTOID_FORMAT{
+	//int printSizeW;
+	//int printSizeH;
+	CString name;
+	int photoSizeW;
+	int photoSizeH;
+	float aRatio;
+
+	void set(CString _name, int _phoW, int _phoH){
+		//printSizeW = _priW*DPI300_PIXEL_MM;
+		//printSizeH = _priH*DPI300_PIXEL_MM;]
+		name = _name;
+		photoSizeW = _phoW*DPI300_PIXEL_MM;
+		photoSizeH = _phoH*DPI300_PIXEL_MM;
+		aRatio = (float)_phoW / (float)_phoH;
+	};
+};
 
 #pragma pack()
