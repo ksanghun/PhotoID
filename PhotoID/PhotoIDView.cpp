@@ -448,3 +448,9 @@ void CPhotoIDView::SetPhotoFomat(_PHOTOID_FORMAT _format)
 	if (m_pImageView)
 		m_pImageView->SetPhotoFomat(_format);
 }
+
+void CPhotoIDView::Undo()
+{
+	if (m_pImageView)
+		m_pImageView->Undo();
+}

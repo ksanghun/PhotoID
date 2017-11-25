@@ -70,6 +70,7 @@ public:
 	void ChangeContrast(float _value, bool IsApply);
 	void SetUserCursorSize(int _size);
 	void SetPhotoFomat(_PHOTOID_FORMAT _format);
+	void Undo();
 
 	GLuint Load4ChannelImage(char* sz);
 

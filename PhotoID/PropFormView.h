@@ -87,6 +87,7 @@ public:
 	afx_msg void OnNMCustomdrawSliderCursorSize(NMHDR *pNMHDR, LRESULT *pResult);
 	CComboBox m_comboCountryList;
 	afx_msg void OnCbnSelchangeCombo1();
+	afx_msg void OnBnClickedBnUndo();
 };
 
 

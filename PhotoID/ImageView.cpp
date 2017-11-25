@@ -1665,3 +1665,11 @@ void CImageView::SetPhotoFomat(_PHOTOID_FORMAT _format)
 	}
 
 }
+
+void CImageView::Undo()
+{
+	if (m_pPhotoImg){
+		m_pPhotoImg->Undo();
+	}
+
+}

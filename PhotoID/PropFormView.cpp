@@ -78,6 +78,7 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_BN_CLICKED(IDC_BN_STEMP, &CPropFormView::OnBnClickedBnStemp)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CURSOR_SIZE, &CPropFormView::OnNMCustomdrawSliderCursorSize)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CPropFormView::OnCbnSelchangeCombo1)
+	ON_BN_CLICKED(IDC_BN_UNDO, &CPropFormView::OnBnClickedBnUndo)
 END_MESSAGE_MAP()
 
 
@@ -639,4 +640,11 @@ void CPropFormView::OnCbnSelchangeCombo1()
 	if (pos < m_countryList.size()){
 		pView->SetPhotoFomat(m_countryList[pos]);
 	}
+}
+
+
+void CPropFormView::OnBnClickedBnUndo()
+{
+	// TODO: Add your control notification handler code here
+	pView->Undo();
 }

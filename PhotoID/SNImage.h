@@ -60,6 +60,7 @@ public:
 	POINT3D GetLeftTop() { return m_pntLT; };
 	void SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter);
 	void SetPhotoFomat(_PHOTOID_FORMAT _format);
+	void Undo();
 
 	void ClearMatchResult();
 
@@ -152,6 +153,7 @@ private:
 	IplImage* m_pCropImg;
 	IplImage *m_pCropImgSmall;
 
+	IplImage* m_imgUndo;
 
 	float m_fImgDeskewAngle, m_fSrcBrightness, m_fSrcContrast, m_fImgAngle;
 	float m_fImgDrawAngle;

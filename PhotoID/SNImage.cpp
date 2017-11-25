@@ -61,6 +61,12 @@ CSNImage::CSNImage()
 	m_printFormat.set(L"Canada", 50, 70);
 }
 
+void CSNImage::Undo()
+{
+	m_pCropImg = cvCloneImage(m_imgUndo);
+	SetGLTexture(m_pCropImg);
+}
+
 
 void CSNImage::SetPhotoFomat(_PHOTOID_FORMAT _format)
 {
@@ -643,6 +649,14 @@ void CSNImage::ChangeBrightness(float _value, bool IsApply)
 	}
 	else{
 		if (IsApply){
+
+			if (m_imgUndo){
+				cvReleaseImage(&m_imgUndo);
+			}
+			// For Undo=============== //
+			m_imgUndo = cvCloneImage(m_pCropImg);
+			//========================//
+
 			CvScalar brVal = cvScalarAll(_value);
 			cvAddS(m_pCropImg, brVal, m_pCropImg, NULL);
 
@@ -674,6 +688,15 @@ void CSNImage::ChangeConstrast(float _value, bool IsApply)
 	}
 	else{
 		if (IsApply){
+
+			if (m_imgUndo){
+				cvReleaseImage(&m_imgUndo);
+			}
+			// For Undo=============== //
+			m_imgUndo = cvCloneImage(m_pCropImg);
+			//========================//
+
+
 			IplImage *pTempImg = cvCreateImage(cvGetSize(m_pCropImg), IPL_DEPTH_8U, m_pCropImg->nChannels);
 			cvSet(pTempImg, cvScalarAll(1), NULL);
 			cvMul(m_pCropImg, pTempImg, m_pCropImg, _value);
@@ -950,7 +973,17 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 {
 	if (m_IsCropImg == true){
 
-		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);
+		if (m_imgUndo){
+			cvReleaseImage(&m_imgUndo);
+		}
+		// For Undo=============== //
+		m_imgUndo = cvCloneImage(m_pCropImg);
+		//========================//
+		
+		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);	
+
+		
+
 		int orignaltype = imgMat.type();
 
 		cv::Rect cutRect = targetRect;
@@ -1009,6 +1042,13 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 void CSNImage::StampImage(cv::Rect _srcRect, cv::Rect targetRect, cv::Size blurSize)
 {
 	if (m_IsCropImg == true){
+
+		if (m_imgUndo){
+			cvReleaseImage(&m_imgUndo);
+		}
+		// For Undo=============== //
+		m_imgUndo = cvCloneImage(m_pCropImg);
+		//========================//
 
 		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);
 		int orignaltype = imgMat.type();
