@@ -61,6 +61,8 @@ protected:
 
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
+	bool checkCurrTime();
+	bool Authorization();
 };
 
 

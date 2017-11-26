@@ -48,10 +48,50 @@ CMainFrame::~CMainFrame()
 {
 }
 
+bool CMainFrame::checkCurrTime()
+{
+	WORD eYear = 2018;
+	WORD eMonth = 6;
+	WORD eDay = 30;
+
+	SYSTEMTIME st;
+	GetSystemTime(&st);
+
+
+	if ((st.wYear < eYear)) {
+		return true;
+	}
+	else if (st.wYear == eYear){
+		if (st.wMonth < eMonth) {
+			return true;
+		}
+		else if (st.wMonth == eMonth) {
+			if ((st.wDay <= eDay)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool CMainFrame::Authorization()
+{
+	if (checkCurrTime() == false) {
+		return false;
+	}
+	return true;
+}
+
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	if (Authorization() == false) {
+		return -1;
+	}
+
 	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	
 
 //	BOOL bNameValid;
 
