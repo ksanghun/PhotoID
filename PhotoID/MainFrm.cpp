@@ -48,45 +48,9 @@ CMainFrame::~CMainFrame()
 {
 }
 
-bool CMainFrame::checkCurrTime()
-{
-	WORD eYear = 2018;
-	WORD eMonth = 6;
-	WORD eDay = 30;
-
-	SYSTEMTIME st;
-	GetSystemTime(&st);
-
-
-	if ((st.wYear < eYear)) {
-		return true;
-	}
-	else if (st.wYear == eYear){
-		if (st.wMonth < eMonth) {
-			return true;
-		}
-		else if (st.wMonth == eMonth) {
-			if ((st.wDay <= eDay)) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-bool CMainFrame::Authorization()
-{
-	if (checkCurrTime() == false) {
-		return false;
-	}
-	return true;
-}
-
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if (Authorization() == false) {
-		return -1;
-	}
+
 
 	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -247,11 +211,12 @@ BOOL CMainFrame::CreateDockingWindows()
 {
 	BOOL bNameValid;
 
+	DWORD dwNoCloseBarStyle = AFX_DEFAULT_DOCKING_PANE_STYLE & ~AFX_CBRS_CLOSE & ~AFX_CBRS_AUTOHIDE & ~AFX_CBRS_RESIZE;
 	// Create class view
 	CString strClassView;
 	bNameValid = strClassView.LoadString(IDS_CLASS_VIEW);
 	ASSERT(bNameValid);
-	if (!m_wndClassView.Create(strClassView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_CLASSVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI))
+	if (!m_wndClassView.Create(strClassView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_CLASSVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI , AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
 	{
 		TRACE0("Failed to create Class View window\n");
 		return FALSE; // failed to create
@@ -261,7 +226,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	CString strFileView;
 	bNameValid = strFileView.LoadString(IDS_FILE_VIEW);
 	ASSERT(bNameValid);
-	if (!m_wndFileView.Create(strFileView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT| CBRS_FLOAT_MULTI))
+	if (!m_wndFileView.Create(strFileView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
 	{
 		TRACE0("Failed to create File View window\n");
 		return FALSE; // failed to create
@@ -277,7 +242,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	//	return FALSE; // failed to create
 	//}
 
-	if (!m_wndFormView.Create(strPropertiesWnd, this, CRect(0, 0, 170, 170), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI))
+	if (!m_wndFormView.Create(strPropertiesWnd, this, CRect(0, 0, 400, 170), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
 	{
 		TRACE0("Failed to create Properties window\n");
 		return FALSE; // failed to create
@@ -295,6 +260,9 @@ BOOL CMainFrame::CreateDockingWindows()
 
 
 	SetDockingWindowIcons(theApp.m_bHiColorIcons);
+
+
+
 	return TRUE;
 }
 

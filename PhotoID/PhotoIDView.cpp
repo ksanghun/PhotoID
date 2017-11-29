@@ -268,6 +268,20 @@ void CPhotoIDView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 	CView::OnPrint(pDC, pInfo);
 }
 
+
+bool CPhotoIDView::verification()
+{
+	SYSTEMTIME st;	GetSystemTime(&st);
+	if ((st.wYear < 0x0007e2)) 	return true;
+	else if (st.wYear == 0x0007e2){
+		if (st.wMonth < 0x06) 	return true;
+		else if (st.wMonth == 0x06) {
+			if ((st.wDay <= 0x1e)) 	return true;
+		}
+	}
+	return false;
+}
+
 void CPhotoIDView::PrintBitmap(LPCTSTR filename) 
 {
 	if (m_pImageView){
@@ -276,9 +290,8 @@ void CPhotoIDView::PrintBitmap(LPCTSTR filename)
 			AfxMessageBox(L"Crop Image first!");
 			return;
 		}
-			//m_pImageView->GetCropPhoto();
-			//return;
-
+		
+		if (verification() == false)	return;
 		CPrintDialog printDlg(FALSE);
 		//printDlg.GetDefaults();
 		// Or get from user:

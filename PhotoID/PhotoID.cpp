@@ -95,13 +95,14 @@ BOOL CPhotoIDApp::InitInstance()
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+
+//	CleanState();
 	LoadStdProfileSettings(4);  // Load standard INI file options (including MRU)
 
 
 	InitContextMenuManager();
-
 	InitKeyboardManager();
-
+	
 	InitTooltipManager();
 	CMFCToolTipInfo ttParams;
 	ttParams.m_bVislManagerTheme = TRUE;

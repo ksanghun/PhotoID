@@ -18,6 +18,8 @@ public:
 	void SetSliderStatus(bool IsCropMode);
 	void LoadCountryFormat();
 
+	virtual BOOL OnShowControlBarMenu(CPoint point);
+
 protected:
 	DECLARE_MESSAGE_MAP()
 public:

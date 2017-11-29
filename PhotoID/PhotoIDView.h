@@ -42,6 +42,9 @@ public:
 	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 	void Undo();
 // Overrides
+
+private:
+	bool verification();
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);

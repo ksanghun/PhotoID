@@ -61,6 +61,8 @@ int CDockFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  Add your specialized creation code here
 	m_pMyFormView = CPropFormView::CreateOne(this);
 
+	
+
 	return 0;
 }
 
@@ -73,4 +75,9 @@ void CDockFormView::OnSize(UINT nType, int cx, int cy)
 	if (m_pMyFormView){
 		m_pMyFormView->SetWindowPos(NULL, 0, 0, cx, cy, SWP_NOZORDER);
 	}
+}
+
+BOOL CDockFormView::OnShowControlBarMenu(CPoint point)
+{
+	return TRUE;
 }
