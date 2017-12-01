@@ -105,6 +105,7 @@ IDB_BITMAP_CROP         BITMAP                  "res\\facecrop.bmp"
 IDB_BITMAP_STAMP        BITMAP                  "res\\stamp.bmp"
 IDB_BITMAP_BLUR         BITMAP                  "res\\blur.bmp"
 IDB_BITMAP_PRINT        BITMAP                  "res\\print.bmp"
+IDB_BITMAP_UNDO         BITMAP                  "res\\undo.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -329,22 +330,22 @@ IDD_FORMVIEW DIALOGEX 0, 0, 218, 354
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    CONTROL         "",IDC_SLIDER_ROTATE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,12,120,189,30
-    GROUPBOX        "Rotate Image",IDC_STATIC,7,111,203,45
+    CONTROL         "",IDC_SLIDER_ROTATE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,11,129,189,30
+    GROUPBOX        "Rotate Image",IDC_STATIC,6,120,203,45
     CONTROL         "AutoFit",IDC_BN_AUTOFIT,"Button",BS_OWNERDRAW | WS_TABSTOP,6,12,36,30
     CONTROL         "",IDC_SLIDER_BRINGTNESS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,12,174,189,30
     GROUPBOX        "Birghtness",IDC_STATIC,7,164,203,45
-    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,12,228,189,24
-    GROUPBOX        "Constrast",IDC_STATIC,6,216,204,45
+    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,12,222,189,24
+    GROUPBOX        "Constrast",IDC_STATIC,6,210,204,45
     CONTROL         "Print",IDC_BN_PRINT,"Button",BS_OWNERDRAW | BS_BITMAP | WS_TABSTOP,174,12,36,31
     CONTROL         "Crop",IDC_BN_CROPIMG,"Button",BS_OWNERDRAW | WS_TABSTOP,48,12,36,31
     CONTROL         "Stamp",IDC_BN_STEMP,"Button",BS_OWNERDRAW | WS_TABSTOP,90,12,36,31
     CONTROL         "Blur",IDC_BN_STEMP2,"Button",BS_OWNERDRAW | BS_BITMAP | WS_TABSTOP,132,12,36,31
-    COMBOBOX        IDC_COMBO1,42,60,168,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Contry: ",IDC_STATIC,12,62,28,8
+    COMBOBOX        IDC_COMBO1,36,96,168,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Contry: ",IDC_STATIC,6,98,28,8
     CONTROL         "",IDC_SLIDER_CURSOR_SIZE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,12,282,189,24
     GROUPBOX        "Cursor Size",IDC_STATIC,6,270,204,45
-    PUSHBUTTON      "Undo",IDC_BN_UNDO,161,333,50,14
+    CONTROL         "Undo",IDC_BN_UNDO,"Button",BS_OWNERDRAW | WS_TABSTOP,6,48,36,30
 END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 121, 68
@@ -355,6 +356,12 @@ BEGIN
     DEFPUSHBUTTON   "Apply",IDOK,12,42,48,17
     PUSHBUTTON      "Cancel",IDCANCEL,66,42,48,17
     LTEXT           "Apply this setting?",IDC_STATIC,18,18,58,8
+END
+
+IDD_FORMVIEWFILE DIALOGEX 0, 0, 88, 143
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
 END
 
 
@@ -427,6 +434,14 @@ BEGIN
         RIGHTMARGIN, 114
         TOPMARGIN, 7
         BOTTOMMARGIN, 61
+    END
+
+    IDD_FORMVIEWFILE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 81
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 136
     END
 END
 #endif    // APSTUDIO_INVOKED

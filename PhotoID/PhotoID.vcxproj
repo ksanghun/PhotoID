@@ -117,7 +117,9 @@
     <ClInclude Include="data_type.h" />
     <ClInclude Include="DlgApply.h" />
     <ClInclude Include="DockFormView.h" />
+    <ClInclude Include="DockFormViewFile.h" />
     <ClInclude Include="FileView.h" />
+    <ClInclude Include="FormViewFile.h" />
     <ClInclude Include="GLHScrollBar.h" />
     <ClInclude Include="GuideLine.h" />
     <ClInclude Include="HoverButton.h" />
@@ -143,7 +145,9 @@
     <ClCompile Include="ClassView.cpp" />
     <ClCompile Include="DlgApply.cpp" />
     <ClCompile Include="DockFormView.cpp" />
+    <ClCompile Include="DockFormViewFile.cpp" />
     <ClCompile Include="FileView.cpp" />
+    <ClCompile Include="FormViewFile.cpp" />
     <ClCompile Include="GLHScrollBar.cpp" />
     <ClCompile Include="GuideLine.cpp" />
     <ClCompile Include="HoverButton.cpp" />
@@ -199,6 +203,7 @@
     <Image Include="res\stamp.bmp" />
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\Toolbar256.bmp" />
+    <Image Include="res\undo.bmp" />
     <Image Include="UserImages.bmp" />
   </ItemGroup>
   <ItemGroup>

@@ -93,6 +93,12 @@
     <ClInclude Include="DlgApply.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FormViewFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DockFormViewFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhotoID.cpp">
@@ -159,6 +165,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DlgApply.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FormViewFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DockFormViewFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -259,6 +271,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\print.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\undo.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

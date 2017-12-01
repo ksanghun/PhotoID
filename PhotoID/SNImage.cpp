@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SNImage.h"
-
+#include "MainFrm.h"
 
 #define PHOTO_WIDTH_MM 50.0f
 #define PHOTO_HEIGHT_MM 70.0f
@@ -63,8 +63,14 @@ CSNImage::CSNImage()
 
 void CSNImage::Undo()
 {
-	m_pCropImg = cvCloneImage(m_imgUndo);
-	SetGLTexture(m_pCropImg);
+	if (m_pCropImg){
+		cvReleaseImage(&m_pCropImg);
+		m_pCropImg = cvCloneImage(m_imgUndo);
+		SetGLTexture(m_pCropImg);
+
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd(); 
+		pM->SetUndoButtonState(false);
+	}
 }
 
 
@@ -119,9 +125,7 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	if (m_pSrcImgCopy){
 		cvReleaseImage(&m_pSrcImgCopy);
 	}
-	//if (m_pSrcImgSmall){
-	//	cvReleaseImage(&m_pSrcImgSmall);
-	//}
+
 	if (m_PrtImg){
 		cvReleaseImage(&m_PrtImg);
 	}
@@ -130,7 +134,14 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	if (m_pCropImg){
 		cvReleaseImage(&m_pCropImg);		
 	}
-	
+
+	if (m_pCropImgSmall){
+		cvReleaseImage(&m_pCropImgSmall);
+	}
+
+	if (m_imgUndo){
+		cvReleaseImage(&m_imgUndo);
+	}
 
 
 	m_pSrcImg = pimg;
@@ -655,6 +666,8 @@ void CSNImage::ChangeBrightness(float _value, bool IsApply)
 			}
 			// For Undo=============== //
 			m_imgUndo = cvCloneImage(m_pCropImg);
+			CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+			pM->SetUndoButtonState(true);
 			//========================//
 
 			CvScalar brVal = cvScalarAll(_value);
@@ -694,6 +707,8 @@ void CSNImage::ChangeConstrast(float _value, bool IsApply)
 			}
 			// For Undo=============== //
 			m_imgUndo = cvCloneImage(m_pCropImg);
+			CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+			pM->SetUndoButtonState(true);
 			//========================//
 
 
@@ -900,6 +915,7 @@ void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage
 void CSNImage::SetCropImg(float _fScale)
 {
 	if (m_IsCropImg == true) return;
+	if (m_pSrcImg == NULL) return;
 
 	if (m_pCropImg){
 		cvReleaseImage(&m_pCropImg);
@@ -978,6 +994,8 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 		}
 		// For Undo=============== //
 		m_imgUndo = cvCloneImage(m_pCropImg);
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+		pM->SetUndoButtonState(true);
 		//========================//
 		
 		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);	
@@ -1048,6 +1066,8 @@ void CSNImage::StampImage(cv::Rect _srcRect, cv::Rect targetRect, cv::Size blurS
 		}
 		// For Undo=============== //
 		m_imgUndo = cvCloneImage(m_pCropImg);
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+		pM->SetUndoButtonState(true);
 		//========================//
 
 		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);

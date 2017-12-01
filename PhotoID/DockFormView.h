@@ -17,6 +17,7 @@ public:
 	void SetImageRotateValue(float _fAngle);
 	void SetSliderStatus(bool IsCropMode);
 	void LoadCountryFormat();
+	void SetUndoButton(bool IsEnable);
 
 	virtual BOOL OnShowControlBarMenu(CPoint point);
 

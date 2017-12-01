@@ -21,9 +21,9 @@ CImgList::~CImgList()
 	////	delete m_pDragImage;
 	//	m_pDragImage->
 	//}
-	if (m_pDragImage){
-		while (m_pDragImage->GetImageCount()) m_pDragImage->Remove(0);
-	}
+	//if (m_pDragImage){
+	//	while (m_pDragImage->GetImageCount()) m_pDragImage->Remove(0);
+	//}
 
 }
 

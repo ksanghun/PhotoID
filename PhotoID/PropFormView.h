@@ -39,6 +39,7 @@ public:
 
 	void SetImageRotateValue(float _fAngle);
 	void SetSliderMode(bool IsCropMode);
+	void SetUndoButton(bool IsEnable);
 	
 	afx_msg int OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT message);
 	int m_sliderRotate;
@@ -88,6 +89,7 @@ public:
 	CComboBox m_comboCountryList;
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnBnClickedBnUndo();
+	CHoverButton m_btnUndo;
 };
 
 

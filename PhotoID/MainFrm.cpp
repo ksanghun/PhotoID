@@ -120,18 +120,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	m_wndFileView.EnableDocking(CBRS_ALIGN_ANY);
-	m_wndClassView.EnableDocking(CBRS_ALIGN_ANY);
-	DockPane(&m_wndFileView);
+	//m_wndFileView.EnableDocking(CBRS_ALIGN_ANY);
+	//m_wndClassView.EnableDocking(CBRS_ALIGN_ANY);
+	//DockPane(&m_wndFileView);
 
 
-	CDockablePane* pTabbedBar = NULL;
-	m_wndClassView.AttachToTabWnd(&m_wndFileView, DM_SHOW, TRUE, &pTabbedBar);
+	//CDockablePane* pTabbedBar = NULL;
+	//m_wndClassView.AttachToTabWnd(&m_wndFileView, DM_SHOW, TRUE, &pTabbedBar);
 	//m_wndProperties.EnableDocking(CBRS_ALIGN_ANY);
 	//DockPane(&m_wndProperties);
 
-	m_wndFormView.EnableDocking(CBRS_ALIGN_ANY);
+	m_wndFormView.EnableDocking(CBRS_ALIGN_RIGHT);
 	DockPane(&m_wndFormView);
+
+	m_wndFormViewFile.EnableDocking(CBRS_ALIGN_LEFT);
+	DockPane(&m_wndFormViewFile);
 
 	// set the visual manager and style based on persisted value
 	OnApplicationLook(theApp.m_nAppLook);
@@ -214,40 +217,48 @@ BOOL CMainFrame::CreateDockingWindows()
 	DWORD dwNoCloseBarStyle = AFX_DEFAULT_DOCKING_PANE_STYLE & ~AFX_CBRS_CLOSE & ~AFX_CBRS_AUTOHIDE & ~AFX_CBRS_RESIZE;
 	// Create class view
 	CString strClassView;
-	bNameValid = strClassView.LoadString(IDS_CLASS_VIEW);
-	ASSERT(bNameValid);
-	if (!m_wndClassView.Create(strClassView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_CLASSVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI , AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
-	{
-		TRACE0("Failed to create Class View window\n");
-		return FALSE; // failed to create
-	}
+	//bNameValid = strClassView.LoadString(IDS_CLASS_VIEW);
+	//ASSERT(bNameValid);
+	//if (!m_wndClassView.Create(strClassView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_CLASSVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI , AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
+	//{
+	//	TRACE0("Failed to create Class View window\n");
+	//	return FALSE; // failed to create
+	//}
 
-	// Create file view
-	CString strFileView;
-	bNameValid = strFileView.LoadString(IDS_FILE_VIEW);
-	ASSERT(bNameValid);
-	if (!m_wndFileView.Create(strFileView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
-	{
-		TRACE0("Failed to create File View window\n");
-		return FALSE; // failed to create
-	}
+	//// Create file view
+	//CString strFileView;
+	//bNameValid = strFileView.LoadString(IDS_FILE_VIEW);
+	//ASSERT(bNameValid);
+	//if (!m_wndFileView.Create(strFileView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
+	//{
+	//	TRACE0("Failed to create File View window\n");
+	//	return FALSE; // failed to create
+	//}
 
 	// Create properties window
-	CString strPropertiesWnd;
-	bNameValid = strPropertiesWnd.LoadString(IDS_PROPERTIES_WND);
-	ASSERT(bNameValid);
+	//CString strPropertiesWnd;
+	//bNameValid = strPropertiesWnd.LoadString(IDS_PROPERTIES_WND);
+	//ASSERT(bNameValid);
 	//if (!m_wndProperties.Create(strPropertiesWnd, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI))
 	//{
 	//	TRACE0("Failed to create Properties window\n");
 	//	return FALSE; // failed to create
 	//}
 
-	if (!m_wndFormView.Create(strPropertiesWnd, this, CRect(0, 0, 400, 170), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
+	if (!m_wndFormView.Create(L"Properties", this, CRect(0, 0, 330, 170), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
 	{
 		TRACE0("Failed to create Properties window\n");
 		return FALSE; // failed to create
 	}
 	m_wndFormView.LoadCountryFormat();
+
+	if (!m_wndFormViewFile.Create(L"File Viewer", this, CRect(0, 0, 350, 170), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
+	{
+		TRACE0("Failed to create File Viewer window\n");
+		return FALSE; // failed to create
+	}
+
+	
 	
 	//if (!m_wndFormView.Create(strPropertiesWnd, this, CRect(0, 0, 205, 157), TRUE,
 	//	ID_VIEW_PROPERTIESWND,
@@ -268,15 +279,15 @@ BOOL CMainFrame::CreateDockingWindows()
 
 void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
 {
-	HICON hFileViewIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_FILE_VIEW_HC : IDI_FILE_VIEW), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
-	m_wndFileView.SetIcon(hFileViewIcon, FALSE);
+	//HICON hFileViewIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_FILE_VIEW_HC : IDI_FILE_VIEW), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
+	//m_wndFormViewFile.SetIcon(hFileViewIcon, FALSE);
 
-	HICON hClassViewIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_CLASS_VIEW_HC : IDI_CLASS_VIEW), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
-	m_wndClassView.SetIcon(hClassViewIcon, FALSE);
+	//HICON hClassViewIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_CLASS_VIEW_HC : IDI_CLASS_VIEW), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
+	//m_wndClassView.SetIcon(hClassViewIcon, FALSE);
 
-	HICON hPropertiesBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_PROPERTIES_WND_HC : IDI_PROPERTIES_WND), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
-//	m_wndProperties.SetIcon(hPropertiesBarIcon, FALSE);
-	m_wndFormView.SetIcon(hPropertiesBarIcon, FALSE);
+//	HICON hPropertiesBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_PROPERTIES_WND_HC : IDI_PROPERTIES_WND), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
+////	m_wndProperties.SetIcon(hPropertiesBarIcon, FALSE);
+//	m_wndFormView.SetIcon(hPropertiesBarIcon, FALSE);
 
 }
 
@@ -431,8 +442,8 @@ BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParent
 
 void CMainFrame::UpdateImgListCtrl(CString strPath)
 {
-	if (m_wndFileView){
-		m_wndFileView.UpdateImgListCtrl(strPath);
+	if (m_wndFormViewFile){
+		m_wndFormViewFile.UpdateImgListCtrl(strPath);
 	}
 }
 
@@ -448,4 +459,12 @@ void CMainFrame::SetSliderStatus(bool IsCrop)
 	if (m_wndFormView){
 		m_wndFormView.SetSliderStatus(IsCrop);
 	}
+}
+
+void CMainFrame::SetUndoButtonState(bool bIsEnable)
+{
+	if (m_wndFormView){
+		m_wndFormView.SetUndoButton(bIsEnable);
+	}
+
 }

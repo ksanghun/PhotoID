@@ -60,6 +60,7 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	//	DDX_Text(pDX, IDC_EDIT_CONT_VALUE, m_fEditContrast);
 	DDX_Control(pDX, IDC_SLIDER_CURSOR_SIZE, m_sliderCurSize);
 	DDX_Control(pDX, IDC_COMBO1, m_comboCountryList);
+	DDX_Control(pDX, IDC_BN_UNDO, m_btnUndo);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -173,7 +174,7 @@ void CPropFormView::OnInitialUpdate()
 	pView->SetUserCursorSize(m_sliderCurSize.GetPos());
 
 	SetSliderMode(false);
-
+	m_btnUndo.EnableWindow(FALSE);
 
 	// Set Button Icon //
 	m_pButtonAutoFit.MoveWindow(5, 5, 64, 64);
@@ -181,6 +182,12 @@ void CPropFormView::OnInitialUpdate()
 	m_pButtonStamp.MoveWindow(135, 5, 64, 64);
 	m_pButtonBlur.MoveWindow(200, 5, 64, 64);
 	m_pButtonPrint.MoveWindow(265, 5, 64, 64);
+
+	m_btnUndo.MoveWindow(5, 70, 64, 64);
+	m_btnUndo.ShowWindow(SW_HIDE);
+
+
+	
 
 	//m_pButtonAutoFit.SetBitmap((HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_BITMAP_FITFACE), IMAGE_BITMAP, 64, 64, LR_COLOR));
 	//m_pButtonCrop.SetBitmap((HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_BITMAP_CROP), IMAGE_BITMAP, 64, 64, LR_COLOR));
@@ -211,6 +218,12 @@ void CPropFormView::OnInitialUpdate()
 		m_pButtonPrint.LoadBitmap(IDB_BITMAP_PRINT);
 		m_pButtonPrint.SetToolTipText(&text);
 
+
+
+		text = _T("Undo");
+		m_btnUndo.LoadBitmap(IDB_BITMAP_UNDO);
+		m_btnUndo.SetToolTipText(&text);
+
 		m_IsBtnCreated = true;
 	}
 
@@ -219,6 +232,18 @@ void CPropFormView::OnInitialUpdate()
 
 }
 
+
+void CPropFormView::SetUndoButton(bool IsEnable)
+{
+	if (IsEnable == false){
+		m_btnUndo.EnableWindow(FALSE);
+		m_btnUndo.ShowWindow(SW_HIDE);
+	}
+	else{
+		m_btnUndo.EnableWindow(TRUE);
+		m_btnUndo.ShowWindow(SW_SHOW);
+	}
+}
 
 void CPropFormView::SetSliderMode(bool IsCropMode)
 {

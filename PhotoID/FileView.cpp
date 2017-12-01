@@ -71,7 +71,7 @@ int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	dummy.LoadBitmap(ILC_COLOR32);
 	m_FileViewImages.Add(&dummy, RGB(0, 0, 0));
 
-	m_wndListCtrl.SetImageList(&m_FileViewImages, LVSIL_NORMAL);
+//	m_wndListCtrl.SetImageList(&m_FileViewImages, LVSIL_NORMAL);
 	m_wndListCtrl.SetImageList(&m_FileViewImages, LVSIL_SMALL);
 
 	//// Create view:

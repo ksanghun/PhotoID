@@ -77,12 +77,14 @@
 #define ID_VIEW_APPLOOK_WINDOWS_7       219
 #define IDS_EXPLORER                    305
 #define IDS_EDIT_MENU                   306
+#define IDD_FORMVIEWFILE                310
 #define IDB_BITMAP_FITFACE              311
 #define IDB_BITMAP_CROP                 312
 #define IDB_BITMAP_STAMP                313
 #define IDB_BITMAP_BLUR                 314
 #define IDB_BITMAP_PRINT                315
 #define IDD_DIALOG1                     316
+#define IDB_BITMAP_UNDO                 317
 #define IDC_SLIDER_ROTATE               1000
 #define IDC_SLIDER_BRINGTNESS           1001
 #define IDC_EDIT_ROT_VALUE              1002
@@ -94,16 +96,16 @@
 #define IDC_BN_STEMP                    1009
 #define IDC_BN_STEMP2                   1010
 #define IDC_COMBO1                      1011
-#define IDC_BUTTON1                     1012
 #define IDC_BN_UNDO                     1012
+#define IDC_LIST1                       1014
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        317
+#define _APS_NEXT_RESOURCE_VALUE        319
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1013
-#define _APS_NEXT_SYMED_VALUE           310
+#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

@@ -3,10 +3,11 @@
 //
 
 #pragma once
-#include "FileView.h"
-#include "ClassView.h"
+//#include "FileView.h"
+//#include "ClassView.h"
 //#include "PropertiesWnd.h"
 #include "DockFormView.h"
+#include "DockFormViewFile.h"
 
 class CMainFrame : public CFrameWndEx
 {
@@ -30,7 +31,7 @@ public:
 
 	void SetImageRotateValue(float _fAngle);
 	void SetSliderStatus(bool IsCrop);
-
+	void SetUndoButtonState(bool bIsEnable);
 // Implementation
 public:
 	virtual ~CMainFrame();
@@ -44,11 +45,12 @@ protected:  // control bar embedded members
 	//CMFCToolBar       m_wndToolBar;
 	//CMFCStatusBar     m_wndStatusBar;
 	//CMFCToolBarImages m_UserImages;
-	CFileView         m_wndFileView;
-	CClassView        m_wndClassView;
+	//CFileView         m_wndFileView;
+	//CClassView        m_wndClassView;
 //	CPropertiesWnd    m_wndProperties;
 
 	CDockFormView	 m_wndFormView;
+	CDockFormViewFile m_wndFormViewFile;
 
 // Generated message map functions
 protected:

@@ -96,7 +96,7 @@ BOOL CPhotoIDApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-//	CleanState();
+	CleanState();
 	LoadStdProfileSettings(4);  // Load standard INI file options (including MRU)
 
 
