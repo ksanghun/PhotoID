@@ -95,33 +95,20 @@ void CFormViewFile::OnInitialUpdate()
 
 void CFormViewFile::FillClassView()
 {
-	HTREEITEM hRoot = m_ctrlTreeView.InsertItem(_T("C:"), 2, 2);
+
+	HTREEITEM hRoot = m_ctrlTreeView.InsertItem(_T("This PC"), 2, 2);
 	m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 
 	CFileFind finder;
-	BOOL bWorking = finder.FindFile(_T("C:\\*.*"));
+	//	BOOL bWorking = finder.FindFile(_T("D:\\*.*"));
+	BOOL bWorking = finder.FindFile(_T("\\*.*"));
 
 	while (bWorking){
 		bWorking = finder.FindNextFile();
 
-		if (finder.IsDirectory()){
-			CString strTemp = finder.GetFileName();
-			m_ctrlTreeView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
+		if (finder.IsSystem()){
+			int a = 0;
 		}
-	}
-
-	//	m_wndClassView.EnsureVisible(hRoot);
-
-
-
-	hRoot = m_ctrlTreeView.InsertItem(_T("D:"), 2, 2);
-	m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
-
-//	finder;
-	bWorking = finder.FindFile(_T("D:\\*.*"));
-
-	while (bWorking){
-		bWorking = finder.FindNextFile();
 
 		if (finder.IsDirectory()){
 			CString strTemp = finder.GetFileName();
@@ -130,6 +117,43 @@ void CFormViewFile::FillClassView()
 	}
 
 	m_ctrlTreeView.EnsureVisible(hRoot);
+
+
+//	HTREEITEM hRoot = m_ctrlTreeView.InsertItem(_T("C:"), 2, 2);
+//	m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+//
+//	CFileFind finder;
+//	BOOL bWorking = finder.FindFile(_T("C:\\*.*"));
+//
+//	while (bWorking){
+//		bWorking = finder.FindNextFile();
+//
+//		if (finder.IsDirectory()){
+//			CString strTemp = finder.GetFileName();
+//			m_ctrlTreeView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
+//		}
+//	}
+//
+//	//	m_wndClassView.EnsureVisible(hRoot);
+//
+//
+//
+//	hRoot = m_ctrlTreeView.InsertItem(_T("D:"), 2, 2);
+//	m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+//
+////	finder;
+//	bWorking = finder.FindFile(_T("D:\\*.*"));
+//
+//	while (bWorking){
+//		bWorking = finder.FindNextFile();
+//
+//		if (finder.IsDirectory()){
+//			CString strTemp = finder.GetFileName();
+//			m_ctrlTreeView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
+//		}
+//	}
+//
+//	m_ctrlTreeView.EnsureVisible(hRoot);
 
 }
 

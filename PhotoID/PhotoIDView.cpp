@@ -467,3 +467,11 @@ void CPhotoIDView::Undo()
 	if (m_pImageView)
 		m_pImageView->Undo();
 }
+
+void CPhotoIDView::OnInitialUpdate()
+{
+	CView::OnInitialUpdate();
+
+	// TODO: Add your specialized code here and/or call the base class
+//	ShowWindow(SW_MAXIMIZE);
+}

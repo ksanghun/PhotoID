@@ -124,41 +124,43 @@ void CClassView::OnSize(UINT nType, int cx, int cy)
 
 void CClassView::FillClassView()
 {
-	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("C:"), 2, 2);
-	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+	//HTREEITEM hRoot = m_wndClassView.InsertItem(_T("C:"), 2, 2);
+	//m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 
-	CFileFind finder;
-	BOOL bWorking = finder.FindFile(_T("C:\\*.*"));
+	//CFileFind finder;
+	//BOOL bWorking = finder.FindFile(_T("C:\\*.*"));
 
-	while (bWorking){
-		bWorking = finder.FindNextFile();
+	//while (bWorking){
+	//	bWorking = finder.FindNextFile();
 
-		if (finder.IsDirectory()){
-			CString strTemp = finder.GetFileName();
-			m_wndClassView.InsertItem(finder.GetFileName(), 2,2, hRoot);
-		}
-	}
+	//	if (finder.IsDirectory()){
+	//		CString strTemp = finder.GetFileName();
+	//		m_wndClassView.InsertItem(finder.GetFileName(), 2,2, hRoot);
+	//	}
+	//}
 
 //	m_wndClassView.EnsureVisible(hRoot);
 
 
 
-	hRoot = m_wndClassView.InsertItem(_T("D:"), 2, 2);
-	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
-
-	finder;
-	bWorking = finder.FindFile(_T("D:\\*.*"));
-
-	while (bWorking){
-		bWorking = finder.FindNextFile();
-
-		if (finder.IsDirectory()){
-			CString strTemp = finder.GetFileName();
-			m_wndClassView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
-		}
-	}
-
-	m_wndClassView.EnsureVisible(hRoot);
+//	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("D:"), 2, 2);
+//	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("Thiis PC"), 2, 2);
+//	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+//
+//	CFileFind finder;
+////	BOOL bWorking = finder.FindFile(_T("D:\\*.*"));
+//	BOOL bWorking = finder.FindFile(_T("*.*"));
+//
+//	while (bWorking){
+//		bWorking = finder.FindNextFile();
+//
+//		if (finder.IsDirectory()){
+//			CString strTemp = finder.GetFileName();
+//			m_wndClassView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
+//		}
+//	}
+//
+//	m_wndClassView.EnsureVisible(hRoot);
 
 }
 

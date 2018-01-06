@@ -132,6 +132,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndFormView.EnableDocking(CBRS_ALIGN_RIGHT);
 	DockPane(&m_wndFormView);
+	
 
 	m_wndFormViewFile.EnableDocking(CBRS_ALIGN_LEFT);
 	DockPane(&m_wndFormViewFile);
@@ -184,14 +185,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//CMFCToolBar::SetBasicCommands(lstBasicCommands);
 
 
-	CWnd* pMainWnd = AfxGetMainWnd();
+//	CWnd* pMainWnd = AfxGetMainWnd();
 //	CMenu* pMenu = pMainWnd->GetMenu();
-	pMainWnd->SetMenu(NULL);
-	pMainWnd->UpdateWindow();
+//	pMainWnd->SetMenu(NULL);
+//	pMainWnd->UpdateWindow();
 	//pMenu->RemoveMenu(0, MF_BYPOSITION);
 	//pMenu->RemoveMenu(1, MF_BYPOSITION);
 	//pMenu->RemoveMenu(2, MF_BYPOSITION);
 	//pMenu->RemoveMenu(3, MF_BYPOSITION);
+
+
 
 
 	return 0;
@@ -204,8 +207,23 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
 
-	cs.style &= ~(LONG)FWS_ADDTOTITLE;
+//	cs.style &= ~(LONG)FWS_ADDTOTITLE;
 	cs.lpszName = L"PhotoID Maker";
+
+	CRect r;
+	GetDesktopWindow()->GetWindowRect(&r);
+	cs.x = -4;       // You should get the border width 
+	cs.y = -20;       // and use that value in these variables. 
+	cs.cx = r.Width() + 8;
+	cs.cy = r.Height() + 40;
+	//cs.style = WS_OVERLAPPED | WS_VISIBLE;
+	//return CFrameWnd::PreCreateWindow(cs);
+
+	//cs.cy = ::GetSystemMetrics(SM_CYSCREEN) / 3;
+	//cs.cx = ::GetSystemMetrics(SM_CXSCREEN) / 3;
+	//cs.y = ((cs.cy * 3) - cs.cy) / 2;
+	//cs.x = ((cs.cx * 3) - cs.cx) / 2;
+	cs.style = WS_POPUPWINDOW;
 
 	return TRUE;
 }
@@ -214,7 +232,7 @@ BOOL CMainFrame::CreateDockingWindows()
 {
 	BOOL bNameValid;
 
-	DWORD dwNoCloseBarStyle = AFX_DEFAULT_DOCKING_PANE_STYLE & ~AFX_CBRS_CLOSE & ~AFX_CBRS_AUTOHIDE & ~AFX_CBRS_RESIZE;
+	DWORD dwNoCloseBarStyle = AFX_DEFAULT_DOCKING_PANE_STYLE & ~AFX_CBRS_CLOSE & ~AFX_CBRS_AUTOHIDE & ~AFX_CBRS_RESIZE & ~AFX_CBRS_FLOAT;
 	// Create class view
 	CString strClassView;
 	//bNameValid = strClassView.LoadString(IDS_CLASS_VIEW);
@@ -245,14 +263,14 @@ BOOL CMainFrame::CreateDockingWindows()
 	//	return FALSE; // failed to create
 	//}
 
-	if (!m_wndFormView.Create(L"Properties", this, CRect(0, 0, 330, 170), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
+	if (!m_wndFormView.Create(L"Properties", this, CRect(0, 0, 330, 170), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT , AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
 	{
 		TRACE0("Failed to create Properties window\n");
 		return FALSE; // failed to create
 	}
 	m_wndFormView.LoadCountryFormat();
 
-	if (!m_wndFormViewFile.Create(L"File Viewer", this, CRect(0, 0, 350, 170), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT, AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
+	if (!m_wndFormViewFile.Create(L"File Viewer", this, CRect(0, 0, 350, 170), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT , AFX_CBRS_REGULAR_TABS, dwNoCloseBarStyle))
 	{
 		TRACE0("Failed to create File Viewer window\n");
 		return FALSE; // failed to create

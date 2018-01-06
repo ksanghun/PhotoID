@@ -76,6 +76,7 @@ public:
 
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual void OnPrint(CDC* pDC, CPrintInfo* pInfo);
+	virtual void OnInitialUpdate();
 };
 
 #ifndef _DEBUG  // debug version in PhotoIDView.cpp
