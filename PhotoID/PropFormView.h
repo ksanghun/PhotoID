@@ -90,6 +90,8 @@ public:
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnBnClickedBnUndo();
 	CHoverButton m_btnUndo;
+	CHoverButton m_bnExitApp;
+	afx_msg void OnBnClickedBnExitPohtoid();
 };
 
 

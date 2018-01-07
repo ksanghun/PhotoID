@@ -61,6 +61,7 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_CURSOR_SIZE, m_sliderCurSize);
 	DDX_Control(pDX, IDC_COMBO1, m_comboCountryList);
 	DDX_Control(pDX, IDC_BN_UNDO, m_btnUndo);
+	DDX_Control(pDX, IDC_BN_EXIT_POHTOID, m_bnExitApp);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -80,6 +81,7 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CURSOR_SIZE, &CPropFormView::OnNMCustomdrawSliderCursorSize)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CPropFormView::OnCbnSelchangeCombo1)
 	ON_BN_CLICKED(IDC_BN_UNDO, &CPropFormView::OnBnClickedBnUndo)
+	ON_BN_CLICKED(IDC_BN_EXIT_POHTOID, &CPropFormView::OnBnClickedBnExitPohtoid)
 END_MESSAGE_MAP()
 
 
@@ -177,12 +179,19 @@ void CPropFormView::OnInitialUpdate()
 	m_btnUndo.EnableWindow(FALSE);
 
 	// Set Button Icon //
-	m_pButtonAutoFit.MoveWindow(5, 5, 64, 64);
-	m_pButtonCrop.MoveWindow(70, 5, 64, 64);
-	m_pButtonStamp.MoveWindow(135, 5, 64, 64);
-	m_pButtonBlur.MoveWindow(200, 5, 64, 64);
-	m_pButtonPrint.MoveWindow(265, 5, 64, 64);
 
+	
+	m_bnExitApp.MoveWindow(297, 3, 32, 32);
+
+	int xpos = 5, ypos = 35;
+	m_pButtonAutoFit.MoveWindow(5, ypos, 64, 64);
+	m_pButtonCrop.MoveWindow(70, ypos, 64, 64);
+	m_pButtonStamp.MoveWindow(135, ypos, 64, 64);
+	m_pButtonBlur.MoveWindow(200, ypos, 64, 64);
+	m_pButtonPrint.MoveWindow(265, ypos, 64, 64);
+
+	// second line //
+	ypos += 65;
 	m_btnUndo.MoveWindow(5, 70, 64, 64);
 	m_btnUndo.ShowWindow(SW_HIDE);
 
@@ -455,8 +464,8 @@ void CPropFormView::OnBnClickedBnAutofit()
 void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
-	CDlgApply dlg;
-	if (dlg.DoModal() == IDOK){
+	//CDlgApply dlg;
+	//if (dlg.DoModal() == IDOK){
 		UpdateData(TRUE);
 		
 		pView->ChangeBrightness(m_fBrightNess, true);		
@@ -466,18 +475,18 @@ void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *
 		
 	//	m_fEditBrightness = 0;
 		UpdateData(FALSE);
-	}
-	else{
-		UpdateData(TRUE);
-		
-		pView->ChangeBrightness(0, true);
-				
-		m_fPreBrightness = 0;
-		m_SliderBrightness.SetPos(0);	
-	//	m_fEditBrightness = 0;
-		
-		UpdateData(FALSE);
-	}	
+	//}
+	//else{
+	//	UpdateData(TRUE);
+	//	
+	//	pView->ChangeBrightness(0, true);
+	//			
+	//	m_fPreBrightness = 0;
+	//	m_SliderBrightness.SetPos(0);	
+	////	m_fEditBrightness = 0;
+	//	
+	//	UpdateData(FALSE);
+	//}	
 
 	*pResult = 0;
 }
@@ -486,8 +495,8 @@ void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *
 void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
-	CDlgApply dlg;
-	if (dlg.DoModal() == IDOK){
+	//CDlgApply dlg;
+	//if (dlg.DoModal() == IDOK){
 		UpdateData(TRUE);
 		float contrast = m_fContrast*0.01f + 1.0f;
 		pView->ChangeContrast(contrast, true);
@@ -497,19 +506,19 @@ void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pR
 		m_SliderContrast.SetPos(0);
 	//	m_fEditContrast = 0;
 		UpdateData(FALSE);
-	}
-	else{
-		UpdateData(TRUE);
+	//}
+	//else{
+	//	UpdateData(TRUE);
 
-		pView->ChangeBrightness(1.0f, true);		
-		
-		m_fContrast = 0;
-		m_fPreContrast = 0;
-		m_SliderContrast.SetPos(0);
-	//	m_fEditContrast = 0;
-		
-		UpdateData(FALSE);
-	}
+	//	pView->ChangeBrightness(1.0f, true);		
+	//	
+	//	m_fContrast = 0;
+	//	m_fPreContrast = 0;
+	//	m_SliderContrast.SetPos(0);
+	////	m_fEditContrast = 0;
+	//	
+	//	UpdateData(FALSE);
+	//}
 
 
 
@@ -672,4 +681,11 @@ void CPropFormView::OnBnClickedBnUndo()
 {
 	// TODO: Add your control notification handler code here
 	pView->Undo();
+}
+
+
+void CPropFormView::OnBnClickedBnExitPohtoid()
+{
+	// TODO: Add your control notification handler code here
+	exit(0);
 }
