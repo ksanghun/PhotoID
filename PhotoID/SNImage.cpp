@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SNImage.h"
 #include "MainFrm.h"
+#include "PhotoIDView.h"
 
 #define PHOTO_WIDTH_MM 50.0f
 #define PHOTO_HEIGHT_MM 70.0f
@@ -58,25 +59,42 @@ CSNImage::CSNImage()
 	m_IsCropImg = false;
 
 	
-	m_printFormat.set(L"Canada", 50, 70);
+//	m_printFormat.set(L"Canada", 50, 70);
+
+
+	glGenTextures(1, &thTexId);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+
+	m_undoType = 0;
 }
 
 void CSNImage::Undo()
 {
 	if (m_pCropImg){
+
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 		cvReleaseImage(&m_pCropImg);
 		m_pCropImg = cvCloneImage(m_imgUndo);
 		SetGLTexture(m_pCropImg);
 
-		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd(); 
-		pM->SetUndoButtonState(false);
+		cvResize(m_pCropImg, m_pCropImgSmall);
+		cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
+
+		pM->DisplayPreview(m_pCropImgSmall);		
+		pM->SetUndoButtonState(false, m_undoType);
 	}
 }
 
 
 void CSNImage::SetPhotoFomat(_PHOTOID_FORMAT _format)
 {
-	m_printFormat.set(_format.name, _format.photoSizeW, _format.photoSizeH);
+	m_printFormat.set(_format.name, _format.widthMM, _format.heightMM, _format.topMarginMM, _format.botMarginMM);
 }
 
 CSNImage::~CSNImage()
@@ -167,7 +185,8 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	m_fSrcContrast = 1.0f;
 
 
-
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+	pM->ReSetSlideValues();
 	//CvMat M = cvMat(2, 3, CV_32F, m_matRot);
 	//int w = pimg->width;
 	//int h = pimg->height;
@@ -242,10 +261,13 @@ void CSNImage::SetSize(unsigned short _w, unsigned short _h, float _size)
 	mtSetPoint3D(&m_vertex[3], -w, h, 0.0f);		mtSetPoint2D(&m_texcoord[3], 0.0f, 0.0f);
 
 
-	mtSetPoint3D(&m_vertexBg[0], -_size*0.5f, -_size*0.5f, 0.0f);
-	mtSetPoint3D(&m_vertexBg[1], _size*0.5f, -_size*0.5f, 0.0f);
-	mtSetPoint3D(&m_vertexBg[2], _size*0.5f, _size*0.5f, 0.0f);
-	mtSetPoint3D(&m_vertexBg[3], -_size*0.5f, _size*0.5f, 0.0f);
+
+	float pw = w*0.25f;
+	float ph = h*0.25f;
+	mtSetPoint3D(&m_vertexBg[0], -pw, -ph, 0.0f);
+	mtSetPoint3D(&m_vertexBg[1], pw, -ph, 0.0f);
+	mtSetPoint3D(&m_vertexBg[2], pw, ph, 0.0f);
+	mtSetPoint3D(&m_vertexBg[3], -pw, ph, 0.0f);
 
 	m_fRectWidth = _size*fARatio;
 
@@ -257,6 +279,18 @@ void CSNImage::SetSize(unsigned short _w, unsigned short _h, float _size)
 	m_pntLT.y = h;
 	m_pntLT.z = 0;
 
+	m_pntPreview.x = w + 5;
+	m_pntPreview.y = -h + ph;
+	m_pntPreview.z = 0;
+
+
+	if ((m_IsCropImg == false) && (m_pCropImgSmall)){
+		IplImage* tmpImg = cvCreateImage(cvSize(64, 64), 8, 3);
+		cvSet(tmpImg, CV_RGB(255, 255, 255));
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+		pM->DisplayPreview(tmpImg);
+		cvReleaseImage(&tmpImg);
+	}
 
 	//m_fXScale = (float)GetImgWidth() / (GetLeftTop().x * 2);
 	//m_fYScale = (float)GetImgHeight() / (GetLeftTop().y * 2);
@@ -371,26 +405,27 @@ void CSNImage::DrawThumbNail(float fAlpha)
 	
 	glTranslatef(m_pos.x, m_pos.y, m_pos.z);
 	glRotatef(-m_fImgDrawAngle, 0, 0, 1);
-
+	//glEnable(GL_TEXTURE_2D);
 	// Background//
 	//glDisable(GL_TEXTURE_2D);
-	//glColor4f(m_vBgColor.x, m_vBgColor.y, m_vBgColor.z, 1.0f);
+
+	//glPushMatrix();
+	//glTranslatef(m_pntPreview.x, m_pntPreview.y, m_pntPreview.z);
+
+	//glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 	//glBegin(GL_QUADS);	
 	//glVertex3f(m_vertexBg[0].x, m_vertexBg[0].y, m_vertexBg[0].z);
 	//glVertex3f(m_vertexBg[1].x, m_vertexBg[1].y, m_vertexBg[1].z);
 	//glVertex3f(m_vertexBg[2].x, m_vertexBg[2].y, m_vertexBg[2].z);
 	//glVertex3f(m_vertexBg[3].x, m_vertexBg[3].y, m_vertexBg[3].z);
 	//glEnd();
+	//glPopMatrix();
 	//==================//
 
 
 	glEnable(GL_TEXTURE_2D);
-	if (texId == 0){
-		glBindTexture(GL_TEXTURE_2D, thTexId);
-	}
-	else{
-		glBindTexture(GL_TEXTURE_2D, texId);
-	}
+	glBindTexture(GL_TEXTURE_2D, thTexId);
+
 	glColor4f(1.0f, 1.0f, 1.0f, fAlpha);	
 
 	glBegin(GL_QUADS);
@@ -498,21 +533,20 @@ void CSNImage::SetGLTexture(IplImage* pimg)
 	SetSize(pimg->width, pimg->height, m_imgRectSize);
 
 
-	if (thTexId > 0){
-		glDeleteTextures(1, &thTexId);
-	}
-	glGenTextures(1, &thTexId);
+	//if (thTexId > 0){
+	////	glDeleteTextures(1, &thTexId);
+	//	glGenTextures(1, &thTexId);
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
+	//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	//}
+	//glGenTextures(1, &thTexId);
 
 	// glupload Image - Thumnail image=======================================================//
 	glBindTexture(GL_TEXTURE_2D, thTexId);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_INTENSITY, pimg->width, pimg->height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pimg->imageData);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pimg->width, pimg->height, GL_RGB, GL_UNSIGNED_BYTE, pimg->imageData);
 	//======================================================================================//
@@ -655,6 +689,7 @@ void CSNImage::SetRotateionAngle(float _fangle)
 
 void CSNImage::ChangeBrightness(float _value, bool IsApply)
 {
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 	if (m_pCropImg == NULL){
 		AfxMessageBox(L"Image is not cropped");
 	}
@@ -665,28 +700,35 @@ void CSNImage::ChangeBrightness(float _value, bool IsApply)
 				cvReleaseImage(&m_imgUndo);
 			}
 			// For Undo=============== //
-			m_imgUndo = cvCloneImage(m_pCropImg);
-			CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
-			pM->SetUndoButtonState(true);
+			m_imgUndo = cvCloneImage(m_pCropImg);		
+			m_undoType = 0;
+			pM->SetUndoButtonState(true, m_undoType);
 			//========================//
 
 			CvScalar brVal = cvScalarAll(_value);
 			cvAddS(m_pCropImg, brVal, m_pCropImg, NULL);
+		//	cvAddS(m_pCropImgOri, brVal, m_pCropImg, NULL);
 
 			m_fSrcBrightness = 0;
 			SetGLTexture(m_pCropImg);
 
 			// Update small crop image
 			cvResize(m_pCropImg, m_pCropImgSmall);
+			cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
 			TRACE(L"Apply Brightness\n");
 		}
 		else{
-			IplImage* pTmp = cvCloneImage(m_pCropImgSmall);
+		//	IplImage* pTmp = cvCloneImage(m_pCropImgSmall);
+			IplImage* pTmp = cvCreateImage(cvSize(m_pCropImgSmall->width, m_pCropImgSmall->height), m_pCropImgSmall->depth, m_pCropImgSmall->nChannels);
 			CvScalar brVal = cvScalarAll(_value);
 			cvAddS(m_pCropImgSmall, brVal, pTmp, NULL);
 
 			m_fSrcBrightness = _value;
-			SetGLTexture(pTmp);
+	//		SetGLTexture(pTmp);
+	//		cvCvtColor(pTmp, pTmp, CV_BGR2RGB);
+
+			
+			pM->DisplayPreview(pTmp);
 			cvReleaseImage(&pTmp);
 
 			TRACE(L"Not Apply Brightness\n");
@@ -696,6 +738,7 @@ void CSNImage::ChangeBrightness(float _value, bool IsApply)
 
 void CSNImage::ChangeConstrast(float _value, bool IsApply)
 {
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 	if (m_pCropImg == NULL){
 		AfxMessageBox(L"Image is not cropped");
 	}
@@ -706,9 +749,9 @@ void CSNImage::ChangeConstrast(float _value, bool IsApply)
 				cvReleaseImage(&m_imgUndo);
 			}
 			// For Undo=============== //
-			m_imgUndo = cvCloneImage(m_pCropImg);
-			CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
-			pM->SetUndoButtonState(true);
+			m_imgUndo = cvCloneImage(m_pCropImg);	
+			m_undoType = 1;
+			pM->SetUndoButtonState(true, m_undoType);
 			//========================//
 
 
@@ -722,15 +765,19 @@ void CSNImage::ChangeConstrast(float _value, bool IsApply)
 
 			// Update small crop image
 			cvResize(m_pCropImg, m_pCropImgSmall);
+			cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
 		}
 		else{
-			IplImage* pTmp = cvCloneImage(m_pCropImgSmall);
+
+			IplImage* pTmp = cvCreateImage(cvSize(m_pCropImgSmall->width, m_pCropImgSmall->height), m_pCropImgSmall->depth, m_pCropImgSmall->nChannels);
+	//		IplImage* pTmp = cvCloneImage(m_pCropImgSmall);
 			IplImage *pTempImg = cvCreateImage(cvGetSize(m_pCropImgSmall), IPL_DEPTH_8U, m_pCropImgSmall->nChannels);
 			cvSet(pTempImg, cvScalarAll(1), NULL);
 			cvMul(m_pCropImgSmall, pTempImg, pTmp, _value);
 			cvReleaseImage(&pTempImg);
 
-			SetGLTexture(pTmp);
+			//SetGLTexture(pTmp);
+			pM->DisplayPreview(pTmp);
 			m_fSrcContrast = _value;
 			cvReleaseImage(&pTmp);
 		}
@@ -789,29 +836,55 @@ void CSNImage::DrawCroppingArea()
 }
 
 void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter)
-{
+{	
+	float faceLength = (yFaceTop - yFaceBot);
+	float faceeLengthMM = m_printFormat.heightMM - (m_printFormat.botMarginMM + m_printFormat.topMarginMM);
+	float topMarginLength = m_printFormat.topMarginMM*faceLength / faceeLengthMM;
+	float botMarginLength = m_printFormat.botMarginMM*faceLength / faceeLengthMM;
 
-//	float aRatio = CANADA_WIDTH_MM / CANADA_HEIGHT_MM;
 
-	// need to know the ratio of face length / image height
-
-	float cropHeight = (yFaceTop - yFaceBot) * 1.5;  // face length X 2
-//	float cropWidth = cropHeight*CANADA_RATIO;
+	float cropHeight = faceLength + topMarginLength + botMarginLength;  // face length X 2
 	float cropWidth = cropHeight*m_printFormat.aRatio;
-	
-
 
 	m_rectCrop.set(xFaceCenter - cropWidth*0.5f, xFaceCenter + cropWidth*0.5f,
-		yFaceCenter - cropHeight*0.5f, yFaceCenter + cropHeight*0.5f);
+		yFaceBot - topMarginLength, yFaceTop + botMarginLength);
+
 	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
 	m_rectCrop.height =  m_rectCrop.y2 - m_rectCrop.y1;
-
-
 
 	mtSetPoint2D(&m_vecInBoundery[0], m_rectCrop.x1, m_rectCrop.y1);
 	mtSetPoint2D(&m_vecInBoundery[1], m_rectCrop.x1, m_rectCrop.y2);
 	mtSetPoint2D(&m_vecInBoundery[2], m_rectCrop.x2, m_rectCrop.y2);
 	mtSetPoint2D(&m_vecInBoundery[3], m_rectCrop.x2, m_rectCrop.y1);
+
+
+	
+	
+	if (m_IsCropImg){
+		float fScale = pView->GetDetectedScale();
+		SetCropImg(fScale);
+	}
+
+
+
+
+	// need to know the ratio of face length / image height
+	//float cropHeight = (yFaceTop - yFaceBot) * 1.5;  // face length X 2
+	//float cropWidth = cropHeight*m_printFormat.aRatio;
+	//
+
+
+	//m_rectCrop.set(xFaceCenter - cropWidth*0.5f, xFaceCenter + cropWidth*0.5f,
+	//	yFaceCenter - cropHeight*0.5f, yFaceCenter + cropHeight*0.5f);
+	//m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
+	//m_rectCrop.height =  m_rectCrop.y2 - m_rectCrop.y1;
+
+
+
+	//mtSetPoint2D(&m_vecInBoundery[0], m_rectCrop.x1, m_rectCrop.y1);
+	//mtSetPoint2D(&m_vecInBoundery[1], m_rectCrop.x1, m_rectCrop.y2);
+	//mtSetPoint2D(&m_vecInBoundery[2], m_rectCrop.x2, m_rectCrop.y2);
+	//mtSetPoint2D(&m_vecInBoundery[3], m_rectCrop.x2, m_rectCrop.y1);
 
 
 }
@@ -914,7 +987,10 @@ void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage
 
 void CSNImage::SetCropImg(float _fScale)
 {
-	if (m_IsCropImg == true) return;
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+
+
+//	if (m_IsCropImg == true) return;
 	if (m_pSrcImg == NULL) return;
 
 	if (m_pCropImg){
@@ -952,14 +1028,19 @@ void CSNImage::SetCropImg(float _fScale)
 	cvResetImageROI(m_pSrcImgCopy);
 
 
+	
+
 	// Set Crop image as main image
 	SetGLTexture(m_pCropImg);
+//	SetGLTexture(m_pCropImgOri);
 	m_IsCropImg = true;
-
 
 
 	nImgWidth = m_pCropImg->width;
 	nImgHeight = m_pCropImg->height;
+	
+	cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
+	pM->DisplayPreview((void*)m_pCropImgSmall);
 }
 
 
@@ -995,7 +1076,7 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 		// For Undo=============== //
 		m_imgUndo = cvCloneImage(m_pCropImg);
 		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
-		pM->SetUndoButtonState(true);
+		pM->SetUndoButtonState(true, 3);
 		//========================//
 		
 		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);	
@@ -1067,7 +1148,7 @@ void CSNImage::StampImage(cv::Rect _srcRect, cv::Rect targetRect, cv::Size blurS
 		// For Undo=============== //
 		m_imgUndo = cvCloneImage(m_pCropImg);
 		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
-		pM->SetUndoButtonState(true);
+		pM->SetUndoButtonState(true, 3);
 		//========================//
 
 		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);
@@ -1124,7 +1205,7 @@ void CSNImage::StampImage(cv::Rect _srcRect, cv::Rect targetRect, cv::Size blurS
 
 		//cvReleaseImage(&pimg);
 		//pimg = new IplImage(ouImage);
-		//		cvShowImage("cropimg", m_pCropImg);
+	//	cvShowImage("cropimg", m_pCropImg);
 
 		SetGLTexture(m_pCropImg);
 	}

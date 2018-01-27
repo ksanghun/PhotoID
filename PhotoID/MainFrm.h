@@ -31,7 +31,9 @@ public:
 
 	void SetImageRotateValue(float _fAngle);
 	void SetSliderStatus(bool IsCrop);
-	void SetUndoButtonState(bool bIsEnable);
+	void SetUndoButtonState(bool bIsEnable, unsigned short _type);
+	void DisplayPreview(void* pImg);
+	void ReSetSlideValues();
 // Implementation
 public:
 	virtual ~CMainFrame();
@@ -63,6 +65,8 @@ protected:
 
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
 

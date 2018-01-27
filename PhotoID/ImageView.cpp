@@ -811,18 +811,18 @@ void CImageView::OnMouseMove(UINT nFlags, CPoint point)
 		case 2:
 			incre = (point.y - m_mousedown.y) / m_fImgDetectScale;
 			m_guideLine[m_selButtonId].SetIncrement(0, incre);
-
+			ReSizeIcon();
 			break;
 		case 3:
 			float s = m_pPhotoImg->GetImgWScale();
 			incre = (point.x - m_mousedown.x) / m_fImgDetectScale;
 			m_guideLine[m_selButtonId].SetIncrement(incre, 0);
-
+			ReSizeIcon();
 			break;
 		}
 
 		//SetCropArea();
-		ReSizeIcon();
+		//ReSizeIcon();
 		m_mousedown = point;
 
 		//m_centerx -= (point.x - m_mousedown.x);

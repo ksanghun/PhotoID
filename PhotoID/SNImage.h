@@ -147,9 +147,12 @@ private:
 	float m_imgWScale;
 	float m_imgHScale;
 	POINT3D m_pntLT;
+	POINT3D m_pntPreview;
 
 	IplImage *m_pSrcImg;
 	IplImage *m_pSrcImgCopy;
+
+
 	IplImage* m_pCropImg;
 	IplImage *m_pCropImgSmall;
 
@@ -165,5 +168,7 @@ private:
 	IplImage* m_PrtImg;
 
 	_PHOTOID_FORMAT m_printFormat;
+
+	unsigned short m_undoType;
 };
 

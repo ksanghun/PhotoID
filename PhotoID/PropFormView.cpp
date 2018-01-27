@@ -22,16 +22,37 @@ CPropFormView::CPropFormView()
 	, m_fContrast(0)
 	//, m_fEditBrightness(0)
 	//, m_fEditContrast(0)
+	, m_topMargin(0)
+	, m_botMargin(0)
 {
 	m_preRotateSliderPos = 0;
 	m_IsBtnCreated = false;
 
 	m_fPreBrightness = 0;
 	m_fPreContrast = 0;
+
+	m_CurBrightness = 0;
+	m_fCurContrast = 0.0f;
+
+	m_UndoBrightness = 0;
+	m_UndoContrast = 0;
 }
 
 CPropFormView::~CPropFormView()
 {
+}
+
+
+void CPropFormView::ReSetSlideValues()
+{
+	m_fPreBrightness = 0;
+	m_fPreContrast = 0;
+
+	m_CurBrightness = 0;
+	m_fCurContrast = 0.0f;
+
+	m_UndoBrightness = 0;
+	m_UndoContrast = 0;
 }
 
 void CPropFormView::DoDataExchange(CDataExchange* pDX)
@@ -61,7 +82,11 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_CURSOR_SIZE, m_sliderCurSize);
 	DDX_Control(pDX, IDC_COMBO1, m_comboCountryList);
 	DDX_Control(pDX, IDC_BN_UNDO, m_btnUndo);
-	DDX_Control(pDX, IDC_BN_EXIT_POHTOID, m_bnExitApp);
+	//	DDX_Control(pDX, IDC_BN_EXIT_POHTOID, m_bnExitApp);
+	DDX_Text(pDX, IDC_EDIT_TOP_MARGIN, m_topMargin);
+	DDV_MinMaxUInt(pDX, m_topMargin, 0, 99999);
+	DDX_Text(pDX, IDC_EDIT_BOT_MARGIN, m_botMargin);
+	DDV_MinMaxUInt(pDX, m_botMargin, 0, 9999);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -81,7 +106,9 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_CURSOR_SIZE, &CPropFormView::OnNMCustomdrawSliderCursorSize)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CPropFormView::OnCbnSelchangeCombo1)
 	ON_BN_CLICKED(IDC_BN_UNDO, &CPropFormView::OnBnClickedBnUndo)
-	ON_BN_CLICKED(IDC_BN_EXIT_POHTOID, &CPropFormView::OnBnClickedBnExitPohtoid)
+//	ON_BN_CLICKED(IDC_BN_EXIT_POHTOID, &CPropFormView::OnBnClickedBnExitPohtoid)
+ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN2, &CPropFormView::OnDeltaposSpin2)
+ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN3, &CPropFormView::OnDeltaposSpin3)
 END_MESSAGE_MAP()
 
 
@@ -110,29 +137,40 @@ void CPropFormView::LoadCountryListFile()
 	std::ifstream in;
 	in.open("PhotoSize.txt");
 	std::string strName;
-	int width, height;
+	int width, height, top, bot;
 
 
 	m_countryList.clear();
 	while (!in.eof())
 	{
-		in >> strName >> width >> height;		
+		in >> strName >> width >> height >> top >> bot;		
 		_PHOTOID_FORMAT item;
 		item.name = strName.data();
-		item.photoSizeW = width;
-		item.photoSizeH = height;
+		item.photoSizeW = 0;
+		item.photoSizeH = 0;
+
+		item.widthMM = width;
+		item.heightMM= height;
+		item.topMarginMM = top;
+		item.botMarginMM = bot;
+
 		m_countryList.push_back(item);
 	}
 
 	for (auto i = 0; i < m_countryList.size(); i++){
 		CString strItem;
-		strItem.Format(L"%s: %dmm X %dmm", m_countryList[i].name, m_countryList[i].photoSizeW, m_countryList[i].photoSizeH);
+		strItem.Format(L"%s: %dmm X %dmm (Top: %dmm, Bottom: %dmm)", m_countryList[i].name, m_countryList[i].widthMM, m_countryList[i].heightMM, m_countryList[i].topMarginMM, m_countryList[i].botMarginMM);
 		m_comboCountryList.InsertString(i, strItem);
 	}
 
 	if (m_countryList.size() > 0){
 		m_comboCountryList.SetCurSel(0);
 		pView->SetPhotoFomat(m_countryList[0]);
+
+		m_selContryList = m_countryList[0];
+		m_topMargin = m_countryList[0].topMarginMM;
+		m_botMargin = m_countryList[0].botMarginMM;
+
 		UpdateData(FALSE);
 	}
 
@@ -157,11 +195,11 @@ void CPropFormView::OnInitialUpdate()
 	m_ctrlSliderRotate.SetTicFreq(100);
 
 
-	m_SliderBrightness.SetRange(-100, 100, TRUE);
+	m_SliderBrightness.SetRange(-50, 50, TRUE);
 	m_SliderBrightness.SetPos(0);
 	m_SliderBrightness.SetTicFreq(10);
 
-	m_SliderContrast.SetRange(-100, 100, TRUE);
+	m_SliderContrast.SetRange(-50, 50, TRUE);
 	m_SliderContrast.SetPos(0);
 	m_SliderContrast.SetTicFreq(10);
 	
@@ -181,9 +219,9 @@ void CPropFormView::OnInitialUpdate()
 	// Set Button Icon //
 
 	
-	m_bnExitApp.MoveWindow(297, 3, 32, 32);
+//	m_bnExitApp.MoveWindow(297, 3, 32, 32);
 
-	int xpos = 5, ypos = 35;
+	int xpos = 5, ypos = 5;
 	m_pButtonAutoFit.MoveWindow(5, ypos, 64, 64);
 	m_pButtonCrop.MoveWindow(70, ypos, 64, 64);
 	m_pButtonStamp.MoveWindow(135, ypos, 64, 64);
@@ -192,7 +230,7 @@ void CPropFormView::OnInitialUpdate()
 
 	// second line //
 	ypos += 65;
-	m_btnUndo.MoveWindow(5, 70, 64, 64);
+	m_btnUndo.MoveWindow(5, ypos, 64, 64);
 	m_btnUndo.ShowWindow(SW_HIDE);
 
 
@@ -242,16 +280,27 @@ void CPropFormView::OnInitialUpdate()
 }
 
 
-void CPropFormView::SetUndoButton(bool IsEnable)
+void CPropFormView::SetUndoButton(bool IsEnable, unsigned short _type)
 {
-	if (IsEnable == false){
+	if (IsEnable == false){  // finish undo
 		m_btnUndo.EnableWindow(FALSE);
 		m_btnUndo.ShowWindow(SW_HIDE);
+
+		if (_type == 0){
+			m_SliderBrightness.SetPos(m_UndoBrightness);
+			m_CurBrightness = m_UndoBrightness;
+		}
+		else if (_type == 1){
+			m_SliderContrast.SetPos(m_UndoContrast);
+			m_fCurContrast = m_UndoContrast;
+		}
 	}
 	else{
 		m_btnUndo.EnableWindow(TRUE);
 		m_btnUndo.ShowWindow(SW_SHOW);
 	}
+
+	UpdateData(FALSE);
 }
 
 void CPropFormView::SetSliderMode(bool IsCropMode)
@@ -267,6 +316,10 @@ void CPropFormView::SetSliderMode(bool IsCropMode)
 		m_SliderBrightness.EnableWindow(TRUE);
 		m_sliderCurSize.EnableWindow(TRUE);
 		m_SliderContrast.EnableWindow(TRUE);
+
+		m_SliderContrast.SetPos(0);
+		m_SliderBrightness.SetPos(0);
+		m_sliderCurSize.SetPos(50);
 	}
 }
 
@@ -468,10 +521,15 @@ void CPropFormView::OnNMReleasedcaptureSliderBringtness(NMHDR *pNMHDR, LRESULT *
 	//if (dlg.DoModal() == IDOK){
 		UpdateData(TRUE);
 		
-		pView->ChangeBrightness(m_fBrightNess, true);		
+
+	//	pView->ChangeBrightness(m_fBrightNess, true);		
+		int diff = m_fBrightNess - m_CurBrightness;
+		pView->ChangeBrightness(diff, true);
 		
-		m_fPreBrightness = 0;
-		m_SliderBrightness.SetPos(0);
+		m_UndoBrightness = m_CurBrightness;
+		m_CurBrightness = m_fBrightNess;
+	//	m_fPreBrightness = 0;
+	//	m_SliderBrightness.SetPos(0);
 		
 	//	m_fEditBrightness = 0;
 		UpdateData(FALSE);
@@ -498,12 +556,18 @@ void CPropFormView::OnNMReleasedcaptureSliderContrast(NMHDR *pNMHDR, LRESULT *pR
 	//CDlgApply dlg;
 	//if (dlg.DoModal() == IDOK){
 		UpdateData(TRUE);
-		float contrast = m_fContrast*0.01f + 1.0f;
+		float diff = m_fContrast - m_fCurContrast;
+
+		float contrast = diff*0.01f + 1.0f;
 		pView->ChangeContrast(contrast, true);
 
-		m_fContrast = 0;
-		m_fPreContrast = 0;		
-		m_SliderContrast.SetPos(0);
+		m_UndoContrast = m_fCurContrast;
+		m_fCurContrast = m_fContrast;
+
+
+		//m_fContrast = 0;
+		//m_fPreContrast = 0;		
+		//m_SliderContrast.SetPos(0);
 	//	m_fEditContrast = 0;
 		UpdateData(FALSE);
 	//}
@@ -550,7 +614,10 @@ void CPropFormView::OnNMCustomdrawSliderBringtness(NMHDR *pNMHDR, LRESULT *pResu
 	UpdateData(TRUE);
 	if (m_fPreBrightness != m_fBrightNess){
 
-		pView->ChangeBrightness(m_fBrightNess, false);
+
+		int diff = m_fBrightNess - m_CurBrightness;
+		pView->ChangeBrightness(diff, false);
+	//	pView->ChangeBrightness(m_fBrightNess, false);
 	//	m_fEditBrightness = m_fBrightNess;
 		m_fPreBrightness = m_fBrightNess;
 		
@@ -567,7 +634,9 @@ void CPropFormView::OnNMCustomdrawSliderContrast(NMHDR *pNMHDR, LRESULT *pResult
 	UpdateData(TRUE);
 	if (m_fPreContrast != m_fContrast){
 
-		float contrast = m_fContrast*0.01f + 1.0f;
+		float diff = m_fContrast - m_fCurContrast;
+
+		float contrast = diff*0.01f + 1.0f;
 		pView->ChangeContrast(contrast, false);
 	//	m_fEditContrast = m_fContrast;
 		m_fPreContrast = m_fContrast;
@@ -673,7 +742,13 @@ void CPropFormView::OnCbnSelchangeCombo1()
 	int pos = m_comboCountryList.GetCurSel();
 	if (pos < m_countryList.size()){
 		pView->SetPhotoFomat(m_countryList[pos]);
+		m_selContryList = m_countryList[pos];
+
+		m_topMargin = m_countryList[pos].topMarginMM;
+		m_botMargin = m_countryList[pos].botMarginMM;
 	}
+
+	UpdateData(FALSE);
 }
 
 
@@ -684,8 +759,89 @@ void CPropFormView::OnBnClickedBnUndo()
 }
 
 
-void CPropFormView::OnBnClickedBnExitPohtoid()
+//void CPropFormView::OnBnClickedBnExitPohtoid()
+//{
+//	// TODO: Add your control notification handler code here
+//	exit(0);
+//}
+
+
+void CPropFormView::OnDeltaposSpin2(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	// TODO: Add your control notification handler code here
-	exit(0);
+	if (pNMUpDown->iDelta == -1) {
+		m_topMargin++;
+	}
+
+	else if (pNMUpDown->iDelta == 1)  {
+		m_topMargin--;
+	}
+
+	m_selContryList.topMarginMM = m_topMargin;
+	pView->SetPhotoFomat(m_selContryList);
+
+	*pResult = 0;
+
+	UpdateData(FALSE);
+}
+
+
+void CPropFormView::OnDeltaposSpin3(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	if (pNMUpDown->iDelta == -1) {
+		m_botMargin++;
+	}
+
+	else if (pNMUpDown->iDelta == 1)  {
+		m_botMargin--;
+	}
+	*pResult = 0;
+
+	m_selContryList.botMarginMM = m_botMargin;
+	pView->SetPhotoFomat(m_selContryList);
+
+	UpdateData(FALSE);
+}
+
+
+void CPropFormView::DisplayPreview(void* _pImg)
+{
+	IplImage* pImg = (IplImage*)_pImg;
+
+
+	if (pImg != nullptr){
+		CWnd* pWnd_ImageTraget = GetDlgItem(IDC_PREVIEW);
+		CClientDC dcImageTraget(pWnd_ImageTraget);
+		RECT rcImageTraget;
+		pWnd_ImageTraget->GetClientRect(&rcImageTraget);
+
+		BITMAPINFO bitmapInfo;
+		memset(&bitmapInfo, 0, sizeof(bitmapInfo));
+		bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bitmapInfo.bmiHeader.biPlanes = 1;
+		bitmapInfo.bmiHeader.biCompression = BI_RGB;
+		bitmapInfo.bmiHeader.biWidth = pImg->width;
+		bitmapInfo.bmiHeader.biHeight = -pImg->height;
+
+		IplImage *tempImage = nullptr;
+
+		if (pImg->nChannels == 1)
+		{
+			tempImage = cvCreateImage(cvSize(pImg->width, pImg->height), IPL_DEPTH_8U, 3);
+			cvCvtColor(pImg, tempImage, CV_GRAY2BGR);
+		}
+		else if (pImg->nChannels == 3)
+		{			
+			tempImage = cvCloneImage(pImg);
+		}
+
+		bitmapInfo.bmiHeader.biBitCount = tempImage->depth * tempImage->nChannels;
+
+		dcImageTraget.SetStretchBltMode(COLORONCOLOR);
+		::StretchDIBits(dcImageTraget.GetSafeHdc(), rcImageTraget.left, rcImageTraget.top, rcImageTraget.right, rcImageTraget.bottom,
+			0, 0, tempImage->width, tempImage->height, tempImage->imageData, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+	}
 }

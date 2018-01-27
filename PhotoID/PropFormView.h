@@ -9,6 +9,10 @@
 #include "data_type.h"
 
 // CPropFormView form view
+#include <opencv2/opencv.hpp>
+using namespace std;
+using namespace cv;
+
 
 class CPropFormView : public CFormView
 {
@@ -39,7 +43,9 @@ public:
 
 	void SetImageRotateValue(float _fAngle);
 	void SetSliderMode(bool IsCropMode);
-	void SetUndoButton(bool IsEnable);
+	void SetUndoButton(bool IsEnable, unsigned short _type);
+	void DisplayPreview(void* _pImg);
+	void ReSetSlideValues();
 	
 	afx_msg int OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT message);
 	int m_sliderRotate;
@@ -70,12 +76,18 @@ public:
 
 	bool m_IsBtnCreated;
 	int m_fPreBrightness;
+	int m_CurBrightness;
+	
+	int m_UndoBrightness;
+	int m_UndoContrast;
+
 	int m_fPreContrast;
+	int m_fCurContrast;
 
 
 	void LoadCountryListFile();
 	std::vector<_PHOTOID_FORMAT>m_countryList;
-
+	_PHOTOID_FORMAT m_selContryList;
 
 	afx_msg void OnBnClickedBnCropimg();
 	//float m_fEditBrightness;
@@ -90,8 +102,12 @@ public:
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnBnClickedBnUndo();
 	CHoverButton m_btnUndo;
-	CHoverButton m_bnExitApp;
-	afx_msg void OnBnClickedBnExitPohtoid();
+//	CHoverButton m_bnExitApp;
+//	afx_msg void OnBnClickedBnExitPohtoid();
+	afx_msg void OnDeltaposSpin2(NMHDR *pNMHDR, LRESULT *pResult);
+	UINT m_topMargin;
+	UINT m_botMargin;
+	afx_msg void OnDeltaposSpin3(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 

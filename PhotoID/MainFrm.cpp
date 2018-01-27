@@ -479,10 +479,36 @@ void CMainFrame::SetSliderStatus(bool IsCrop)
 	}
 }
 
-void CMainFrame::SetUndoButtonState(bool bIsEnable)
+void CMainFrame::SetUndoButtonState(bool bIsEnable, unsigned short _type)
 {
 	if (m_wndFormView){
-		m_wndFormView.SetUndoButton(bIsEnable);
+		m_wndFormView.SetUndoButton(bIsEnable, _type);
+	}
+}
+
+void CMainFrame::ReSetSlideValues()
+{
+	if (m_wndFormView){
+		m_wndFormView.ReSetSlideValues();
+	}
+}
+
+void CMainFrame::DisplayPreview(void* pImg)
+{
+	if (m_wndFormView){
+		m_wndFormView.DisplayPreview(pImg);
+	}
+}
+
+BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		if (pMsg->wParam == VK_ESCAPE){
+			exit(0);
+		}
 	}
 
+	return CFrameWndEx::PreTranslateMessage(pMsg);
 }

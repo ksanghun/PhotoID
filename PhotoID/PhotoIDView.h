@@ -32,6 +32,8 @@ public:
 	void ChangeContrast(float _value, bool IsApply);
 	void PrintBitmap(LPCTSTR filename);
 
+	float GetDetectedScale();
+
 	void SetUserCursorSize(int _size);
 
 

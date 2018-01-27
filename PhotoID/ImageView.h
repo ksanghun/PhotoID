@@ -80,6 +80,8 @@ public:
 	void StampImage();
 	CSNImage* GetPhotoIDImg() { return m_pPhotoImg; }
 
+	float GetDetectedScale(){ return m_fImgDetectScale;  }
+
 private:
 //	CWinThread* g_pl;
 

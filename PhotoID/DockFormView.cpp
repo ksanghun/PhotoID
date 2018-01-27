@@ -46,14 +46,26 @@ void CDockFormView::SetSliderStatus(bool IsCropMode)
 	}
 }
 
-void CDockFormView::SetUndoButton(bool IsEnable)
+void CDockFormView::SetUndoButton(bool IsEnable, unsigned short _type)
 {
 	if (m_pMyFormView){
-		m_pMyFormView->SetUndoButton(IsEnable);
+		m_pMyFormView->SetUndoButton(IsEnable, _type);
 	}
 }
 
+void CDockFormView::ReSetSlideValues()
+{
+	if (m_pMyFormView){
+		m_pMyFormView->ReSetSlideValues();
+	}
+}
 
+void CDockFormView::DisplayPreview(void* pImg)
+{
+	if (m_pMyFormView){
+		m_pMyFormView->DisplayPreview(pImg);
+	}
+}
 
 void CDockFormView::LoadCountryFormat()
 {

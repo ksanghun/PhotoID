@@ -248,6 +248,15 @@ void CPhotoIDView::ChangeContrast(float _value, bool IsApply)
 	}
 }
 
+float CPhotoIDView::GetDetectedScale()
+{
+	if (m_pImageView){
+		return m_pImageView->GetDetectedScale();
+	}
+	else
+		return 0.0f;
+}
+
 BOOL CPhotoIDView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	// TODO: Add your message handler code here and/or call default
