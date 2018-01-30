@@ -984,8 +984,21 @@ void CImageView::OnLButtonDown(UINT nFlags, CPoint point)
 			// Copy image
 			//m_imgStampcut.release();
 			//m_pPhotoImg->CpoyForStamp(rect, m_imgStampcut);
+			int margin = 10;
 			m_rectForStamp = rect;
-			m_bStampCopied = true;
+			m_rectForStamp.x -= margin;
+			m_rectForStamp.y -= margin;
+			m_rectForStamp.width += margin * 2;
+			m_rectForStamp.height += margin * 2;
+
+			if ((m_rectForStamp.x >= 0) && (m_rectForStamp.y >= 0) &&
+				((m_rectForStamp.x + m_rectForStamp.width) < m_pPhotoImg->GetWidth()) && 
+				((m_rectForStamp.y + m_rectForStamp.height) < m_pPhotoImg->GetHeight())){
+			//	return;
+				m_bStampCopied = true;
+			}
+
+			//m_bStampCopied = true;
 		}
 		else{
 			// paste image

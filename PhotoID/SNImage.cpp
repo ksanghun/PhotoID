@@ -1061,7 +1061,6 @@ void CSNImage::CpoyForStamp(cv::Rect targetRect, cv::Mat& stampCut)
 
 		cv::Mat imgMat = cv::cvarrToMat(m_pCropImg);
 		imgMat(cutRect).copyTo(stampCut);
-
 	}
 }
 
@@ -1162,16 +1161,21 @@ void CSNImage::StampImage(cv::Rect _srcRect, cv::Rect targetRect, cv::Size blurS
 		cutRect.height += margin * 2;
 
 		cv::Rect srcRect = _srcRect;
-		srcRect.x -= margin;
-		srcRect.y -= margin;
-		srcRect.width += margin * 2;
-		srcRect.height += margin * 2;
+		//srcRect.x -= margin;
+		//srcRect.y -= margin;
+		//srcRect.width += margin * 2;
+		//srcRect.height += margin * 2;
 
 
 		if ((cutRect.x < 0) || (cutRect.y < 0) ||
 			((cutRect.x + cutRect.width) >= nWidth) || ((cutRect.y + cutRect.height) >= nHeight)){
 			return;
 		}
+
+		//if ((srcRect.x < 0) || (srcRect.y < 0) ||
+		//	((srcRect.x + srcRect.width) >= nWidth) || ((srcRect.y + srcRect.height) >= nHeight)){
+		//	return;
+		//}
 
 
 		cv::Mat mask = cv::Mat::zeros(cv::Size(cutRect.width, cutRect.height), imgMat.type());
