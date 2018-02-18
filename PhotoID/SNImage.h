@@ -6,11 +6,9 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include "math_tool.h"
-
+#include "UnDoObj.h"
 enum _FACEPOS { _EYE_CENTER, _LEFT_EYE, _RIGHT_EYE, _FCENTER, _TOP_EYE, _BOTTOM_EYE, _NOSE, _TOPHEAD, _CHIN };
 #define _LNADMARK_POS_NUM 9
-
-
 
 
 class CSNImage
@@ -58,9 +56,10 @@ public:
 	float GetImgWScale() { return m_imgWScale; };
 	float GetImgHScale() { return m_imgHScale; };
 	POINT3D GetLeftTop() { return m_pntLT; };
-	void SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter);
+	void SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter, bool IsPreview);
 	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 	void Undo();
+	void SaveCrop();
 
 	void ClearMatchResult();
 
@@ -71,6 +70,7 @@ public:
 	IplImage* GetSrcCopyIplImage() { return m_pSrcImgCopy; }
 	IplImage* GetPrintImg(float _fScale); // { return m_pCropImg; }
 	void SetCropImg(float _fScale);
+	void UpdatePreview(float _fScale);
 
 //	IplImage* GetSrcSmallIplImage() { return m_pSrcImgSmall; }
 	void SetGLTexture(IplImage* pimg);
@@ -156,7 +156,8 @@ private:
 	IplImage* m_pCropImg;
 	IplImage *m_pCropImgSmall;
 
-	IplImage* m_imgUndo;
+//	IplImage* m_imgUndo;
+	CUnDoObj m_Undo;
 
 	float m_fImgDeskewAngle, m_fSrcBrightness, m_fSrcContrast, m_fImgAngle;
 	float m_fImgDrawAngle;

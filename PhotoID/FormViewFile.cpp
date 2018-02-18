@@ -118,42 +118,54 @@ void CFormViewFile::FillClassView()
 
 	//m_ctrlTreeView.EnsureVisible(hRoot);
 
+	TCHAR name[UNLEN + 1];
+	DWORD size = UNLEN + 1;
 
-	HTREEITEM hRoot = m_ctrlTreeView.InsertItem(_T("C:"), 2, 2);
-	m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+	if (GetUserName((TCHAR*)name, &size)){
 
-	CFileFind finder;
-	BOOL bWorking = finder.FindFile(_T("C:\\*.*"));
+		CString strUser = name;
+		CString strRoot = _T("C:\\Users\\") + strUser + _T("\\Desktop");
 
-	while (bWorking){
-		bWorking = finder.FindNextFile();
+		HTREEITEM hRoot = m_ctrlTreeView.InsertItem(strRoot, 2, 2);
+		m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 
-		if (finder.IsDirectory()){
-			CString strTemp = finder.GetFileName();
-			m_ctrlTreeView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
+		CFileFind finder;
+		BOOL bWorking = finder.FindFile(_T("C:\\Users\\shkim\\Desktop\\*.*"));
+
+		while (bWorking){
+			bWorking = finder.FindNextFile();
+
+			if (finder.IsDirectory()){
+				CString strTemp = finder.GetFileName();
+
+				if ((strTemp != _T(".")) && (strTemp != _T(".."))){
+					m_ctrlTreeView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
+				}
+			}
 		}
+
+		//	m_wndClassView.EnsureVisible(hRoot);
+
+
+
+		//	hRoot = m_ctrlTreeView.InsertItem(_T("D:"), 2, 2);
+		//	m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+		//
+		////	finder;
+		//	bWorking = finder.FindFile(_T("D:\\*.*"));
+		//
+		//	while (bWorking){
+		//		bWorking = finder.FindNextFile();
+		//
+		//		if (finder.IsDirectory()){
+		//			CString strTemp = finder.GetFileName();
+		//			m_ctrlTreeView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
+		//		}
+		//	}
+
+		m_ctrlTreeView.EnsureVisible(hRoot);
+		m_ctrlTreeView.Expand(hRoot, TVE_EXPAND);
 	}
-
-	//	m_wndClassView.EnsureVisible(hRoot);
-
-
-
-	hRoot = m_ctrlTreeView.InsertItem(_T("D:"), 2, 2);
-	m_ctrlTreeView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
-
-//	finder;
-	bWorking = finder.FindFile(_T("D:\\*.*"));
-
-	while (bWorking){
-		bWorking = finder.FindNextFile();
-
-		if (finder.IsDirectory()){
-			CString strTemp = finder.GetFileName();
-			m_ctrlTreeView.InsertItem(finder.GetFileName(), 2, 2, hRoot);
-		}
-	}
-
-	m_ctrlTreeView.EnsureVisible(hRoot);
 
 }
 

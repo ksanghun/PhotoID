@@ -108,6 +108,8 @@ public:
 	UINT m_topMargin;
 	UINT m_botMargin;
 	afx_msg void OnDeltaposSpin3(NMHDR *pNMHDR, LRESULT *pResult);
+	CHoverButton m_btnSave;
+	afx_msg void OnBnClickedBnSavecrop();
 };
 
 

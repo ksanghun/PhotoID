@@ -87,6 +87,7 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxUInt(pDX, m_topMargin, 0, 99999);
 	DDX_Text(pDX, IDC_EDIT_BOT_MARGIN, m_botMargin);
 	DDV_MinMaxUInt(pDX, m_botMargin, 0, 9999);
+	DDX_Control(pDX, IDC_BN_SAVECROP, m_btnSave);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -109,6 +110,7 @@ BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
 //	ON_BN_CLICKED(IDC_BN_EXIT_POHTOID, &CPropFormView::OnBnClickedBnExitPohtoid)
 ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN2, &CPropFormView::OnDeltaposSpin2)
 ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN3, &CPropFormView::OnDeltaposSpin3)
+ON_BN_CLICKED(IDC_BN_SAVECROP, &CPropFormView::OnBnClickedBnSavecrop)
 END_MESSAGE_MAP()
 
 
@@ -230,7 +232,9 @@ void CPropFormView::OnInitialUpdate()
 
 	// second line //
 	ypos += 65;
-	m_btnUndo.MoveWindow(5, ypos, 64, 64);
+	m_btnSave.MoveWindow(5, ypos, 64, 64);
+
+	m_btnUndo.MoveWindow(70, ypos, 64, 64);
 	m_btnUndo.ShowWindow(SW_HIDE);
 
 
@@ -265,7 +269,9 @@ void CPropFormView::OnInitialUpdate()
 		m_pButtonPrint.LoadBitmap(IDB_BITMAP_PRINT);
 		m_pButtonPrint.SetToolTipText(&text);
 
-
+		text = _T("Save");
+		m_btnSave.LoadBitmap(IDB_BITMAP_SAVE);
+		m_btnSave.SetToolTipText(&text);
 
 		text = _T("Undo");
 		m_btnUndo.LoadBitmap(IDB_BITMAP_UNDO);
@@ -286,14 +292,14 @@ void CPropFormView::SetUndoButton(bool IsEnable, unsigned short _type)
 		m_btnUndo.EnableWindow(FALSE);
 		m_btnUndo.ShowWindow(SW_HIDE);
 
-		if (_type == 0){
-			m_SliderBrightness.SetPos(m_UndoBrightness);
-			m_CurBrightness = m_UndoBrightness;
-		}
-		else if (_type == 1){
-			m_SliderContrast.SetPos(m_UndoContrast);
-			m_fCurContrast = m_UndoContrast;
-		}
+		//if (_type == 0){
+		//	m_SliderBrightness.SetPos(m_UndoBrightness);
+		//	m_CurBrightness = m_UndoBrightness;
+		//}
+		//else if (_type == 1){
+		//	m_SliderContrast.SetPos(m_UndoContrast);
+		//	m_fCurContrast = m_UndoContrast;
+		//}
 	}
 	else{
 		m_btnUndo.EnableWindow(TRUE);
@@ -844,4 +850,10 @@ void CPropFormView::DisplayPreview(void* _pImg)
 		::StretchDIBits(dcImageTraget.GetSafeHdc(), rcImageTraget.left, rcImageTraget.top, rcImageTraget.right, rcImageTraget.bottom,
 			0, 0, tempImage->width, tempImage->height, tempImage->imageData, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 	}
+}
+
+void CPropFormView::OnBnClickedBnSavecrop()
+{
+	// TODO: Add your control notification handler code here
+	pView->SaveCrop();
 }

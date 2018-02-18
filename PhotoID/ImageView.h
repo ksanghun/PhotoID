@@ -71,6 +71,7 @@ public:
 	void SetUserCursorSize(int _size);
 	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 	void Undo();
+	void SaveCrop();
 
 	GLuint Load4ChannelImage(char* sz);
 
@@ -148,7 +149,7 @@ private:
 
 	// Image Guide Line =================================================//
 	void DrawCropArea();
-	void SetCropArea();
+	void SetCropArea(bool IsPreview);
 	
 
 	POINT2D m_guidePosDraw[_LNADMARK_POS_NUM];

@@ -106,6 +106,7 @@ IDB_BITMAP_STAMP        BITMAP                  "res\\stamp.bmp"
 IDB_BITMAP_BLUR         BITMAP                  "res\\blur.bmp"
 IDB_BITMAP_PRINT        BITMAP                  "res\\print.bmp"
 IDB_BITMAP_UNDO         BITMAP                  "res\\undo.bmp"
+IDB_BITMAP_SAVE         BITMAP                  "res\\save.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -330,10 +331,10 @@ IDD_FORMVIEW DIALOGEX 0, 0, 218, 452
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    CONTROL         "",IDC_SLIDER_ROTATE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,270,204,21
+    CONTROL         "",IDC_SLIDER_ROTATE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,310,204,21
     CONTROL         "AutoFit",IDC_BN_AUTOFIT,"Button",BS_OWNERDRAW | WS_TABSTOP,6,12,36,30
-    CONTROL         "",IDC_SLIDER_BRINGTNESS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,309,204,23
-    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,345,204,23
+    CONTROL         "",IDC_SLIDER_BRINGTNESS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,348,204,23
+    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,385,204,23
     CONTROL         "Print",IDC_BN_PRINT,"Button",BS_OWNERDRAW | BS_BITMAP | WS_TABSTOP,174,12,36,31
     CONTROL         "Crop",IDC_BN_CROPIMG,"Button",BS_OWNERDRAW | WS_TABSTOP,48,12,36,31
     CONTROL         "Stamp",IDC_BN_STEMP,"Button",BS_OWNERDRAW | WS_TABSTOP,90,12,36,31
@@ -341,19 +342,20 @@ BEGIN
     COMBOBOX        IDC_COMBO1,48,90,156,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Contry: ",IDC_STATIC,6,96,28,8
     CONTROL         "Undo",IDC_BN_UNDO,"Button",BS_OWNERDRAW | WS_TABSTOP,6,48,36,30
-    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_ARROWKEYS,143,116,11,14
-    EDITTEXT        IDC_EDIT_TOP_MARGIN,114,116,30,14,ES_AUTOHSCROLL
-    LTEXT           "Top Margin: ",IDC_STATIC,60,119,41,8
-    CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_ARROWKEYS,144,241,11,14
-    EDITTEXT        IDC_EDIT_BOT_MARGIN,114,241,30,14,ES_AUTOHSCROLL
-    LTEXT           "Bottom  Margin: ",IDC_STATIC,60,243,54,8
-    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKFRAME,60,132,96,108,WS_EX_CLIENTEDGE
-    LTEXT           "Rotate Image",IDC_STATIC,6,261,45,8
-    LTEXT           "Brightness",IDC_STATIC,6,297,34,8
-    LTEXT           "Contrast",IDC_STATIC,6,333,29,8
-    CONTROL         "",IDC_SLIDER_CURSOR_SIZE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,381,204,24
-    LTEXT           "Cursor Size",IDC_STATIC,6,369,37,8
-    GROUPBOX        "Preview",IDC_STATIC,6,109,204,150
+    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_ARROWKEYS,42,132,11,14
+    EDITTEXT        IDC_EDIT_TOP_MARGIN,12,132,30,14,ES_AUTOHSCROLL
+    LTEXT           "Top Margin: ",IDC_STATIC,12,120,41,8
+    CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_ARROWKEYS,42,270,11,14
+    EDITTEXT        IDC_EDIT_BOT_MARGIN,12,270,30,14,ES_AUTOHSCROLL
+    LTEXT           "Bottom  Margin: ",IDC_STATIC,12,258,54,8
+    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKFRAME,72,132,132,150,WS_EX_STATICEDGE
+    LTEXT           "Rotate Image",IDC_STATIC,6,300,45,8
+    LTEXT           "Brightness",IDC_STATIC,6,337,34,8
+    LTEXT           "Contrast",IDC_STATIC,6,372,29,8
+    CONTROL         "",IDC_SLIDER_CURSOR_SIZE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,6,420,204,24
+    LTEXT           "Cursor Size",IDC_STATIC,6,409,37,8
+    GROUPBOX        "Preview",IDC_STATIC,6,109,204,185
+    CONTROL         "Save",IDC_BN_SAVECROP,"Button",BS_OWNERDRAW | WS_TABSTOP,47,50,34,27
 END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 121, 68

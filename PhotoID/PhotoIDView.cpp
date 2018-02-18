@@ -477,6 +477,12 @@ void CPhotoIDView::Undo()
 		m_pImageView->Undo();
 }
 
+void CPhotoIDView::SaveCrop()
+{
+	if (m_pImageView)
+		m_pImageView->SaveCrop();
+}
+
 void CPhotoIDView::OnInitialUpdate()
 {
 	CView::OnInitialUpdate();

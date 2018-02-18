@@ -80,14 +80,61 @@ void CSNImage::Undo()
 
 		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 		cvReleaseImage(&m_pCropImg);
-		m_pCropImg = cvCloneImage(m_imgUndo);
-		SetGLTexture(m_pCropImg);
+//		m_pCropImg = cvCloneImage(m_imgUndo);
+		IplImage* pUndo = m_Undo.GetUndoImg();
 
-		cvResize(m_pCropImg, m_pCropImgSmall);
-		cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
+		if (pUndo != nullptr){
+			m_pCropImg = cvCloneImage(pUndo);
+			m_Undo.PopUndo();
 
-		pM->DisplayPreview(m_pCropImgSmall);		
-		pM->SetUndoButtonState(false, m_undoType);
+			SetGLTexture(m_pCropImg);
+			cvResize(m_pCropImg, m_pCropImgSmall);
+			cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
+
+			pM->DisplayPreview(m_pCropImgSmall);
+
+			if (m_Undo.GetCurId() == 0){
+				pM->SetUndoButtonState(false, m_undoType);
+			}
+		}
+	}
+}
+
+void CSNImage::SaveCrop()
+{
+	if (m_pCropImg){
+
+		CString path, filename;
+		int nIndex = strPath.ReverseFind(_T('.'));
+		if (nIndex > 0) {
+			filename = strPath.Left(nIndex);
+		}
+		//	filename += strExtension;	
+		path = filename + L"_crop.bmp";
+
+
+		USES_CONVERSION;
+		char* sz = T2A(path);
+		sz = T2A(path);
+
+		IplImage* pImgTmp = cvCloneImage(m_pCropImg);
+		cvCvtColor(pImgTmp, pImgTmp, CV_BGR2RGB);
+
+		cvSaveImage(sz, pImgTmp);
+
+		cvReleaseImage(&pImgTmp);
+
+
+		//CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+		//cvReleaseImage(&m_pCropImg);
+		//m_pCropImg = cvCloneImage(m_imgUndo);
+		//SetGLTexture(m_pCropImg);
+
+		//cvResize(m_pCropImg, m_pCropImgSmall);
+		//cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
+
+		//pM->DisplayPreview(m_pCropImgSmall);
+		//pM->SetUndoButtonState(false, m_undoType);
 	}
 }
 
@@ -157,9 +204,11 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 		cvReleaseImage(&m_pCropImgSmall);
 	}
 
-	if (m_imgUndo){
-		cvReleaseImage(&m_imgUndo);
-	}
+	m_Undo.InitUnDoImg();
+
+	//if (m_imgUndo){
+	//	cvReleaseImage(&m_imgUndo);
+	//}
 
 
 	m_pSrcImg = pimg;
@@ -284,13 +333,13 @@ void CSNImage::SetSize(unsigned short _w, unsigned short _h, float _size)
 	m_pntPreview.z = 0;
 
 
-	if ((m_IsCropImg == false) && (m_pCropImgSmall)){
-		IplImage* tmpImg = cvCreateImage(cvSize(64, 64), 8, 3);
-		cvSet(tmpImg, CV_RGB(255, 255, 255));
-		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
-		pM->DisplayPreview(tmpImg);
-		cvReleaseImage(&tmpImg);
-	}
+	//if ((m_IsCropImg == false) && (m_pCropImgSmall)){
+	//	IplImage* tmpImg = cvCreateImage(cvSize(64, 64), 8, 3);
+	//	cvSet(tmpImg, CV_RGB(255, 255, 255));
+	//	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+	//	pM->DisplayPreview(tmpImg);
+	//	cvReleaseImage(&tmpImg);
+	//}
 
 	//m_fXScale = (float)GetImgWidth() / (GetLeftTop().x * 2);
 	//m_fYScale = (float)GetImgHeight() / (GetLeftTop().y * 2);
@@ -696,13 +745,14 @@ void CSNImage::ChangeBrightness(float _value, bool IsApply)
 	else{
 		if (IsApply){
 
-			if (m_imgUndo){
-				cvReleaseImage(&m_imgUndo);
-			}
+			//if (m_imgUndo){
+			//	cvReleaseImage(&m_imgUndo);
+			//}
 			// For Undo=============== //
-			m_imgUndo = cvCloneImage(m_pCropImg);		
-			m_undoType = 0;
-			pM->SetUndoButtonState(true, m_undoType);
+			//m_imgUndo = cvCloneImage(m_pCropImg);		
+			//m_Undo.PushUndo(m_pCropImg);
+			//m_undoType = 0;
+			//pM->SetUndoButtonState(true, m_undoType);
 			//========================//
 
 			CvScalar brVal = cvScalarAll(_value);
@@ -745,13 +795,13 @@ void CSNImage::ChangeConstrast(float _value, bool IsApply)
 	else{
 		if (IsApply){
 
-			if (m_imgUndo){
-				cvReleaseImage(&m_imgUndo);
-			}
-			// For Undo=============== //
-			m_imgUndo = cvCloneImage(m_pCropImg);	
-			m_undoType = 1;
-			pM->SetUndoButtonState(true, m_undoType);
+			//if (m_imgUndo){
+			//	cvReleaseImage(&m_imgUndo);
+			//}
+			//// For Undo=============== //
+			//m_imgUndo = cvCloneImage(m_pCropImg);	
+			//m_undoType = 1;
+			//pM->SetUndoButtonState(true, m_undoType);
 			//========================//
 
 
@@ -835,7 +885,7 @@ void CSNImage::DrawCroppingArea()
 
 }
 
-void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter)
+void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter, bool IsPreview)
 {	
 	float faceLength = (yFaceTop - yFaceBot);
 	float faceeLengthMM = m_printFormat.heightMM - (m_printFormat.botMarginMM + m_printFormat.topMarginMM);
@@ -859,11 +909,15 @@ void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, fl
 
 
 	
-	
-	if (m_IsCropImg){
+	if (IsPreview){
 		float fScale = pView->GetDetectedScale();
-		SetCropImg(fScale);
+		UpdatePreview(fScale);
 	}
+	
+	//if (m_IsCropImg){
+	//	float fScale = pView->GetDetectedScale();
+	//	SetCropImg(fScale);
+	//}
 
 
 
@@ -981,16 +1035,54 @@ void CSNImage::DrawCrossMark(int length, int thickness, int _x, int _y, IplImage
 		pImg->imageData[id + 1] = 0;
 		pImg->imageData[id + 2] = 0;
 	}
+}
 
+void CSNImage::UpdatePreview(float _fScale)
+{
+	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+
+	//	if (m_IsCropImg == true) return;
+	if (m_pSrcImg == NULL) return;
+
+	if (m_pCropImgSmall){
+		cvReleaseImage(&m_pCropImgSmall);
+		m_pCropImgSmall = NULL;
+	}
+
+	m_rectCrop.x1 *= _fScale;
+	m_rectCrop.x2 *= _fScale;
+	m_rectCrop.y1 *= _fScale;
+	m_rectCrop.y2 *= _fScale;
+
+	if (m_rectCrop.y1 < 0)					m_rectCrop.y1 = 0;
+	if (m_rectCrop.y2 > m_pSrcImgCopy->height)	m_rectCrop.y2 = m_pSrcImgCopy->height;
+	if (m_rectCrop.x1 < 0)					m_rectCrop.x1 = 0;
+	if (m_rectCrop.x2 > m_pSrcImgCopy->width)	m_rectCrop.x2 = m_pSrcImgCopy->width;
+
+
+	m_rectCrop.width = m_rectCrop.x2 - m_rectCrop.x1;
+	m_rectCrop.height = m_rectCrop.y2 - m_rectCrop.y1;
+
+	float fRatio = m_printFormat.aRatio;
+	int sHeight = 200;
+	int sWidth = sHeight * fRatio;
+
+	m_pCropImgSmall = cvCreateImage(cvSize(sWidth, sHeight), m_pSrcImgCopy->depth, m_pSrcImgCopy->nChannels);
+	cvSetImageROI(m_pSrcImgCopy, cvRect(m_rectCrop.x1, m_rectCrop.y1, m_rectCrop.width, m_rectCrop.height));		// posx, posy = left - top
+	cvResize(m_pSrcImgCopy, m_pCropImgSmall);
+	cvResetImageROI(m_pSrcImgCopy);
+
+	cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
+	pM->DisplayPreview((void*)m_pCropImgSmall);
 }
 
 
 void CSNImage::SetCropImg(float _fScale)
 {
 	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+	
+	if (m_IsCropImg == true) return;
 
-
-//	if (m_IsCropImg == true) return;
 	if (m_pSrcImg == NULL) return;
 
 	if (m_pCropImg){
@@ -1069,11 +1161,12 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 {
 	if (m_IsCropImg == true){
 
-		if (m_imgUndo){
-			cvReleaseImage(&m_imgUndo);
-		}
+		//if (m_imgUndo){
+		//	cvReleaseImage(&m_imgUndo);
+		//}
 		// For Undo=============== //
-		m_imgUndo = cvCloneImage(m_pCropImg);
+		//m_imgUndo = cvCloneImage(m_pCropImg);
+		m_Undo.PushUndo(m_pCropImg);
 		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 		pM->SetUndoButtonState(true, 3);
 		//========================//
@@ -1141,11 +1234,12 @@ void CSNImage::StampImage(cv::Rect _srcRect, cv::Rect targetRect, cv::Size blurS
 {
 	if (m_IsCropImg == true){
 
-		if (m_imgUndo){
-			cvReleaseImage(&m_imgUndo);
-		}
+		//if (m_imgUndo){
+		//	cvReleaseImage(&m_imgUndo);
+		//}
 		// For Undo=============== //
-		m_imgUndo = cvCloneImage(m_pCropImg);
+		//m_imgUndo = cvCloneImage(m_pCropImg);
+		m_Undo.PushUndo(m_pCropImg);
 		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 		pM->SetUndoButtonState(true, 3);
 		//========================//

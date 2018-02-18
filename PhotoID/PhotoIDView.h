@@ -43,6 +43,7 @@ public:
 	void StampImage();
 	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 	void Undo();
+	void SaveCrop();
 // Overrides
 
 private:

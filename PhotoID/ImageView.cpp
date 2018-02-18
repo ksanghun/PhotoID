@@ -378,7 +378,7 @@ void CImageView::Render2D()
 
 
 		else{
-			DrawDebugInfo();
+		//	DrawDebugInfo();
 
 			if (m_bBlurMode){
 				glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
@@ -601,7 +601,7 @@ void CImageView::ReSizeIcon()
 			m_guideLine[i].SetDrawEndPnt(tmpV.x, tmpV.y);
 		}
 
-		SetCropArea();
+		SetCropArea(false);
 
 
 		// Update Cursor Size ///
@@ -726,7 +726,7 @@ bool CImageView::LoadSNImage(CString strPath, CSNImage* pInfo)
 		cvCvtColor(pimg, pImgrgb, CV_BGR2RGB);
 		cvReleaseImage(&pimg);
 
-
+		pInfo->SetName(strPath, strPath, strPath, 0, 0);
 		pInfo->SetSrcIplImage(pImgrgb);
 		pInfo->SetImgSize(pImgrgb->width, pImgrgb->height);
 		pInfo->SetSize(pImgrgb->width, pImgrgb->height, m_iconSize);
@@ -768,7 +768,7 @@ void CImageView::OnLButtonUp(UINT nFlags, CPoint point)
 
 	if (GetCapture() && (m_selButtonId>-1)){
 		ReleaseCapture();
-
+		SetCropArea(false);
 		m_selButtonId = -1;
 		//ReSizeIcon();
 
@@ -894,7 +894,7 @@ void CImageView::OnTimer(UINT_PTR nIDEvent)
 
 	if (nIDEvent == _UPDATE_IMAGE){
 		wglMakeCurrent(m_CDCPtr->GetSafeHdc(), m_hRC);
-		SetCropArea();
+		SetCropArea(false);
 		ReSizeIcon();
 		Render();
 		KillTimer(_UPDATE_IMAGE);
@@ -1342,7 +1342,7 @@ bool CImageView::FaceDetection(IplImage* pImg)
 		}
 
 		
-		SetCropArea();
+		SetCropArea(true);
 		m_pPhotoImg->RestoreGuidePos();
 	}
 
@@ -1360,7 +1360,7 @@ bool CImageView::FaceDetection(IplImage* pImg)
 	return true;
 }
 
-void CImageView::SetCropArea()
+void CImageView::SetCropArea(bool IsPreview)
 {
 	// 0: bottom, 1: eye, 2: top, 3: vcenter ;;
 	float fTop = m_guideLine[2].GetCurrPos().y;
@@ -1370,7 +1370,7 @@ void CImageView::SetCropArea()
 	float fCenterY = (m_guideLine[1].GetCurrPos().y + nPos)*0.5f;
 	float fCenterX = m_guideLine[3].GetCurrPos().x;
 
-	m_pPhotoImg->SetCropArea(fTop, fBot, fCenterX, fCenterY);
+	m_pPhotoImg->SetCropArea(fTop, fBot, fCenterX, fCenterY, IsPreview);
 }
 
 //POINT2D CImageView::convertScreenToImageSpace(POINT2D pnt)
@@ -1684,5 +1684,11 @@ void CImageView::Undo()
 	if (m_pPhotoImg){
 		m_pPhotoImg->Undo();
 	}
+}
 
+void CImageView::SaveCrop()
+{
+	if (m_pPhotoImg){
+		m_pPhotoImg->SaveCrop();
+	}
 }

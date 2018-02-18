@@ -85,6 +85,8 @@
 #define IDB_BITMAP_PRINT                315
 #define IDD_DIALOG1                     316
 #define IDB_BITMAP_UNDO                 317
+#define IDB_BITMAP1                     319
+#define IDB_BITMAP_SAVE                 319
 #define IDC_SLIDER_ROTATE               1000
 #define IDC_SLIDER_BRINGTNESS           1001
 #define IDC_EDIT_ROT_VALUE              1002
@@ -102,14 +104,15 @@
 #define IDC_SPIN3                       1022
 #define IDC_EDIT_BOT_MARGIN             1023
 #define IDC_PREVIEW                     1028
+#define IDC_BN_SAVECROP                 1029
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        319
+#define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif
